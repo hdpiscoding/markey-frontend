@@ -10,7 +10,7 @@ const Login = () => {
     }
     return (
         <div>
-            <div className="bg-gradient-to-b from-Blue to-Light_blue h-screen w-screen grid grid-cols-[2fr_5fr_5fr_2fr] justify-items-center items-center">
+            <div className="bg-gradient-to-b from-Blue to-Light_blue h-screen w-screen grid grid-cols-[1fr_5fr_5fr_1fr] justify-items-center items-center">
                 <div className="flex flex-col items-center col-start-2 select-none">
                     <div className="w-[20rem] h-[18rem]">
                         <img src="/Markey_white_vertical.png" className="object-cover" alt="Markey"/>
@@ -23,7 +23,7 @@ const Login = () => {
                     </div>
                 </div>
 
-                <div className="rounded-2xl bg-White w-[28rem] col-start-3 flex flex-col justify-center items-center">
+                <div className="rounded-2xl bg-White w-[28rem] col-start-3 flex flex-col justify-center items-center select-none">
                     <div className="flex flex-col justify-center items-center w-[20rem]">
                         <div className="mt-4 select-none">
                             <span className="font-sans text-Black font-semibold text-2xl">
@@ -40,17 +40,38 @@ const Login = () => {
                         <div className="mb-8 relative flex justify-items-center items-center">
                             {showPassword
                                 ?
-                                <input className="border-2 w-[20rem] rounded-sm h-8 focus:ring-Blue focus:ring-1 outline-none pl-2 pr-5 focus:border-Blue"
-                                placeholder="Mật khẩu" type="password"/>
+                                <input
+                                    className="border-2 w-[20rem] rounded-sm h-8 focus:ring-Blue focus:ring-1 outline-none pl-2 pr-5 focus:border-Blue"
+                                    placeholder="Mật khẩu" type="password"/>
                                 :
-                                <input className="border-2 w-[20rem] rounded-sm h-8 focus:ring-Blue focus:ring-1 outline-none pl-2 pr-5 focus:border-Blue"
-                                placeholder="Mật khẩu" type="text"/>}
+                                <input
+                                    className="border-2 w-[20rem] rounded-sm h-8 focus:ring-Blue focus:ring-1 outline-none pl-2 pr-5 focus:border-Blue"
+                                    placeholder="Mật khẩu" type="text"/>}
 
-                            {showPassword ? <FaEye onClick={handleShowPassword} className="h-4 w-4 absolute right-2 select-none cursor-pointer"/> :
-                                <FaEyeSlash onClick={handleShowPassword} className="h-4 w-4 absolute right-2 select-none cursor-pointer"/>}
+                            {showPassword ? <FaEye onClick={handleShowPassword}
+                                                   className="h-4 w-4 absolute right-2 select-none cursor-pointer"/> :
+                                <FaEyeSlash onClick={handleShowPassword}
+                                            className="h-4 w-4 absolute right-2 select-none cursor-pointer"/>}
                         </div>
 
-                        <div className="mb-1 h-8 bg-Blue flex flex-col items-center justify-center rounded-sm cursor-pointer hover:bg-Dark_blue">
+                        <div className="mb-8">
+                            <select className="border-2 w-[20rem] rounded-sm h-8 focus:ring-Blue focus:ring-1 outline-none pl-2 focus:border-Blue">
+                                <option value="0">
+                                    <span>
+                                        Khách hàng
+                                    </span>
+                                </option>
+
+                                <option value="1">
+                                    <span>
+                                        Người bán
+                                    </span>
+                                </option>
+                            </select>
+                        </div>
+
+                        <div
+                            className="mb-1 h-8 bg-Blue flex flex-col items-center justify-center rounded-sm cursor-pointer hover:bg-Dark_blue">
                             <button className="rounded-sm w-[20rem]">
                                 <div>
                                 <span className="text-White select-none">
@@ -69,7 +90,7 @@ const Login = () => {
                         <div className="mb-4 select-none">
                             <span>
                                 Bạn chưa có tài khoản?
-                                <a href="#" className="ml-2 text-Red underline">
+                                <a href="#" className="ml-2 text-Red">
                                     Đăng ký
                                 </a>
                             </span>
