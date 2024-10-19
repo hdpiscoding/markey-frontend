@@ -34,5 +34,7 @@ code {
     --yellow: #FABC3F;
     --dark-blue: #0073B2;
     --gray: #AAAAAA;
+    --light-gray: #EEEEEE;
+    --lighter-gray: #F7F7F7;
   }
 }

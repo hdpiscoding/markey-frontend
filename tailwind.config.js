@@ -16,6 +16,8 @@ module.exports = {
         Star: 'var(--yellow)',
         Dark_blue: 'var(--dark-blue)',
         Gray: 'var(--gray)',
+        Light_gray: 'var(--light-gray)',
+        Lighter_gray: 'var(--lighter-gray)',
       }
     },
   },

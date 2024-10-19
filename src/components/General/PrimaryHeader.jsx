@@ -8,7 +8,7 @@ import cart_svg from "../../assets/cart.svg";
 
 const PrimaryHeader = () => {
     return (
-        <header className="bg-gradient-to-b from-Blue to-Light_blue grid grid-cols-[1fr_10fr_1fr] w-screen h-auto select-none sticky">
+        <header className="bg-gradient-to-b from-Blue to-Light_blue grid grid-cols-[1fr_10fr_1fr] w-screen h-auto select-none sticky top-0 z-50">
             <div className="col-start-2">
                 <div className="grid grid-rows-[auto_1fr] my-3">
                     <div className="flex flex-row-reverse gap-10 mb-1">

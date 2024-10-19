@@ -1,14 +1,13 @@
-import ForgetFinished from "./pages/Login_Register_Forget/ForgetFinished";
-import PrimaryHeader from "./components/General/PrimaryHeader";
-import SecondaryHeader from "./components/General/SecondaryHeader";
-import Footer from "./components/General/Footer";
-import Login from "./pages/Login_Register_Forget/Login";
-import Register from "./pages/Login_Register_Forget/Register";
+
+import AboutMarkey from "./pages/General/AboutMarkey";
+import Terms from "./pages/General/Terms";
+import SecurityPolicy from "./pages/General/SecurityPolicy";
+import Product from "./components/Shopper/Product";
 
 function App() {
   return (
     <div>
-        <Login />
+        <Product />
     </div>
   );
 }
