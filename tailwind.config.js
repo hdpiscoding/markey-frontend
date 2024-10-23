@@ -18,6 +18,9 @@ module.exports = {
         Gray: 'var(--gray)',
         Light_gray: 'var(--light-gray)',
         Lighter_gray: 'var(--lighter-gray)',
+        Dark_gray: 'var(--dark-gray)',
+        Dark_red: 'var(--dark-red)',
+        Light_red: 'var(--light-red)',
       }
     },
   },

@@ -5,7 +5,7 @@ import bell_svg from "../../assets/bell.svg";
 
 const SecondaryHeader = (props) => {
     return (
-        <header className="grid grid-rows-[auto_1fr] w-screen h-auto select-none sticky top-0 z-50">
+        <header className="grid grid-rows-[auto_1fr] w-screen h-auto select-none">
             <div className="bg-gradient-to-b from-Blue to-Light_blue py-2">
                 <div className="grid grid-cols-[1fr_10fr_1fr]">
                     <div className="flex flex-row-reverse gap-10 col-start-2">

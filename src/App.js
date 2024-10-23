@@ -1,13 +1,12 @@
-
-import AboutMarkey from "./pages/General/AboutMarkey";
-import Terms from "./pages/General/Terms";
-import SecurityPolicy from "./pages/General/SecurityPolicy";
-import Product from "./components/Shopper/Product";
+import CategoryCarousel from "./components/Shopper/CategoryCarousel";
+import CartItemListView from "./components/Shopper/CartItemListView";
+import CartItemGroupByDate from "./components/Shopper/CartItemGroupByDate";
+import ShopperCart from "./pages/Shopper/ShopperCart";
 
 function App() {
   return (
     <div>
-        <Product />
+        <ShopperCart />
     </div>
   );
 }

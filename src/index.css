@@ -36,5 +36,8 @@ code {
     --gray: #AAAAAA;
     --light-gray: #EEEEEE;
     --lighter-gray: #F7F7F7;
+    --dark-gray: #A7A7A7;
+    --dark-red: #B71C1C;
+    --light-red: #F8CFCF;
   }
 }
