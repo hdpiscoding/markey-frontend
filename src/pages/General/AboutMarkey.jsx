@@ -7,7 +7,7 @@ const AboutMarkey = () => {
         <div className="bg-Light_gray overflow-x-hidden">
             <SecondaryHeader head="Thông tin về Markey"/>
 
-            <main className="grid grid-cols-[1fr_10fr_1fr]">
+            <main className="grid grid-cols-[1fr_10fr_1fr] w-screen">
                 <div className="col-start-2 bg-White my-4">
                     <div className="grid grid-rows-auto">
                         <div className="flex items-center justify-center mt-3">

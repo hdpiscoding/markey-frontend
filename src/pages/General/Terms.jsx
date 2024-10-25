@@ -7,7 +7,7 @@ const Terms = () => {
         <div className="bg-Light_gray overflow-x-hidden">
             <SecondaryHeader head="Điều khoản sử dụng"/>
 
-            <main className="grid grid-cols-[1fr_10fr_1fr]">
+            <main className="grid grid-cols-[1fr_10fr_1fr] w-screen">
                 <div className="col-start-2 bg-White my-4">
                     <div className="grid grid-rows-auto">
                         <div className="flex items-center justify-center relative h-[5rem] my-2">

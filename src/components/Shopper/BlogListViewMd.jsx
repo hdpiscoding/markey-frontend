@@ -4,11 +4,11 @@ import clock from '../../assets/clock.svg';
 
 const BlogListViewMd = (props) => {
     return (
-        <article className="bg-White h[100px] w-auto">
+        <article className="bg-White h[100px] w-auto rounded-md">
             <div className="grid grid-cols-[30%_70%]">
                 <div className="col-start-1 select-none">
                     <a href="#">
-                        <img src={sample_blog} alt="blog" className="object-cover h-[100px]"/>
+                        <img src={sample_blog} alt="blog" className="object-cover h-[100px] rounded-l-md"/>
                     </a>
                 </div>
 
@@ -20,6 +20,16 @@ const BlogListViewMd = (props) => {
                                 {props.title ?? "Nước tẩy trang Simple có tốt không? Review chi tiết từng loại conasodashjdjkdhjksdhfjksdjgfdsjhgwelhuirkfhjvxmcbvxbgjwehrtiuhfjs"}
                             </span>
                             </a>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <span>
+                                Danh mục:
+                            </span>
+
+                            <span className="text-Blue font-semibold">
+                                {props.category ?? "Tẩy trang"}
+                            </span>
                         </div>
 
                         <div className="flex items-center gap-10">

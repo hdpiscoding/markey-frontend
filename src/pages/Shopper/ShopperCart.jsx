@@ -83,7 +83,7 @@ const ShopperCart = () => {
     return (
         <div className="bg-Light_gray overflow-x-hidden h-screen">
             <SecondaryHeader head="Giỏ hàng"/>
-            <main className="grid grid-cols-[1fr_10fr_1fr] my-5">
+            <main className="grid grid-cols-[1fr_10fr_1fr] my-5 w-screen">
                 <div className="col-start-2">
                     <div className="grid grid-cols-[0.25fr_11.5fr_0.25fr] bg-White">
                         <div className="col-start-2 grid grid-cols-[7fr_1.5fr_2fr_1.5fr_1fr]">

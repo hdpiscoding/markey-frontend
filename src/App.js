@@ -1,12 +1,10 @@
-import CategoryCarousel from "./components/Shopper/CategoryCarousel";
-import CartItemListView from "./components/Shopper/CartItemListView";
-import CartItemGroupByDate from "./components/Shopper/CartItemGroupByDate";
-import ShopperCart from "./pages/Shopper/ShopperCart";
+
+import RecommendedBlogs from "./pages/Shopper/RecommendedBlogs";
 
 function App() {
   return (
     <div>
-        <ShopperCart />
+        <RecommendedBlogs />
     </div>
   );
 }

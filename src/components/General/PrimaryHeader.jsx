@@ -5,8 +5,9 @@ import blog_svg from "../../assets/blog.svg";
 import find_svg from "../../assets/find.svg";
 import favourite_svg from "../../assets/favourite.svg";
 import cart_svg from "../../assets/cart.svg";
+import {Badge} from "@mui/material";
 
-const PrimaryHeader = () => {
+const PrimaryHeader = (props) => {
     return (
         <header className="bg-gradient-to-b from-Blue to-Light_blue grid grid-cols-[1fr_10fr_1fr] w-screen h-auto select-none sticky top-0 z-50">
             <div className="col-start-2">
@@ -71,16 +72,18 @@ const PrimaryHeader = () => {
                             </div>
 
                             <div className="flex items-center justify-center">
-                                <a href="#">
-                                    <img src={favourite_svg} alt="heart"
-                                         className="object-cover h-[1.22rem] w-[1.3rem]"/>
-                                </a>
-                            </div>
+                                <Badge badgeContent={props.productCount ?? 5} sx={{
+                                    '& .MuiBadge-badge': {
+                                        backgroundColor: '#D32F2F', //
+                                        color: 'white' // Đặt màu chữ cho badge
+                                    }
+                                }}>
+                                    <a href="#">
+                                        <img src={cart_svg} alt="cart"
+                                             className="object-cover h-[1.35rem] w-[1.35rem]"/>
+                                    </a>
+                                </Badge>
 
-                            <div className="flex items-center justify-center">
-                                <a href="#">
-                                    <img src={cart_svg} alt="cart" className="object-cover h-[1.35rem] w-[1.35rem]"/>
-                                </a>
                             </div>
                         </div>
                     </div>

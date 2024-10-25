@@ -54,21 +54,21 @@ const Login = () => {
                                             className="h-4 w-4 absolute right-2 select-none cursor-pointer"/>}
                         </div>
 
-                        <div className="mb-8">
-                            <select className="border-2 w-[20rem] rounded-sm h-8 focus:ring-Blue focus:ring-1 outline-none pl-2 focus:border-Blue">
-                                <option value="0">
-                                    <span>
-                                        Khách hàng
-                                    </span>
-                                </option>
+                        {/*<div className="mb-8">*/}
+                        {/*    <select className="border-2 w-[20rem] rounded-sm h-8 focus:ring-Blue focus:ring-1 outline-none pl-2 focus:border-Blue">*/}
+                        {/*        <option value="0">*/}
+                        {/*            <span>*/}
+                        {/*                Khách hàng*/}
+                        {/*            </span>*/}
+                        {/*        </option>*/}
 
-                                <option value="1">
-                                    <span>
-                                        Người bán
-                                    </span>
-                                </option>
-                            </select>
-                        </div>
+                        {/*        <option value="1">*/}
+                        {/*            <span>*/}
+                        {/*                Người bán*/}
+                        {/*            </span>*/}
+                        {/*        </option>*/}
+                        {/*    </select>*/}
+                        {/*</div>*/}
 
                         <div
                             className="mb-1 h-8 bg-Blue flex flex-col items-center justify-center rounded-sm cursor-pointer hover:bg-Dark_blue">

@@ -4,69 +4,74 @@ import left_arrow from '../../assets/left_arrow.svg';
 import CategoryCardView from "./CategoryCardView";
 
 const CategoryCarousel = () => {
+    const categories = [
+        "Chăm sóc da", "Chăm sóc tóc", "Phụ kiện làm đẹp",
+        "Chăm sóc da mặt", "Dụng cụ trang điểm", "Trang điểm",
+        "Chăm sóc cơ thể", "Nước hoa", "Chăm sóc toàn thân",
+        "Chăm sóc tóc chuyên sâu", "Sản phẩm dưỡng ẩm",
+        "Trang điểm tự nhiên", "Mặt nạ", "Sản phẩm tẩy trang",
+        "Sữa rửa mặt", "Kem chống nắng", "Serum",
+        "Sữa tắm", "Dầu gội", "Dầu xả", "Cọ trang điểm", "Bông tẩy trang",
+        "Máy massage da", "Máy rửa mặt", "Máy làm đẹp", "Máy tẩy lông", "Máy sấy tóc",
+        "Máy uốn tóc", "Máy làm tóc"
+    ];
+
+    const itemsPerPage = 10;
+    const totalPages = Math.ceil(categories.length / itemsPerPage);
+
+    const [currentPage, setCurrentPage] = React.useState(0);
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages - 1) {
+            setCurrentPage(currentPage + 1);
+        }
+    }
+
+    const handlePrevPage = () => {
+        if (currentPage > 0) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const startIndex = currentPage * itemsPerPage;
+    const displayedCategories = categories.slice(startIndex, startIndex + itemsPerPage);
+
     return (
-        <div className="grid grid-cols-[1fr_10fr_1fr]">
-            <div className="h-[200px] rounded-t-md grid grid-rows-[25%_75%] border col-start-2">
-                <div className="row-start-1 flex justify-between mx-2 ml-4 my-2 items-center">
-                    <div>
-                    <span className="font-semibold text-xl">
-                        DANH MỤC
-                    </span>
-                    </div>
-
-                    <div className="flex gap-5 select-none">
-                        <button
-                            className="rounded-[50%] bg-Light_gray w-[40px] h-[40px] flex items-center justify-center hover:border-Blue hover:ring-2 hover:ring-Blue">
-                            <img src={left_arrow} alt="arrow" className="object-cover w-5 h-5"/>
-                        </button>
-
-                        <button
-                            className="rounded-[50%] bg-Light_gray w-[40px] h-[40px] flex items-center justify-center hover:border-Blue hover:ring-2 hover:ring-Blue">
-                            <img src={right_arrow} alt="arrow" className="object-cover w-5 h-5"/>
-                        </button>
-                    </div>
+        <div className="bg-White h-[200px] rounded-t-md grid grid-rows-[25%_75%] border col-start-2">
+            <div className="row-start-1 flex justify-between mx-2 ml-4 my-2 items-center">
+                <div>
+                <span className="font-semibold text-xl">
+                    DANH MỤC
+                </span>
                 </div>
 
-                <div className="row-start-2">
-                    <ul className="flex flex-row">
-                        <li className="basis-[10%]">
-                            <CategoryCardView/>
-                        </li>
-                        <li className="basis-[10%]">
-                            <CategoryCardView category="Chăm sóc da"/>
-                        </li>
-                        <li className="basis-[10%]">
-                            <CategoryCardView category="Chăm sóc da"/>
-                        </li>
-                        <li className="basis-[10%]">
-                            <CategoryCardView category="Chăm sóc da"/>
-                        </li>
-                        <li className="basis-[10%]">
-                            <CategoryCardView category="Chăm sóc da"/>
-                        </li>
-                        <li className="basis-[10%]">
-                            <CategoryCardView category="Chăm sóc tóc"/>
-                        </li>
-                        <li className="basis-[10%]">
-                            <CategoryCardView category="Phụ kiện làm đẹp"/>
-                        </li>
-                        <li className="basis-[10%]">
-                            <CategoryCardView category="Chăm sóc da mặt"/>
-                        </li>
-                        <li className="basis-[10%]">
-                            <CategoryCardView category="Dụng cụ trang điểm"/>
-                        </li>
-                        <li className="basis-[10%]">
-                            <CategoryCardView category="Trang điểm"/>
-                        </li>
-                        <li className="basis-[10%]">
-                            <CategoryCardView category="Chăm sóc cơ thể"/>
-                        </li>
-                    </ul>
+                <div className="flex gap-5 select-none">
+                    <button
+                        className={`rounded-[50%] bg-light_gray w-[40px] h-[40px] flex items-center justify-center ${currentPage === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        onClick={handlePrevPage}
+                        disabled={currentPage === 0}>
+                        <img src={left_arrow} alt="arrow" className="object-cover w-5 h-5"/>
+                    </button>
+
+                    <button
+                        className={`rounded-[50%] bg-light_gray w-[40px] h-[40px] flex items-center justify-center ${currentPage === totalPages - 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        onClick={handleNextPage}
+                        disabled={currentPage === totalPages - 1}>
+                        <img src={right_arrow} alt="arrow" className="object-cover w-5 h-5"/>
+                    </button>
                 </div>
             </div>
-        </div>
 
+            <div className="row-start-2">
+                <ul className="flex">
+                    {displayedCategories.map((category, index) => (
+                        <li key={index} className="basis-[10%]">
+                            <CategoryCardView category={category} />
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </div>
     );
 };
 

@@ -48,7 +48,9 @@ const CartItemListView = (props) => {
     }
 
     const increaseQuantity = () => {
-        quantity === '' ? setQuantity(1) : setQuantity(quantity + 1);
+        if (quantity <= props.max_quantity) {
+            quantity === '' ? setQuantity(1) : setQuantity(quantity + 1);
+        }
     };
 
     const decreaseQuantity = () => {

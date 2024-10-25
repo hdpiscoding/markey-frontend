@@ -11,7 +11,7 @@ const Footer = () => {
                 <div className="col-start-2">
                     <div className="grid grid-cols-[auto_1fr_1fr_1fr] content-center justify-items-center">
                         <div className="flex flex-col items-center justify-center">
-                            <div className="">
+                            <div className="select-none">
                                 <img src="/Markey_blue_vertical.png" alt="Markey"
                                      className="object-cover h-[100px] w-[100px]"/>
                             </div>
