@@ -72,18 +72,10 @@ const PrimaryHeader = (props) => {
                             </div>
 
                             <div className="flex items-center justify-center">
-                                <Badge badgeContent={props.productCount ?? 5} sx={{
-                                    '& .MuiBadge-badge': {
-                                        backgroundColor: '#D32F2F', //
-                                        color: 'white' // Đặt màu chữ cho badge
-                                    }
-                                }}>
-                                    <a href="#">
-                                        <img src={cart_svg} alt="cart"
-                                             className="object-cover h-[1.35rem] w-[1.35rem]"/>
-                                    </a>
-                                </Badge>
-
+                                <a href="#">
+                                    <img src={cart_svg} alt="cart"
+                                         className="object-cover h-[1.35rem] w-[1.35rem]"/>
+                                </a>
                             </div>
                         </div>
                     </div>

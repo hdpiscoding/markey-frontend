@@ -1,10 +1,9 @@
-
-import RecommendedBlogs from "./pages/Shopper/RecommendedBlogs";
+import ShopperAddress from "./pages/Shopper/ShopperAddress";
 
 function App() {
   return (
     <div>
-        <RecommendedBlogs />
+        <ShopperAddress/>
     </div>
   );
 }

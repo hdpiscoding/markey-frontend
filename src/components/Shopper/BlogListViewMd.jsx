@@ -4,30 +4,30 @@ import clock from '../../assets/clock.svg';
 
 const BlogListViewMd = (props) => {
     return (
-        <article className="bg-White h[100px] w-auto rounded-md">
+        <article className="bg-White h-[130px] w-auto rounded-md">
             <div className="grid grid-cols-[30%_70%]">
                 <div className="col-start-1 select-none">
                     <a href="#">
-                        <img src={sample_blog} alt="blog" className="object-cover h-[100px] rounded-l-md"/>
+                        <img src={sample_blog} alt="blog" className="object-cover h-[130px] rounded-l-md"/>
                     </a>
                 </div>
 
-                <div className="col-start-2 mx-4">
+                <div className="col-start-2 mx-4 py-2">
                     <div className="flex flex-col gap-2">
                         <div>
                             <a href="#" className="hover:text-Blue">
-                            <span className="font-sans font-semibold text-lg text-pretty">
-                                {props.title ?? "Nước tẩy trang Simple có tốt không? Review chi tiết từng loại conasodashjdjkdhjksdhfjksdjgfdsjhgwelhuirkfhjvxmcbvxbgjwehrtiuhfjs"}
-                            </span>
+                                <span className="font-sans font-semibold text-lg text-pretty">
+                                    {props.title ?? "Nước tẩy trang Simple có tốt không? Review chi tiết từng loại conasodashjdjkdhjksdhfjksdjgfdsjhgwelhuirkfhjvxmcbvxbgjwehrtiuhfjs"}
+                                </span>
                             </a>
                         </div>
 
                         <div className="flex items-center gap-2">
-                            <span>
+                            <span className="text-[0.75rem]">
                                 Danh mục:
                             </span>
 
-                            <span className="text-Blue font-semibold">
+                            <span className="text-Blue font-semibold text-[0.75rem]">
                                 {props.category ?? "Tẩy trang"}
                             </span>
                         </div>
