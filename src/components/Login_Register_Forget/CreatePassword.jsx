@@ -16,8 +16,7 @@ const CreatePassword = (props) => {
     }
 
     return (
-        <div
-            className="bg-White shadow rounded-lg h-auto w-[32rem] select-none flex flex-col items-center justify-items-center">
+        <div className="bg-White shadow rounded-lg h-auto w-[32rem] select-none flex flex-col items-center justify-items-center">
             <div className="flex items-center justify-items-center ml-8 mt-4 mb-6 h-auto w-full">
                 <div className="cursor-pointer">
                     <IoArrowBack className="h-5 w-5 object-cover"/>

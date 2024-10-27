@@ -22,7 +22,7 @@ const CartItemListView = (props) => {
     const [isEmpty, setIsEmpty] = useState(false);
 
     // state for voucher
-    const [voucher, setVoucher] = useState({ id: '', name: "", discount: 0, applyProduct: "" });
+    const [voucher, setVoucher] = useState({ id: '', name: "", discount: 0, code: "" });
 
     // state for modal
     const [open, setOpen] = useState(false);
@@ -66,6 +66,10 @@ const CartItemListView = (props) => {
 
         if (value === '0') {
             setQuantity(1);
+            return;
+        }
+        else if (value >= props.max_quantity) {
+            setQuantity(props.max_quantity);
             return;
         }
 

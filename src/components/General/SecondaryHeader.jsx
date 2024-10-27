@@ -11,13 +11,13 @@ const SecondaryHeader = (props) => {
                     <div className="flex flex-row-reverse gap-10 col-start-2">
                         <div className="flex items-center justify-items-center ml-4 mr-0.5">
                             <div className="mr-2 w-[2rem] h-[2rem]">
-                                <img src={avatar_svg} alt="avatar" className="w-[2rem] h-[2rem]"/>
+                                <img src={props.avatar ?? avatar_svg} alt="avatar" className="w-[2rem] h-[2rem]"/>
                             </div>
 
                             <div>
                                 <a href="#">
                                     <span className="text-White text-[0.75rem] font-sans text-center">
-                                        placeholder@gmail.com
+                                        {props.name ?? "placeholder@gmail.com"}
                                     </span>
                                 </a>
                             </div>

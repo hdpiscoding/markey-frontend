@@ -11,7 +11,7 @@ const VoucherModalListView = (props) => {
             id: props.id,
             name: props.name,
             discount: props.discount,
-            applyProduct: props.applyProduct
+            code: props.code
         });
     };
 
@@ -23,7 +23,7 @@ const VoucherModalListView = (props) => {
                 </span>
             </div>
 
-            <div className="bg-Light_gray grid grid-cols-[90%_10%]">
+            <div className="bg-Light_gray grid grid-cols-[90%_10%] py-2">
                 <div className="flex flex-col justify-between col-start-1">
                     <div className="ml-2 mt-1">
                         <span className="text-Red font-bold text-lg">
@@ -39,7 +39,7 @@ const VoucherModalListView = (props) => {
 
                     <div className="ml-2 mb-1">
                         <span className="text-pretty text-sm">
-                            Áp dụng: {props.applyProduct ?? "Chăm sóc tóc, chăm sóc da mặt, dụng cụ trang điểm"}
+                            Code: {props.code ?? "GPMN-1975"}
                         </span>
                     </div>
                 </div>

@@ -70,7 +70,7 @@ const AddressModal = ({open, onClose, name, phone, address, onUpdateInfo}) => {
             newErrors.phone = 'Số điện thoại không hợp lệ';
         }
         if (!newAddress) {
-            newErrors.address = 'Địa chỉ cụ thể không được để trống';
+            newErrors.address = 'Địa chỉ không được để trống';
         }
 
         setErrors(newErrors);

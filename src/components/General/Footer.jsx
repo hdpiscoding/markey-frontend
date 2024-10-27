@@ -9,7 +9,7 @@ const Footer = () => {
         <footer className="shadow grid grid-rows-[1fr_auto] bg-White">
             <div className="grid grid-cols-[1fr_10fr_1fr] bg-White mt-5">
                 <div className="col-start-2">
-                    <div className="grid grid-cols-[auto_1fr_1fr_1fr] content-center justify-items-center">
+                    <div className="grid grid-cols-[auto_1fr_1fr] content-center justify-items-center">
                         <div className="flex flex-col items-center justify-center">
                             <div className="select-none">
                                 <img src="/Markey_blue_vertical.png" alt="Markey"
@@ -130,33 +130,6 @@ const Footer = () => {
                                             </span>
                                             </a>
                                         </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div className="col-start-4">
-                            <div className="mb-1.5">
-                                <span className="text-Black font-sans font-bold text-lg">
-                                    Khám phá
-                                </span>
-                            </div>
-
-                            <div>
-                                <ul className="space-y-1">
-                                    <li>
-                                        <a href="#">
-                                            <span className="text-Gray hover:text-Blue font-sans text-sm">
-                                                Tất cả danh mục
-                                            </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#">
-                                            <span className="text-Gray hover:text-Blue font-sans text-sm">
-                                                Markey blog
-                                            </span>
-                                        </a>
                                     </li>
                                 </ul>
                             </div>

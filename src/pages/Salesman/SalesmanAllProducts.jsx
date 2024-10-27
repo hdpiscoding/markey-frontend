@@ -1,13 +1,11 @@
-import React, {useState} from "react";
-import PrimaryHeader from "../../components/General/PrimaryHeader";
-import Filter from "../../components/General/Filter";
+import React, {useState} from 'react';
+import SecondaryHeader from "../../components/General/SecondaryHeader";
+import Footer from "../../components/General/Footer";
+import SalesmanNav from "../../components/Salesman/SalesmanNav";
 import ProductCardViewMd from "../../components/Shopper/ProductCardViewMd";
 import {Pagination, Stack} from "@mui/material";
-import Footer from "../../components/General/Footer";
-import avatar from "../../assets/avatar_holder.svg";
-import { IoLocationSharp } from "react-icons/io5";
 
-const ShopDetails = () => {
+const SalesmanAllProducts = () => {
     const products = [
         { id: 1, name: "Son môi màu đỏ quyến rũ", price: 150000, sold: 2500 },
         { id: 2, name: "Nước hoa hương chanh tươi mát", price: 800000, sold: 1800 },
@@ -112,19 +110,41 @@ const ShopDetails = () => {
     ];
 
     const [selectedDiv, setSelectedDiv] = useState(1); // Default selected div (1: Phổ biến, 2: Bán chạy, 3: Giá)
-    const [selectValue, setSelectValue] = useState('default');
+    const [selectedDate, setSelectedDate] = useState('1');
+    const [selectedPrice, setSelectedPrice] = useState('default');
 
     const handleDivClick = (index) => {
         if (selectedDiv !== index) {
             setSelectedDiv(index);
-            if (selectedDiv === 3) {
-                setSelectValue('default');
-            }
+            if (index === 1) {
+                setSelectedPrice('default');
+            } else if (index === 2) {
+                setSelectedDate('default');}
         }
     };
 
-    const handleSelectChange = (event) => {
-        setSelectValue(event.target.value);
+    const handleSelectedDateChange = (event) => {
+        setSelectedDate(event.target.value);
+
+        setPage(1);
+        if(event.target.value === '1') {
+            // Call API to sort by newest date
+        }
+        else if(event.target.value === '2') {
+            // Call API to sort by oldest date
+        }
+    };
+
+    const handleSelectedPriceChange = (event) => {
+        setSelectedPrice(event.target.value);
+
+        setPage(1);
+        if (event.target.value === '1') {
+            // Call API to sort by low to high price
+        }
+        else if (event.target.value === '2') {
+            // Call API to sort by high to low price
+        }
     };
 
     // set up pagination
@@ -146,144 +166,84 @@ const ShopDetails = () => {
 
     return (
         <div className="bg-Light_gray w-screen overflow-x-hidden">
-            <PrimaryHeader/>
+            <SecondaryHeader head="Kênh người bán"/>
 
-            <main className="flex flex-col">
-                <div className="bg-White grid grid-cols-[1fr_10fr_1fr] mb-4">
-                    <div className="col-start-2 grid grid-cols-[40%_60%] py-2">
-                        <div className="col-start-1 flex items-center gap-2">
-                            <div>
-                                <img src={avatar} alt="avatar" className="object-cover h-20 w-20"/>
-                            </div>
-
-                            <div className="flex flex-col">
-                                <div>
-                                    <div className="flex items-center">
-                                        <span className="font-semibold text-lg">
-                                            Tên cửa hàng
-                                        </span>
-                                    </div>
-
-                                    <div className="flex items-center gap-0.5">
-                                        <IoLocationSharp className="text-Red"/>
-
-                                        <span className="text-sm">
-                                            123/456 Hồng Bàng, Phường 6, Quận 6, TP.HCM
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="col-start-2">
-                            <p className="text-sm ">
-                                But I must explain to you how all this mistaken idea of denouncing pleasure and praising
-                                pain was born and I will give you a complete account of the system, and expound the
-                                actual teachings of the great explorer of the truth, the master-builder of human
-                                happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure,
-                                but because those who do not know how to pursue pleasure rationally encounter
-                                consequences that are extremely painful. Nor again is there anyone who loves or pursues
-                                or desires to obtain pain of itself, because it is pain, but because occasionally
-                                circumstances occur in which toil and pain can procure him some great pleasure. To take
-                                a trivial example, which of us ever undertakes laborious physical exercise, except to
-                                obtain some advantage from it? But who has any right to find fault with a man who
-                                chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain
-                                that produces no resultant pleasure?
-                            </p>
-                        </div>
-
+            <main className="grid grid-cols-[1fr_10fr_1fr] my-4">
+                <div className="col-start-2 grid grid-cols-[15%_2%_83%]">
+                    <div className="col-start-1 flex justify-center">
+                        <SalesmanNav currentPage={2}/>
                     </div>
-                </div>
 
-                <div className="grid grid-cols-[1fr_10fr_1fr] my-4">
-                    <div className="col-start-2 flex flex-col gap-4">
-                        <div className="bg-gradient-to-b from-Blue to-Light_blue rounded-sm py-1 text-center mb-4">
-                            <span className="text-White font-bold text-2xl p-4">
-                                SẢN PHẨM CỦA SHOP
+                    <div className="col-start-3 flex flex-col gap-5">
+                        <div className="flex flex-col">
+                            <div className="bg-White flex items-center pl-4 pt-3">
+                            <span className="text-[2rem] font-semibold">
+                                Tất cả sản phẩm
                             </span>
+                            </div>
+
+                            <div className="bg-[#E1E1E1] flex pl-4 py-3 items-center gap-10">
+                            <span>
+                                Sắp xếp theo:
+                            </span>
+
+                                <select className={`rounded-sm px-5 py-1 cursor-pointer 
+                                                    ${selectedDiv === 1 ? 'border border-Blue outline-none ring-2 ring-Blue text-Blue' : ''}`}
+                                        onClick={() => handleDivClick(1)}
+                                        value={selectedDate} onChange={handleSelectedDateChange}>
+                                    <option value="default" disabled hidden>Ngày tạo:</option>
+                                    <option value="1">Ngày tạo: Mới nhất</option>
+                                    <option value="2">Ngày tạo: Cũ nhất</option>
+                                </select>
+
+                                <select className={`rounded-sm px-5 py-1 cursor-pointer 
+                                                    ${selectedDiv === 2 ? 'border border-Blue outline-none ring-2 ring-Blue text-Blue' : ''}`}
+                                        onClick={() => handleDivClick(2)}
+                                        value={selectedPrice} onChange={handleSelectedPriceChange}>
+                                    <option value="default" disabled hidden>Giá:</option>
+                                    <option value="1">Giá: Thấp đến cao</option>
+                                    <option value="2">Giá: Cao đến Thấp</option>
+                                </select>
+                            </div>
                         </div>
 
-                        <div className="grid grid-cols-[22%_1%_77%]">
-                            <Filter/>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 justify-items-center">
+                            {currentProducts.map((product) => (
+                                <ProductCardViewMd key={product.id} name={product.name} price={product.price}
+                                                   sold={product.sold}/>
+                            ))}
+                        </div>
 
-                            <div className="col-start-3 flex flex-col gap-6">
-                                <div className="bg-[#e1e1e1]">
-                                    <div className="flex items-center gap-20 ml-8 py-2">
-                                        <div>
-                                        <span className="font-semibold text-lg">
-                                            Sắp xếp theo
-                                        </span>
-                                        </div>
-
-                                        <div className="flex items-center gap-10 select-none">
-                                            <div className={`flex text-center rounded-md px-5 py-1 cursor-pointer 
-                                            ${selectedDiv === 1 ? 'bg-Blue text-white' : 'bg-White'}`}
-                                                 onClick={() => handleDivClick(1)}>
-                                            <span>
-                                                Phổ biến
-                                            </span>
-                                            </div>
-
-                                            <div className={`flex text-center rounded-md px-5 py-1 cursor-pointer 
-                                            ${selectedDiv === 2 ? "bg-Blue text-white" : 'bg-White'}`}
-                                                 onClick={() => handleDivClick(2)}>
-                                                <span>
-                                                    Bán chạy
-                                                </span>
-                                            </div>
-
-                                            <div>
-                                                <select className={`rounded-md px-5 py-1 cursor-pointer 
-                                                    ${selectedDiv === 3 ? 'border border-Blue outline-none ring-2 ring-Blue text-Blue' : ''}`}
-                                                        onClick={() => handleDivClick(3)}
-                                                        value={selectValue} onChange={handleSelectChange}>
-                                                    <option value="default" disabled hidden>Giá:</option>
-                                                    <option value="1">Giá: Thấp đến Cao</option>
-                                                    <option value="2">Giá: Cao đến Thấp</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2">
-                                    {currentProducts.map((product) => (
-                                        <ProductCardViewMd key={product.id} name={product.name} price={product.price}
-                                                           sold={product.sold}/>
-                                    ))}
-                                </div>
-
-                                <div className="flex items-center justify-center">
-                                    <Stack>
-                                        <Pagination
-                                            count={totalPages}
-                                            page={page}
-                                            onChange={handlePageChange}
-                                            variant="text"
-                                            shape="rounded"
-                                            sx={{
-                                                "& .MuiPaginationItem-root": {
-                                                    color: "#AAAAAA",            // Màu văn bản mặc định
-                                                },
-                                                '& .MuiPaginationItem-root:hover': {
-                                                    // Màu khi hover
-                                                    backgroundColor: '#008DDA', // Màu nền khi hover
-                                                    color: 'white', // Màu chữ khi hover
-                                                },
-                                                "& .Mui-selected": {
-                                                    backgroundColor: "#008DDA !important", // Màu nền cho item được chọn
-                                                    color: "white",              // Màu chữ cho item được chọn
-                                                },
-                                                "& .MuiPaginationItem-ellipsis": {
-                                                    color: "#AAAAAA"              // Màu sắc cho dấu ba chấm (ellipsis)
-                                                }
-                                            }}/>
-                                    </Stack>
-                                </div>
-                            </div>
+                        <div className="flex items-center justify-center">
+                            <Stack>
+                                <Pagination
+                                    count={totalPages}
+                                    page={page}
+                                    onChange={handlePageChange}
+                                    variant="text"
+                                    shape="rounded"
+                                    sx={{
+                                        "& .MuiPaginationItem-root": {
+                                            color: "#AAAAAA",            // Màu văn bản mặc định
+                                        },
+                                        '& .MuiPaginationItem-root:hover': {
+                                            // Màu khi hover
+                                            backgroundColor: '#008DDA', // Màu nền khi hover
+                                            color: 'white', // Màu chữ khi hover
+                                        },
+                                        "& .Mui-selected": {
+                                            backgroundColor: "#008DDA !important", // Màu nền cho item được chọn
+                                            color: "white",              // Màu chữ cho item được chọn
+                                        },
+                                        "& .MuiPaginationItem-ellipsis": {
+                                            color: "#AAAAAA"              // Màu sắc cho dấu ba chấm (ellipsis)
+                                        }
+                                    }}/>
+                            </Stack>
                         </div>
                     </div>
                 </div>
+
             </main>
 
             <Footer/>
@@ -291,4 +251,4 @@ const ShopDetails = () => {
     );
 };
 
-export default ShopDetails;
+export default SalesmanAllProducts;

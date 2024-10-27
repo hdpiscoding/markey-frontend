@@ -4,22 +4,22 @@ import VoucherModalListView from "./VoucherModalListView";
 
 const VoucherModal = ({open, onClose, onSelectVoucher, selectedVoucherID}) => {
     const handleDelete = () => {
-        onSelectVoucher({id: '', name: "", discount: 0, applyProduct: ""});
+        onSelectVoucher({id: '', name: "", discount: 0, code: ""});
         onClose();
     }
 
     if (!open) return null;
 
     const vouchers = [
-        { id: '1', name: "Voucher mùa thu", discount: 10, applyProduct: "Chăm sóc tóc, chăm sóc da mặt, dụng cụ trang điểm" },
-        { id: '2', name: "Voucher mùa xuân", discount: 30, applyProduct: "Chăm sóc tóc, chăm sóc da mặt, dụng cụ trang điểm" },
-        { id: '3', name: "Voucher mùa hè", discount: 5, applyProduct: "Chăm sóc tóc, chăm sóc da mặt, dụng cụ trang điểm" },
-        { id: '4', name: "Voucher mùa đông", discount: 12, applyProduct: "Chăm sóc tóc, chăm sóc da mặt, dụng cụ trang điểm" },
+        { id: '1', name: "Voucher mùa thu", discount: 10, code: "CMT8-1945" },
+        { id: '2', name: "Voucher mùa xuân", discount: 30, code: "GPMN-1975" },
+        { id: '3', name: "Voucher mùa hè", discount: 5, code: "ĐBP-1954" },
+        { id: '4', name: "Voucher mùa đông", discount: 12, code: "PNVN-2010" },
     ]
 
     return (
         // backdrop
-        <div onClick={onClose} className={`fixed inset-0 flex items-center justify-center z-[100] ${open ? "visible bg-black/20" : "collapse"}`}>
+        <div className={`fixed inset-0 flex items-center justify-center z-[100] ${open ? "visible bg-black/20" : "collapse"}`}>
             {/* modal */}
             <div onClick={(e) => e.stopPropagation()} className={`bg-White rounded-sm shadow w-[35rem] h-[30rem] grid grid-rows-[90%_10%] ${open ? "scale-100 opacity-100" : "scale-125 opacity-0"}`}>
                 <div className="row-start-1 flex flex-col overflow-auto overflow-x-hidden">
@@ -42,7 +42,7 @@ const VoucherModal = ({open, onClose, onSelectVoucher, selectedVoucherID}) => {
                                 id={voucher.id}
                                 name={voucher.name}
                                 discount={voucher.discount}
-                                applyProduct={voucher.applyProduct}
+                                code={voucher.code}
                                 isSelected={selectedVoucherID === voucher.id}
                                 onSelect={onSelectVoucher}/>
                         ))}

@@ -1,16 +1,16 @@
 import React from 'react';
 import RFHeader from "../../components/Login_Register_Forget/RFHeader";
-import Finished from "../../components/Login_Register_Forget/Finished";
+import Verification from "../../components/Login_Register_Forget/Verification";
 
-const ForgetFinished = () => {
+const PhoneVerificationF = () => {
     return (
         <div>
             <RFHeader title="Đặt lại mật khẩu"/>
             <div className="flex flex-col items-center justify-items-center mt-32">
-                <Finished method="password"/>
+                <Verification value="0985858857"/>
             </div>
         </div>
     );
-};
+}
 
-export default ForgetFinished;
+export default PhoneVerificationF;
