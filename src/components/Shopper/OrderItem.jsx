@@ -74,12 +74,12 @@ const OrderItem = (props) => {
                     </button>
                 </div>
 
-                {props.status === "CHỜ XỬ LÝ"
+                {props.status === "CHƯA THANH TOÁN"
                     ?
                     <div>
                         <button className="bg-Red hover:bg-Light_red rounded-md text-center px-6 py-1.5">
                                 <span className="text-White">
-                                    Hủy đơn
+                                    Thanh toán
                                 </span>
                         </button>
                     </div>

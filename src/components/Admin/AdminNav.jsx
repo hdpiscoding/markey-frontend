@@ -1,19 +1,20 @@
-import React from "react";
-import {TiDocumentText} from "react-icons/ti";
+import React from 'react';
+import { TfiMenuAlt } from "react-icons/tfi";
+import { FaRegUser } from "react-icons/fa";
+import {BsBoxSeam, BsPostcard} from "react-icons/bs";
+import {PiStorefrontLight} from "react-icons/pi";
 import {MdOutlineLogout} from "react-icons/md";
-import { BsBoxSeam, BsPostcard } from "react-icons/bs";
-import { PiStorefrontLight } from "react-icons/pi";
+import { AiOutlineHome } from "react-icons/ai";
 
-
-const SalesmanNav = (props) => {
+const AdminNav = (props) => {
     return (
         <nav className="flex flex-col gap-2">
             <div className="flex gap-4 items-center">
-                <TiDocumentText className="w-5 h-5"/>
+                <AiOutlineHome className="w-5 h-5"/>
 
                 <div>
                     <span className="font-semibold text-lg">
-                        Quản lý đơn hàng
+                        Home
                     </span>
                 </div>
 
@@ -22,17 +23,17 @@ const SalesmanNav = (props) => {
             <div className="flex flex-col ml-12 gap-2">
                 <div className="cursor-pointer select-none">
                     <span className={`${props.currentPage === 1 ? "text-Blue" : "text-Dark_gray"}`}>
-                        Tất cả đơn hàng
+                        Duyệt người bán
                     </span>
                 </div>
             </div>
 
             <div className="flex gap-4 items-center">
-                <BsBoxSeam className="w-5 h-5"/>
+                <TfiMenuAlt className="w-5 h-5"/>
 
                 <div>
                     <span className="font-semibold text-lg">
-                        Quản lý sản phẩm
+                        Quản lý danh mục
                     </span>
                 </div>
 
@@ -41,23 +42,23 @@ const SalesmanNav = (props) => {
             <div className="flex flex-col ml-12 gap-2">
                 <div className="cursor-pointer select-none">
                     <span className={`${props.currentPage === 2 ? "text-Blue" : "text-Dark_gray"}`}>
-                        Tất cả sản phẩm
+                        Tất cả danh mục
                     </span>
                 </div>
 
                 <div className="cursor-pointer select-none">
                     <span className={`${props.currentPage === 3 ? "text-Blue" : "text-Dark_gray"}`}>
-                        Thêm sản phẩm
+                        Thêm danh mục
                     </span>
                 </div>
             </div>
 
             <div className="flex gap-4 items-center">
-                <BsPostcard className="w-5 h-5"/>
+                <FaRegUser className="w-5 h-5"/>
 
                 <div>
                     <span className="font-semibold text-lg">
-                        Quản lý blog
+                        Quản lý tài khoản
                     </span>
                 </div>
 
@@ -66,38 +67,13 @@ const SalesmanNav = (props) => {
             <div className="flex flex-col ml-12 gap-2">
                 <div className="cursor-pointer select-none">
                     <span className={`${props.currentPage === 4 ? "text-Blue" : "text-Dark_gray"}`}>
-                        Tất cả blog
+                        Khách hàng
                     </span>
                 </div>
 
                 <div className="cursor-pointer select-none">
                     <span className={`${props.currentPage === 5 ? "text-Blue" : "text-Dark_gray"}`}>
-                        Thêm blog
-                    </span>
-                </div>
-            </div>
-
-            <div className="flex gap-4 items-center">
-                <PiStorefrontLight className="w-5 h-5"/>
-
-                <div>
-                    <span className="font-semibold text-lg">
-                        Quản lý Shop
-                    </span>
-                </div>
-
-            </div>
-
-            <div className="flex flex-col ml-12 gap-2">
-                <div className="cursor-pointer select-none">
-                    <span className={`${props.currentPage === 6 ? "text-Blue" : "text-Dark_gray"}`}>
-                        Thông tin người bán
-                    </span>
-                </div>
-
-                <div className="cursor-pointer select-none">
-                    <span className={`${props.currentPage === 7 ? "text-Blue" : "text-Dark_gray"}`}>
-                        Đổi mật khẩu
+                        Người bán
                     </span>
                 </div>
             </div>
@@ -117,4 +93,4 @@ const SalesmanNav = (props) => {
     );
 };
 
-export default SalesmanNav;
+export default AdminNav;

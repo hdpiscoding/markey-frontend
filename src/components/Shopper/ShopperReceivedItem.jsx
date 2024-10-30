@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {useState} from 'react';
 import versace from "../../assets/versace_cologne.svg";
+import ConfirmModal from "../General/ConfirmModal";
 
-const SalemansOrderItem = (props) => {
+const ShopperReceivedItem = (props) => {
     const formatNumberWithDots = (number) => {
         // Convert the number to a string
         let numberStr = number.toString();
@@ -12,11 +13,25 @@ const SalemansOrderItem = (props) => {
         return formattedStr;
     }
 
-    const handleApprove = () => {
-        // Call API to update status of the order to "ĐANG GIAO HÀNG"
+    // set up modal
+    const [isModalOpen, setModalOpen] = useState(false);
 
-        // Callback to re-render the list of orders
-        props.onApprove();
+    const openModal = () => {
+        setModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalOpen(false);
+    };
+    // end set up modal
+
+    const handleAccept = () => {
+        //Call API to update status of the order to "ĐÃ NHẬN HÀNG"
+
+        // Sample code
+
+        props.onDelete(props.id);
+        closeModal();
     }
 
     return (
@@ -48,15 +63,17 @@ const SalemansOrderItem = (props) => {
 
             <div className="flex flex-row-reverse items-end gap-8 px-4 pb-4 select-none">
                 <div>
-                    <button className="bg-Blue hover:bg-Dark_blue rounded-md text-center px-6 py-1.5" onClick={handleApprove}>
+                    <button className="bg-Blue hover:bg-Dark_blue rounded-md text-center px-6 py-1.5" onClick={openModal}>
                         <span className="text-White">
-                            Duyệt
+                            ĐÃ NHẬN HÀNG
                         </span>
                     </button>
                 </div>
             </div>
+
+            <ConfirmModal isOpen={isModalOpen} onClose={closeModal} onConfirm={handleAccept} title="Xác nhận đã nhận hàng" message="Bạn có chắc chắn đã nhận hàng chưa?"/>
         </div>
     );
 };
 
-export default SalemansOrderItem;
+export default ShopperReceivedItem;

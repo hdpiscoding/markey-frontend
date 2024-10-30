@@ -1,5 +1,6 @@
 import React from "react";
 import sample2 from "../../assets/pretty_skin.svg";
+import {IoMdStar} from "react-icons/io";
 
 const ProductCardViewMd = (props) => {
     // format number with dots
@@ -48,10 +49,12 @@ const ProductCardViewMd = (props) => {
                             </span>
                         </div>
 
-                        <div>
-                            <span className="text-[0.65rem] font-sans">
-                                Đã bán {convertNumber(props.sold) ?? convertNumber(7777)}
-                            </span>
+                        <div className="flex items-center">
+                        <span className="text-[0.75rem] font-sans text-Star font-semibold">
+                            {props.rating ?? "5.0"}/5.0
+                        </span>
+
+                            <IoMdStar className="text-Star"/>
                         </div>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import PrimaryHeader from "../../components/General/PrimaryHeader";
 import Footer from "../../components/General/Footer";
 import AccountNav from "../../components/Shopper/AccountNav";
@@ -8,11 +8,20 @@ import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, {Dayjs} from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import ConfirmModal from "../../components/General/ConfirmModal";
 dayjs.extend(customParseFormat);
 
 const ShopperProfile = () => {
+    // Store API data
+    const [shopper, setShopper] = useState(null);
+
     const [selectedImage, setSelectedImage] = useState(null);
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        // Call API to get shopper's data by shopper_id and set to shopper and set shopper's avatar to selectedImage
+
+    }, []);
 
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
@@ -47,10 +56,25 @@ const ShopperProfile = () => {
     // Khởi tạo giá trị với dayjs từ chuỗi ngày DD/MM/YYYY
     const initialDate = dayjs('25/10/2024', 'DD/MM/YYYY'); // Ngày hợp lệ
 
-    // Kiểm tra xem ngày đã được tạo thành công không
-    console.log(initialDate.isValid()); // Nên in ra true
-
     const [selectedDate, setSelectedDate] = useState(null);
+
+    // set up modal
+    const [isModalOpen, setModalOpen] = useState(false);
+
+    const openModal = () => {
+        setModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalOpen(false);
+    };
+    // end set up modal
+
+    const handleUpdate = () => {
+        // Call API to update shopper's data
+
+        closeModal();
+    }
 
     return (
         <div className="bg-Light_gray w-screen overflow-x-hidden">
@@ -109,146 +133,143 @@ const ShopperProfile = () => {
                             </div>
                         </div>
 
-                        <div className="flex flex-col gap-5">
-                            <table>
-                                <tbody>
+                        <table className="w-[80%]">
+                            <tbody>
+                            <tr>
+                                <td className="py-3">
+                                    <label htmlFor="name">
+                                        Họ và tên
+                                    </label>
+                                </td>
+
+                                <td className="py-3">
+                                    <input type="text" className="focus:outline-none border border-Black py-1 px-2 w-3/4"/>
+                                </td>
+                            </tr>
+                            </tbody>
+
+                            <tbody>
+                            <tr>
+                                <td className="py-3">
+                                    <label htmlFor="gender">
+                                        Giới tính
+                                    </label>
+                                </td>
+
+                                <td className="py-3">
+                                    <RadioGroup
+                                        row
+                                        name="gender_group"
+                                        value={gender}
+                                        onChange={handleGenderChange}
+                                    >
+                                        <FormControlLabel value="male" control={<Radio/>} label="Nam"/>
+                                        <FormControlLabel value="female" control={<Radio/>} label="Nữ"/>
+                                    </RadioGroup>
+                                </td>
+                            </tr>
+                            </tbody>
+
+                            <tbody>
                                 <tr>
                                     <td className="py-3">
-                                        <label htmlFor="name">
-                                            Họ và tên
+                                        <label htmlFor="email">
+                                            Email
                                         </label>
                                     </td>
 
                                     <td className="py-3">
-                                        <input type="text" className="focus:outline-none border border-Black py-1 px-2 w-3/4"/>
+                                        <div className="flex items-center gap-4">
+                                                <span className="font-semibold">
+                                                    placeholder@gmail.com
+                                                </span>
+
+                                            <span
+                                                className="text-sm underline text-Blue select-none cursor-pointer hover:text-Dark_blue">
+                                                    Thay đổi
+                                                </span>
+                                        </div>
                                     </td>
                                 </tr>
-                                </tbody>
+                            </tbody>
 
-                                <tbody>
+                            <tbody>
                                 <tr>
                                     <td className="py-3">
-                                        <label htmlFor="gender">
-                                            Giới tính
+                                        <label htmlFor="email">
+                                            Số điện thoại
                                         </label>
                                     </td>
 
                                     <td className="py-3">
-                                        <RadioGroup
-                                            row
-                                            name="gender_group"
-                                            value={gender}
-                                            onChange={handleGenderChange}
-                                        >
-                                            <FormControlLabel value="male" control={<Radio/>} label="Nam"/>
-                                            <FormControlLabel value="female" control={<Radio/>} label="Nữ"/>
-                                        </RadioGroup>
+                                        <div className="flex items-center gap-4">
+                                                <span className="font-semibold">
+                                                    0903039930
+                                                </span>
+
+                                            <span
+                                                className="text-sm underline text-Blue select-none cursor-pointer hover:text-Dark_blue">
+                                                    Thay đổi
+                                                </span>
+                                        </div>
                                     </td>
                                 </tr>
-                                </tbody>
+                            </tbody>
 
-                                <tbody>
-                                    <tr>
-                                        <td className="py-3">
-                                            <label htmlFor="email">
-                                                Email
-                                            </label>
-                                        </td>
+                            <tbody>
+                                <tr>
+                                    <td className="py-3">
+                                        <label htmlFor="email">
+                                            Ngày sinh
+                                        </label>
+                                    </td>
 
-                                        <td className="py-3">
-                                            <div className="flex items-center gap-4">
-                                                    <span className="font-semibold">
-                                                        placeholder@gmail.com
-                                                    </span>
-
-                                                <span
-                                                    className="text-sm underline text-Blue select-none cursor-pointer hover:text-Dark_blue">
-                                                        Thay đổi
-                                                    </span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-
-                                <tbody>
-                                    <tr>
-                                        <td className="py-3">
-                                            <label htmlFor="email">
-                                                Số điện thoại
-                                            </label>
-                                        </td>
-
-                                        <td className="py-3">
-                                            <div className="flex items-center gap-4">
-                                                    <span className="font-semibold">
-                                                        0903039930
-                                                    </span>
-
-                                                <span
-                                                    className="text-sm underline text-Blue select-none cursor-pointer hover:text-Dark_blue">
-                                                        Thay đổi
-                                                    </span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-
-                                <tbody>
-                                    <tr>
-                                        <td className="py-3">
-                                            <label htmlFor="email">
-                                                Ngày sinh
-                                            </label>
-                                        </td>
-
-                                        <td className="py-3">
-                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                <DatePicker
-                                                    format="DD/MM/YYYY"
-                                                    value={selectedDate}
-                                                    onChange={(newValue) => {
-                                                        // Kiểm tra tính hợp lệ trước khi cập nhật
-                                                        if (newValue && newValue.isValid()) {
-                                                            setSelectedDate(newValue);
-                                                        } else {
-                                                            console.error('Selected date is invalid');
-                                                        }
-                                                    }}
-                                                    slotProps={{
-                                                        textField: {
-                                                            placeholder: "Ngày sinh", // Đặt placeholder
-                                                            sx: {
-                                                                '& .MuiOutlinedInput-root': {
-                                                                    height: '36px', // Chiều cao
-                                                                    padding: '4px 8px', // Padding
-                                                                    borderRadius: '0px', // Bỏ bo tròn
-                                                                },
-                                                                '& .MuiInputBase-input': {
-                                                                    padding: '4px 8px', // Padding cho input
-                                                                    fontSize: '0.875rem', // Kích thước văn bản
-                                                                },
+                                    <td className="py-3">
+                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                            <DatePicker
+                                                format="DD/MM/YYYY"
+                                                value={selectedDate}
+                                                onChange={(newValue) => {
+                                                    // Kiểm tra tính hợp lệ trước khi cập nhật
+                                                    if (newValue && newValue.isValid()) {
+                                                        setSelectedDate(newValue);
+                                                    } else {
+                                                        console.error('Selected date is invalid');
+                                                    }
+                                                }}
+                                                slotProps={{
+                                                    textField: {
+                                                        placeholder: "Ngày sinh", // Đặt placeholder
+                                                        sx: {
+                                                            '& .MuiOutlinedInput-root': {
+                                                                height: '36px', // Chiều cao
+                                                                padding: '4px 8px', // Padding
+                                                                borderRadius: '0px', // Bỏ bo tròn
                                                             },
-                                                            InputLabelProps: {
-                                                                shrink: false, // Ngăn nhãn nổi lên khi click vào input
+                                                            '& .MuiInputBase-input': {
+                                                                padding: '4px 8px', // Padding cho input
+                                                                fontSize: '0.875rem', // Kích thước văn bản
                                                             },
                                                         },
-                                                    }}
-                                                />
-                                            </LocalizationProvider>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                                                        InputLabelProps: {
+                                                            shrink: false, // Ngăn nhãn nổi lên khi click vào input
+                                                        },
+                                                    },
+                                                }}
+                                            />
+                                        </LocalizationProvider>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
 
                         <div className="flex items-center justify-center select-none">
-                            <button className="bg-Blue text-white py-1 px-8 rounded hover:bg-Dark_blue text-center">
+                            <button className="bg-Blue text-white py-1 px-8 rounded hover:bg-Dark_blue text-center" onClick={openModal}>
                                 Cập nhật
                             </button>
                         </div>
-
                     </div>
-
+                    <ConfirmModal isOpen={isModalOpen} onClose={closeModal} onConfirm={handleUpdate} title="Xác nhận cập nhật thông tin" message="Bạn có chắc muốn cập nhật thông tin này?"/>
                 </div>
 
             </main>

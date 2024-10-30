@@ -32,11 +32,7 @@ const CartItemGroupByDate = (props) => {
                             <hr className="border-t border-Black select-none opacity-25"/>
 
                             <div className="grid grid-cols-[0.25fr_11.5fr_0.25fr]">
-                                <CartItemListView key={product.id} id={product.id} name={product.name}
-                                                  price={product.price} max_quantity={product.max_quantity}
-                                                  onDelete={onDelete}
-                                                  onItemChange={props.onItemChange}
-                                                  isChecked={props.checkedItems[product.id]?.isChecked || false}/>
+
                             </div>
                         </div>
                     ))}

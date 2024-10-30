@@ -5,7 +5,7 @@ import SalesmanNav from "../../components/Salesman/SalesmanNav";
 import ProductCardViewMd from "../../components/Shopper/ProductCardViewMd";
 import {Pagination, Stack} from "@mui/material";
 
-const SalesmanAllProducts = () => {
+const AllProducts = () => {
     const products = [
         { id: 1, name: "Son môi màu đỏ quyến rũ", price: 150000, sold: 2500 },
         { id: 2, name: "Nước hoa hương chanh tươi mát", price: 800000, sold: 1800 },
@@ -251,4 +251,4 @@ const SalesmanAllProducts = () => {
     );
 };
 
-export default SalesmanAllProducts;
+export default AllProducts;

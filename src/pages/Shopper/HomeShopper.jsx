@@ -4,6 +4,7 @@ import Footer from "../../components/General/Footer";
 import CategoryCarousel from "../../components/Shopper/CategoryCarousel";
 import ProductCardViewLg from "../../components/Shopper/ProductCardViewLg";
 import BlogCardView from "../../components/Shopper/BlogCardView";
+import {Outlet} from "react-router-dom";
 
 const HomeShopper = () => {
     const products = [

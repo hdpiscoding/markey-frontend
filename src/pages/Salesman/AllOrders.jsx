@@ -1,11 +1,11 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import SecondaryHeader from "../../components/General/SecondaryHeader";
 import Footer from "../../components/General/Footer";
 import SalesmanNav from "../../components/Salesman/SalesmanNav";
 import SalemansOrderItem from "../../components/Salesman/SalemansOrderItem";
 import {Pagination, Stack} from "@mui/material";
 
-const SalesmanAllOrders = () => {
+const AllOrders = () => {
     const orderItems = [
         { id: 1, name: "Son môi màu đỏ quyến rũ", price: 150000, quantity: 2500, status: "CHỜ XỬ LÝ" },
         { id: 2, name: "Nước hoa hương chanh tươi mát", price: 800000, quantity: 1800, status: "ĐANG VẬN CHUYỂN" },
@@ -19,10 +19,18 @@ const SalesmanAllOrders = () => {
         { id: 10, name: "Kem chống nắng SPF 50", price: 400000, quantity: 3600, status: "CHỜ XỬ LÝ" },
     ];
 
-    const [status, setStatus] = useState("CHỜ XỬ LÝ");
+    // store API data
+    const [orders, setOrders] = useState([]);
 
-    const handleStatusChange = (newStatus) => {
-        setStatus(newStatus);
+
+    useEffect(() => {
+        // Call API to get orders
+    }, []);
+
+    const handleApprove = () => {
+        // Call API to re-get orders
+
+
     }
 
     // set up pagination
@@ -52,32 +60,20 @@ const SalesmanAllOrders = () => {
                     </div>
 
                     <div className="col-start-3 bg-White flex flex-col gap-4">
-                        <div className="grid grid-cols-[50%_50%] py-2">
-                            <div className="flex flex-col text-center gap-2 select-none">
-                                    <span
-                                        className={`cursor-pointer font-semibold text-xl ${status === "CHỜ XỬ LÝ" ? "text-Blue" : "text-Black"}`}
-                                        onClick={() => handleStatusChange("CHỜ XỬ LÝ")}>
-                                        ĐƠN HÀNG CHỜ DUYỆT
-                                    </span>
-
-                                {status === "CHỜ XỬ LÝ" && <div className="border-t-2 w-full border-Blue"></div>}
-
+                        <div className="flex flex-col px-4 py-3">
+                            <div>
+                                <span className="text-[2rem] font-semibold">
+                                    Đơn hàng chờ duyệt
+                                </span>
                             </div>
 
-                            <div className="select-none flex flex-col text-center gap-2">
-                                    <span
-                                        className={`cursor-pointer font-semibold text-xl ${status === "" ? "text-Blue" : "text-Black"}`}
-                                        onClick={() => handleStatusChange("")}>
-                                        ĐƠN HÀNG ĐÃ DUYỆT
-                                    </span>
-
-                                {status === "" && <div className="border-t-2 w-full border-Blue"></div>}
-                            </div>
+                            <div className="border-t-2 w-full border-Dark_gray"></div>
                         </div>
 
                         <div className="flex flex-col gap-4 px-4 col-start-3">
                             {currentItems.map((item) => (
-                                <SalemansOrderItem key={item.id} productName={item.name} price={item.price} quantity={item.quantity} status={item.status}/>
+                                <SalemansOrderItem key={item.id} productName={item.name} price={item.price}
+                                                   quantity={item.quantity} status={item.status} onApprove={handleApprove}/>
                             ))}
                         </div>
 
@@ -119,4 +115,4 @@ const SalesmanAllOrders = () => {
     );
 };
 
-export default SalesmanAllOrders;
+export default AllOrders;

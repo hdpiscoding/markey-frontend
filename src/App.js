@@ -1,17 +1,186 @@
-import SalesmanAllProducts from "./pages/Salesman/SalesmanAllProducts";
-import AddProduct from "./pages/Salesman/AddProduct";
-import EditProduct from "./pages/Salesman/EditProduct";
-import ViewProduct from "./pages/Salesman/ViewProduct";
-import AllVouchers from "./pages/Salesman/AllVouchers";
-import AddVoucher from "./pages/Salesman/AddVoucher";
-import EditVoucher from "./pages/Salesman/EditVoucher";
-import ViewVoucher from "./pages/Salesman/ViewVoucher";
+import {BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom';
+import React, {lazy, Suspense} from "react";
+import {LinearProgress} from "@mui/material";
+import PrivateRoute from "./components/General/PrivateRoute";
+const AboutMarkey = lazy(() => import("./pages/General/AboutMarkey"));
+const Terms = lazy(() => import("./pages/General/Terms"));
+const SecurityPolicy = lazy(() => import("./pages/General/SecurityPolicy"));
+const AllProducts = lazy(() => import("./pages/Salesman/AllProducts"));
+const ViewProduct = lazy(() => import("./pages/Salesman/ViewProduct"));
+const EditProduct = lazy(() => import("./pages/Salesman/EditProduct"));
+const AddProduct = lazy(() => import("./pages/Salesman/AddProduct"));
+const AllBlogs = lazy(() => import("./pages/Salesman/AllBlogs"));
+const ViewBlog = lazy(() => import("./pages/Salesman/ViewBlog"));
+const EditBlog = lazy(() => import("./pages/Salesman/EditBlog"));
+const AddBlog = lazy(() => import("./pages/Salesman/AddBlog"));
+const ViewShopInfo = lazy(() => import("./pages/Salesman/ViewShopInfo"));
+const EditShopInfo = lazy(() => import("./pages/Salesman/EditShopInfo"));
+const SalesmanChangePassword = lazy(() => import("./pages/Salesman/SalesmanChangePassword"));
+const ViewShopDetailsVerify = lazy(() => import("./pages/Admin/ViewShopDetailsVerify"));
+const AllCategories = lazy(() => import("./pages/Admin/AllCategories"));
+const EditCategory = lazy(() => import("./pages/Admin/EditCategory"));
+const AddCategory = lazy(() => import("./pages/Admin/AddCategory"));
+const ManageShopper = lazy(() => import("./pages/Admin/ManageShopper"));
+const BanShopperDetails = lazy(() => import("./pages/Admin/BanShopperDetails"));
+const ManageSalesman = lazy(() => import("./pages/Admin/ManageSalesman"));
+const BanSalesmanDetails = lazy(() => import("./pages/Admin/BanSalesmanDetails"));
+const RecommendedBlogs = lazy(() => import("./pages/Shopper/RecommendedBlogs"));
+const ProductDetails = lazy(() => import("./pages/Shopper/ProductDetails"));
+const CategoryProducts = lazy(() => import("./pages/Shopper/CategoryProducts"));
+const CategoryBlogs = lazy(() => import("./pages/Shopper/CategoryBlogs"));
+const HomeBlog = lazy(() => import("./pages/Shopper/HomeBlog"));
+const BlogDetails = lazy(() => import("./pages/Shopper/HomeBlog"));
+const ShopperCart = lazy(() => import("./pages/Shopper/ShopperCart"));
+const ShopperProfile = lazy(() => import("./pages/Shopper/ShopperProfile"));
+const ShopperChangePassword = lazy(() => import("./pages/Shopper/ShopperChangePassword"));
+const ShopperAddress = lazy(() => import("./pages/Shopper/ShopperAddress"));
+const ShopperNotification = lazy(() => import("./pages/Shopper/ShopperNotification"));
+const ShopperOrder = lazy(() => import("./pages/Shopper/ShopperOrder"));
+const PhoneVerificationR = lazy(() => import("./pages/Login_Register_Forget/PhoneVerificationR"));
+const EnterPasswordR = lazy(() => import("./pages/Login_Register_Forget/EnterPasswordR"));
+const EnterShopperInfo = lazy(() => import("./pages/Login_Register_Forget/EnterShopperInfo"));
+const EnterSalesmanInfo = lazy(() => import("./pages/Login_Register_Forget/EnterSalesmanInfo"));
+const RegisterFinished = lazy(() => import("./pages/Login_Register_Forget/RegisterFinished"));
+const SalesmanFinishedR = lazy(() => import("./pages/Login_Register_Forget/SalesmanFinishedR"));
+const EnterPhoneF = lazy(() => import("./pages/Login_Register_Forget/EnterPhoneF"));
+const PhoneVerificationF = lazy(() => import("./pages/Login_Register_Forget/PhoneVerificationF"));
+const EnterPasswordF = lazy(() => import("./pages/Login_Register_Forget/EnterPasswordF"));
+const ForgetFinished = lazy(() => import("./pages/Login_Register_Forget/ForgetFinished")) ;
+const ChangeEmail = lazy(() => import("./pages/Login_Register_Forget/ChangeEmail"));
+const ChangePhoneNumber = lazy(() => import("./pages/Login_Register_Forget/ChangePhoneNumber"));
+const ChangeEmailFinished = lazy(() => import("./pages/Login_Register_Forget/ChangeEmailFinished"));
+const ChangePhoneFinished = lazy(() => import("./pages/Login_Register_Forget/ChangePhoneFinished"));
+const RecommendedProducts = lazy(() => import("./pages/Shopper/RecommendedProducts"));
+const ShopDetails = lazy(() => import("./pages/Shopper/ShopDetails"));
+const Register = lazy(() => import("./pages/Login_Register_Forget/Register"));
+const VerifySalesman = lazy(() => import("./pages/Admin/VerifySalesman"));
+const AllOrders = lazy(() => import("./pages/Salesman/AllOrders"));
+const HomeShopper = lazy(() => import("./pages/Shopper/HomeShopper"));
+const Login = lazy(() => import("./pages/Login_Register_Forget/Login"));
+const NotFound = lazy(() => import("./components/General/NotFound"));
 
 function App() {
+    const isAuthenticated = true;
+    const userRole = "admin";
   return (
-    <div>
-        <ViewVoucher/>
-    </div>
+    <>
+        <Router>
+            <Suspense fallback={<LinearProgress/>}>
+                <Routes>
+                    {/*Login, Register, Forget Password, Change email and phone number routes*/}
+                    <Route path="/login" element={<Login/>}/>
+
+                    {/*Register*/}
+                    <Route path="/register" element={<Register/>}/>
+                    <Route path="/register/phone-verification" element={<PhoneVerificationR/>}/>
+                    <Route path="/register/enter-password" element={<EnterPasswordR/>}/>
+                    <Route path="/register/enter-shopper-info" element={<EnterShopperInfo/>}/>
+                    <Route path="/register/enter-salesman-info" element={<EnterSalesmanInfo/>}/>
+                    <Route path="register/shopper-finish" element={<RegisterFinished/>}/>
+                    <Route path="register/salesman-finish" element={<SalesmanFinishedR/>}/>
+
+                    {/*Forget password*/}
+                    <Route path="/forget-password" element={<EnterPhoneF/>}/>
+                    <Route path="/forget-password/phone-verification" element={<PhoneVerificationF/>}/>
+                    <Route path="/forget-password/enter-password" element={<EnterPasswordF/>}/>
+                    <Route path="/forget-password/finished" element={<ForgetFinished/>}/>
+
+                    {/*Change email and phone*/}
+                    <Route path="/change-email" element={<ChangeEmail/>}/>
+                    <Route path="/change-phone" element={<ChangePhoneNumber/>}/>
+                    <Route path="/change-email/phone-verification" element={<PhoneVerificationR method="phone"/>}/>
+                    <Route path="/change-phone/phone-verification" element={<PhoneVerificationR method="email"/>}/>
+                    <Route path="/change-email/finished" element={<ChangeEmailFinished/>}/>
+                    <Route path="/change-phone/finished" element={<ChangePhoneFinished/>}/>
+
+                    {/*Shopper*/}
+                    <Route element={<PrivateRoute isAuthenticated={isAuthenticated} userRole={userRole} requiredRole="shopper"/>}>
+                        {/*// Shopper routes*/}
+                        <Route path="/shopper" element={<HomeShopper/>}/>
+
+                        {/*Shopper Cart*/}
+                        <Route path="/shopper/cart" element={<ShopperCart/>}/>
+
+                        {/*Shopper Product*/}
+                        <Route path="/shopper/product/:productId" element={<ProductDetails/>}/>
+                        <Route path="/shopper/shop/:shopId" element={<ShopDetails/>}/>
+                        <Route path="/shopper/recommended-products" element={<RecommendedProducts/>}/>
+                        <Route path="/shopper/category-products/:categoryId" element={<CategoryProducts/>}/>
+
+                        {/*Shopper Blog*/}
+                        <Route path="/shopper/blog" element={<HomeBlog/>}/>
+                        <Route path="/shopper/blog/:blogId" element={<BlogDetails/>}/>
+                        <Route path="/shopper/category-blogs/:categoryId" element={<CategoryBlogs/>}/>
+                        <Route path="/shopper/recommended-blogs" element={<RecommendedBlogs/>}/>
+
+                        {/*Shopper Account*/}
+                        <Route path="/shopper/profile" element={<ShopperProfile/>}/>
+                        <Route path="shopper/change-password" element={<ShopperChangePassword/>}/>
+                        <Route path="/shopper/address" element={<ShopperAddress/>}/>
+                        <Route path="/shopper/notification" element={<ShopperNotification/>}/>
+                        <Route path="shopper/order" element={<ShopperOrder/>}/>
+                    </Route>
+
+                    {/*Salesman*/}
+                    <Route element={<PrivateRoute isAuthenticated={isAuthenticated} userRole={userRole} requiredRole="salesman"/>}>
+                        {/* Salesman routes*/}
+                        <Route path="/salesman" element={<AllOrders/>}/>
+
+                        {/*Salesman Product*/}
+                        <Route path="/salesman/all-products" element={<AllProducts/>}/>
+                        <Route path="/salesman/view-product/:productId" element={<ViewProduct/>}/>
+                        <Route path="/salesman/edit-product/:productId" element={<EditProduct/>}/>
+                        <Route path="/salesman/add-product" element={<AddProduct/>}/>
+
+                        {/*Salesman Blog*/}
+                        <Route path="/salesman/all-blogs" element={<AllBlogs/>}/>
+                        <Route path="/salesman/view-blog/:blogId" element={<ViewBlog/>}/>
+                        <Route path="/salesman/edit-blog/:blogId" element={<EditBlog/>}/>
+                        <Route path="/salesman/add-blog" element={<AddBlog/>}/>
+
+                        {/*Salesman Profile*/}
+                        <Route path="/salesman/profile" element={<ViewShopInfo/>}/>
+                        <Route path="/salesman/edit-profile" element={<EditShopInfo/>}/>
+                        <Route path="/salesman/change-password" element={<SalesmanChangePassword/>}/>
+                    </Route>
+
+
+                    {/*Admin*/}
+                    <Route element={<PrivateRoute isAuthenticated={isAuthenticated} userRole={userRole} requiredRole="admin"/>}>
+                        {/* Admin routes*/}
+                        <Route path="/admin" element={<VerifySalesman/>}/>
+                        <Route path="/admin/verify-salesman/:shopID" element={<ViewShopDetailsVerify/>}/>
+
+                        {/*Admin Categories*/}
+                        <Route path="/admin/all-categories" element={<AllCategories/>}/>
+                        <Route path="/admin/edit-category/:categoryId" element={<EditCategory/>}/>
+                        <Route path="/admin/add-category" element={<AddCategory/>}/>
+
+                        {/*Admin manage Shopper and Salesman*/}
+                        <Route path="/admin/shopper" element={<ManageShopper/>}/>
+                        <Route path="/admin/shopper/:shopperId" element={<BanShopperDetails/>}/>
+                        <Route path="/admin/salesman" element={<ManageSalesman/>}/>
+                        <Route path="/admin/salesman/:salesmanId" element={<BanSalesmanDetails/>}/>
+                    </Route>
+
+
+                    {/*General*/}
+                    <Route path="/about" element={<AboutMarkey/>}/>
+                    <Route path="/terms" element={<Terms/>}/>
+                    <Route path="/policy" element={<SecurityPolicy/>}/>
+
+                    {/* Route mặc định */}
+                    <Route path="/" element={<Navigate to={isAuthenticated ? (userRole === 'shopper' ? '/shopper' : userRole === 'admin' ? '/admin' : '/salesman') : '/login'} />} />
+
+                    {/* Route cho trang 404 */}
+                    <Route path="/404" element={<NotFound />} />
+
+                    {/* Route mặc định cho trang không tồn tại */}
+                    <Route path="*" element={<Navigate to="/404" />} />
+                </Routes>
+            </Suspense>
+        </Router>
+    </>
   );
 }
 

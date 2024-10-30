@@ -3,6 +3,7 @@ import facebook_svg from "../../assets/facebook.svg";
 import instagram_svg from "../../assets/instagram.svg";
 import gmail_svg from "../../assets/gmail.svg";
 import phone_svg from "../../assets/phone.svg";
+import {Link} from "react-router-dom";
 
 const Footer = () => {
     return (
@@ -31,33 +32,33 @@ const Footer = () => {
 
                         <div className="col-start-2">
                             <div className="mb-1.5">
-                            <span className="text-Black font-sans font-bold text-lg">
-                                Về chúng tôi
-                            </span>
+                                <span className="text-Black font-sans font-bold text-lg">
+                                    Về chúng tôi
+                                </span>
                             </div>
 
                             <div>
                                 <ul className="space-y-1">
                                     <li>
-                                        <a href="#">
+                                        <Link to="/about">
                                             <span className="text-Gray hover:text-Blue font-sans text-sm">
                                                 Thông tin về Markey
                                             </span>
-                                        </a>
+                                        </Link>
                                     </li>
                                     <li>
-                                        <a href="#">
-                                        <span className="text-Gray hover:text-Blue font-sans text-sm">
-                                            Điều khoản Markey
-                                        </span>
-                                        </a>
+                                        <Link to="/terms">
+                                            <span className="text-Gray hover:text-Blue font-sans text-sm">
+                                                Điều khoản Markey
+                                            </span>
+                                        </Link>
                                     </li>
                                     <li>
-                                        <a href="#">
-                                        <span className="text-Gray hover:text-Blue font-sans text-sm">
-                                            Chính sách bảo mật
-                                        </span>
-                                        </a>
+                                        <Link to="/policy">
+                                            <span className="text-Gray hover:text-Blue font-sans text-sm">
+                                                Chính sách bảo mật
+                                            </span>
+                                        </Link>
                                     </li>
                                 </ul>
                             </div>

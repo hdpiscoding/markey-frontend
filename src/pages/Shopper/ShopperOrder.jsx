@@ -7,17 +7,17 @@ import OrderItem from "../../components/Shopper/OrderItem";
 const ShopperOrder = () => {
     const orderItems = [
         { id: 1, name: "Son môi màu đỏ quyến rũ", price: 150000, quantity: 2500, status: "CHỜ XỬ LÝ" },
-        { id: 2, name: "Nước hoa hương chanh tươi mát", price: 800000, quantity: 1800, status: "ĐANG VẬN CHUYỂN" },
+        { id: 2, name: "Nước hoa hương chanh tươi mát", price: 800000, quantity: 1800, status: "ĐANG GIAO HÀNG" },
         { id: 3, name: "Kem dưỡng da ban đêm chống lão hóa", price: 600000, quantity: 1500, status: "ĐÃ NHẬN HÀNG" },
         { id: 4, name: "Sữa rửa mặt làm sạch sâu", price: 200000, quantity: 3200, status: "CHỜ XỬ LÝ" },
-        { id: 5, name: "Mặt nạ cấp ẩm chiết xuất thiên nhiên", price: 75000, quantity: 4800, status: "ĐANG VẬN CHUYỂN" },
+        { id: 5, name: "Mặt nạ cấp ẩm chiết xuất thiên nhiên", price: 75000, quantity: 4800, status: "ĐANG GIAO HÀNG" },
         { id: 6, name: "Phấn nền trang điểm tự nhiên", price: 500000, quantity: 3100, status: "ĐÃ NHẬN HÀNG" },
         { id: 7, name: "Chì kẻ mắt chống nước", price: 120000, quantity: 5400, status: "CHỜ XỬ LÝ" },
-        { id: 8, name: "Nước tẩy trang dịu nhẹ", price: 250000, quantity: 900, status: "ĐANG VẬN CHUYỂN" },
+        { id: 8, name: "Nước tẩy trang dịu nhẹ", price: 250000, quantity: 900, status: "ĐANG GIAO HÀNG" },
         { id: 9, name: "Son dưỡng môi SPF 15", price: 95000, quantity: 2200, status: "ĐÃ NHẬN HÀNG" },
         { id: 10, name: "Kem chống nắng SPF 50", price: 400000, quantity: 3600, status: "CHỜ XỬ LÝ" },
     ];
-    const [status, setStatus] = useState("");
+    const [status, setStatus] = useState("CHƯA THANH TOÁN");
 
     const handleStatusChange = (newStatus) => {
         setStatus(newStatus);
@@ -54,7 +54,7 @@ const ShopperOrder = () => {
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
-    }, [visibleItems, items]);
+    }, [visibleItems, items, handleScroll]);
 
     return (
         <div className="bg-Light_gray w-screen overflow-x-hidden">
@@ -71,12 +71,12 @@ const ShopperOrder = () => {
                             <div className="grid grid-cols-[25%_25%_25%_25%]">
                                 <div className="flex flex-col text-center gap-2 select-none">
                                     <span
-                                        className={`cursor-pointer font-semibold text-xl ${status === "" ? "text-Blue" : "text-Black"}`}
-                                        onClick={() => handleStatusChange("")}>
-                                        TẤT CẢ
+                                        className={`cursor-pointer font-semibold text-xl ${status === "CHƯA THANH TOÁN" ? "text-Blue" : "text-Black"}`}
+                                        onClick={() => handleStatusChange("CHƯA THANH TOÁN")}>
+                                        CHƯA THANH TOÁN
                                     </span>
 
-                                    {status === "" && <div className="border-t-2 w-full border-Blue"></div>}
+                                    {status === "CHƯA THANH TOÁN" && <div className="border-t-2 w-full border-Blue"></div>}
 
                                 </div>
 
@@ -92,12 +92,12 @@ const ShopperOrder = () => {
 
                                 <div className="flex flex-col text-center gap-2 select-none">
                                 <span
-                                    className={`cursor-pointer font-semibold text-xl ${status === "ĐANG VẬN CHUYỂN" ? "text-Blue" : "text-Black"}`}
-                                    onClick={() => handleStatusChange("ĐANG VẬN CHUYỂN")}>
-                                    ĐANG VẬN CHUYỂN
+                                    className={`cursor-pointer font-semibold text-xl ${status === "ĐANG GIAO HÀNG" ? "text-Blue" : "text-Black"}`}
+                                    onClick={() => handleStatusChange("ĐANG GIAO HÀNG")}>
+                                    ĐANG GIAO HÀNG
                                 </span>
 
-                                    {status === "ĐANG VẬN CHUYỂN" &&
+                                    {status === "ĐANG GIAO HÀNG" &&
                                         <div className="border-t-2 w-full border-Blue"></div>}
                                 </div>
 
