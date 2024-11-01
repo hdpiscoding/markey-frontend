@@ -1,13 +1,14 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import PrimaryHeader from "../../components/General/PrimaryHeader";
 import Footer from "../../components/General/Footer";
 import CategoryCarousel from "../../components/Shopper/CategoryCarousel";
 import ProductCardViewLg from "../../components/Shopper/ProductCardViewLg";
 import BlogCardView from "../../components/Shopper/BlogCardView";
-import {Outlet} from "react-router-dom";
+import {Outlet, useNavigate} from "react-router-dom";
 
 const HomeShopper = () => {
-    const products = [
+    const navigate = useNavigate();
+    const sampleProducts = [
         { id: 1, name: "Son môi màu đỏ quyến rũ", price: 150000, sold: 2500 },
         { id: 2, name: "Nước hoa hương chanh tươi mát", price: 800000, sold: 1800 },
         { id: 3, name: "Kem dưỡng da ban đêm chống lão hóa", price: 600000, sold: 1500 },
@@ -22,7 +23,23 @@ const HomeShopper = () => {
         { id: 12, name: "Sữa tắm chiết xuất dừa", price: 180000, sold: 2100 },
     ];
 
-    const blogs = [
+    const [products, setProducts] = React.useState([]);
+    const [blogs, setBlogs] = React.useState([]);
+
+    const handleMoreProducts = () => {
+        navigate("/shopper/recommended-products");
+    }
+
+    const handleMoreBlogs = () => {
+        navigate("/shopper/recommended-blogs");
+    }
+
+    // Call API to get products and blogs data and cache them in state products and blogs
+    useEffect(() => {
+
+    }, []);
+
+    const sampleBlogs = [
         { id: 1, title: "5 bí quyết chăm sóc tóc khỏe mạnh", author: "Gabriel Garcia Marquez", date: "2024-01-10", category: "chăm sóc tóc" },
         { id: 2, title: "Làm thế nào để có làn da mặt rạng rỡ", author: "Virginia Woolf", date: "2024-01-15", category: "chăm sóc da mặt" },
         { id: 3, title: "Hướng dẫn trang điểm tự nhiên cho mùa hè", author: "Jane Austen", date: "2024-01-20", category: "trang điểm" },
@@ -51,13 +68,13 @@ const HomeShopper = () => {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-                            {products.map((product) => (
-                                <ProductCardViewLg id={product.id} name={product.name} price={product.price} sold={product.sold}/>
+                            {sampleProducts.map((product) => (
+                                <ProductCardViewLg id={product.id} name={product.name} price={product.price} rating={product.rating}/>
                             ))}
                         </div>
 
                         <div className="flex items-center justify-center my-4">
-                            <button className="bg-White rounded-lg px-5 py-1 hover:bg-[#f9f9f9]">
+                            <button className="bg-White rounded-lg px-5 py-1 hover:bg-[#f9f9f9]" onClick={handleMoreProducts}>
                                 <span className="text-Gray text-xl">
                                     Xem thêm
                                 </span>
@@ -73,13 +90,13 @@ const HomeShopper = () => {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                            {blogs.map((blog) => (
+                            {sampleBlogs.map((blog) => (
                                 <BlogCardView id={blog.id} title={blog.title} author={blog.author} date={blog.date} category={blog.category}/>
                             ))}
                         </div>
 
                         <div className="flex items-center justify-center my-4">
-                            <button className="bg-White rounded-lg px-5 py-1 hover:bg-[#f9f9f9]">
+                            <button className="bg-White rounded-lg px-5 py-1 hover:bg-[#f9f9f9]" onClick={handleMoreBlogs}>
                                 <span className="text-Gray text-xl">
                                     Xem thêm
                                 </span>

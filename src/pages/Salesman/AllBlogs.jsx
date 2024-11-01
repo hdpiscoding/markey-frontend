@@ -2,9 +2,7 @@ import React, {useState} from 'react';
 import SecondaryHeader from "../../components/General/SecondaryHeader";
 import Footer from "../../components/General/Footer";
 import SalesmanNav from "../../components/Salesman/SalesmanNav";
-import ProductCardViewMd from "../../components/Shopper/ProductCardViewMd";
 import {Pagination, Stack} from "@mui/material";
-import BlogListViewMd from "../../components/Shopper/BlogListViewMd";
 import BlogListViewLg from "../../components/Shopper/BlogListViewLg";
 
 const AllBlogs = () => {
@@ -128,7 +126,7 @@ const AllBlogs = () => {
                         <div className="flex flex-col gap-4">
                             {currentBlogs.map((blog) => (
                                 <BlogListViewLg key={blog.id} title={blog.title} author={blog.author}
-                                                date={blog.date} category={blog.category}/>
+                                                date={blog.date} category={blog.category} role="salesman"/>
                             ))}
                         </div>
 

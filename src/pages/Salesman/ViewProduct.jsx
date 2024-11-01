@@ -1,21 +1,27 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import SecondaryHeader from "../../components/General/SecondaryHeader";
 import SalesmanNav from "../../components/Salesman/SalesmanNav";
 import product_1 from "../../assets/product_1.png";
 import product_2 from "../../assets/product_2.png";
 import product_3 from "../../assets/product_3.png";
 import Footer from "../../components/General/Footer";
+import {Link} from "react-router-dom";
 
 const ViewProduct = () => {
-    const [images, setImages] = React.useState([product_1, product_2, product_3]);
+    const [images, setImages] = useState([product_1, product_2, product_3]);
 
-    const product = {
+    const [product, setProduct] = useState({
+        id: 1,
         productName: "Mặt nạ dưỡng trắng",
         category: "Chăm sóc da mặt",
         price: "100000",
         stock: "100",
         description: "Mô tả"
-    };
+    });
+
+    useEffect(() => {
+        // Call API to get all shop's products and set to state
+    }, []);
 
     // format number with dots
     const formatNumberWithDots = (number) => {
@@ -48,9 +54,12 @@ const ViewProduct = () => {
                                 </div>
 
                                 <div className="flex items-center justify-center gap-10">
-                                    <span className="font-semibold text-Blue cursor-pointer hover:text-Dark_blue">
-                                        Sửa
-                                    </span>
+                                    <Link to={`/salesman/edit-product/${product.id}`}>
+                                        <span className="font-semibold text-Blue cursor-pointer hover:text-Dark_blue">
+                                            Sửa
+                                        </span>
+                                    </Link>
+
 
                                     <span className="font-semibold text-Red cursor-pointer hover:text-Dark_red">
                                         Xóa

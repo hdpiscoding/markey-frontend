@@ -1,7 +1,15 @@
 import React from 'react';
 import RFHeader from "../../components/Login_Register_Forget/RFHeader";
+import {Link, useNavigate} from "react-router-dom";
 
 const SalesmanFinishedR = () => {
+    const navigate = useNavigate();
+    const handleHome = () => {
+        // Delete token in localStorage
+        localStorage.removeItem("token");
+        navigate("/login");
+    }
+
     return (
         <div>
             <RFHeader title="Đăng ký người bán"/>
@@ -22,12 +30,12 @@ const SalesmanFinishedR = () => {
                     </div>
 
                     <div className="mb-4 bg-Blue hover:bg-Dark_blue rounded-sm">
-                        <button
-                            className="w-[22rem] rounded-sm font-sans flex flex-col items-center justify-items-center">
-                                <span className="text-White my-1">
-                                    Trở về trang đăng nhập
-                                </span>
+                        <button className="w-[22rem] rounded-sm font-sans flex flex-col items-center justify-items-center" onClick={handleHome}>
+                            <span className="text-White my-1">
+                                Trở về trang đăng nhập
+                            </span>
                         </button>
+
                     </div>
                 </div>
             </div>

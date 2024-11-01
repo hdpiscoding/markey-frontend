@@ -1,25 +1,32 @@
 import React, {useEffect, useState} from "react";
 import {IoArrowBack} from "react-icons/io5";
+import {useNavigate} from "react-router-dom";
 
 
 const EnterEmailOrPhone = (props) => {
+    const navigate = useNavigate();
+
     const [title, setTitle] = useState("");
     const [method, setMethod] = useState("");
     const [inputValue, setInputValue] = useState("");
     const [error, setError] = useState("");
+    const [url, setUrl] = useState("");
 
     useEffect(() => {
-        if (props.method === "password") {
+        if (props.method === "forget") {
             setTitle("Đặt lại mật khẩu");
             setMethod("Số điện thoại");
+            setUrl("/forget-password/phone-verification");
         }
         if (props.method === "email") {
             setTitle("Đổi email");
             setMethod("Email");
+            setUrl("/change-email/phone-verification")
         }
         if (props.method === "phone") {
             setTitle("Đổi số điện thoại");
             setMethod("Số điện thoại");
+            setUrl("/change-phone/phone-verification")
         }
     }, [props.method]);
 
@@ -45,7 +52,7 @@ const EnterEmailOrPhone = (props) => {
             if (!emailRegex.test(inputValue)) {
                 newError = "Email không hợp lệ.";
             }
-        } else if (props.method === "phone" || props.method === "password") {
+        } else if (props.method === "phone" || props.method === "forget") {
             // Kiểm tra số điện thoại có đúng 10 chữ số không
             if (inputValue.length !== 10) {
                 newError = "Số điện thoại không hợp lệ.";
@@ -54,14 +61,19 @@ const EnterEmailOrPhone = (props) => {
 
         setError(newError);
         if (!newError) {
-            console.log("Tiến hành bước tiếp theo...");
+            navigate(`${url}`);
         }
     };
+
+    const handleBackClick = () => {
+        // Xóa các dữ liệu liên quan trong localStorage
+        navigate(-1);
+    }
 
     return (
         <div className="bg-White shadow rounded-l h-auto w-[32rem] select-none flex flex-col items-center justify-items-center">
             <div className="flex items-center justify-items-center ml-8 mt-4 h-auto w-full">
-                <div className="cursor-pointer">
+                <div className="cursor-pointer" onClick={handleBackClick}>
                     <IoArrowBack className="h-5 w-5 object-cover" />
                 </div>
 

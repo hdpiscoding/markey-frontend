@@ -1,12 +1,21 @@
 import React, {useState} from 'react';
 import SecondaryHeader from "../../components/General/SecondaryHeader";
 import Footer from "../../components/General/Footer";
-import { TfiAngleDown } from "react-icons/tfi";
 import BlogListViewMd from "../../components/Shopper/BlogListViewMd";
 import {Pagination, Stack} from "@mui/material";
 import BlogCardView from "../../components/Shopper/BlogCardView";
+import {useNavigate} from "react-router-dom";
 
 const HomeBlog = () => {
+    const navigate = useNavigate();
+    const handleMoreBlogs = () => {
+        navigate('/shopper/recommended-blogs');
+    }
+    const handleCategoryChange = (event) => {
+        const categoryId = event.target.value;
+        navigate(`/shopper/category-blogs/${categoryId}`);
+    }
+
     const categories = [
         { id: 1, name: "Chăm sóc tóc" },
         { id: 2, name: "Chăm sóc da mặt" },
@@ -103,10 +112,10 @@ const HomeBlog = () => {
                     <div className="col-start-2 flex items-center py-2">
                         <select name="category" id="category"
                                 className="cursor-pointer border-none focus:outline-none"
-                                defaultValue={'default'}>
-                            <option value="default">TRANG CHỦ</option>
+                                defaultValue={'default'} onChange={handleCategoryChange}>
+                            <option value="default" hidden disabled>TRANG CHỦ</option>
                             {categories.map((category) => (
-                                <option key={category.id} value={category.id}>{category.name}</option>
+                                <option key={category.id} id={category.id} value={category.id}>{category.name}</option>
                             ))}
                         </select>
                     </div>
@@ -129,7 +138,7 @@ const HomeBlog = () => {
                             <div className="flex flex-col gap-4">
                                 {currentBlogs.map((blog) => (
                                     <BlogListViewMd key={blog.id} title={blog.title} author={blog.author}
-                                                    date={blog.date} category={blog.category}/>
+                                                    date={blog.date} category={blog.category} role="shopper"/>
                                 ))}
                             </div>
 
@@ -180,7 +189,7 @@ const HomeBlog = () => {
                             </div>
 
                             <div className="flex items-center justify-center">
-                                <button className="bg-White rounded-lg px-5 py-1 hover:bg-[#f9f9f9]">
+                                <button className="bg-White rounded-lg px-5 py-1 hover:bg-[#f9f9f9]" onClick={handleMoreBlogs}>
                                     <span className="text-Gray text-xl">
                                         Xem thêm
                                     </span>

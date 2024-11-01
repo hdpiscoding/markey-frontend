@@ -6,27 +6,19 @@ import Footer from "../../components/General/Footer";
 import product_1 from "../../assets/product_1.png";
 import product_2 from "../../assets/product_2.png";
 import product_3 from "../../assets/product_3.png";
+import axios from "axios";
 
 const EditProduct = () => {
-    const product = {
-        productName: "Mặt nạ dưỡng trắng",
-        category: "Chăm sóc da mặt",
-        price: "100000",
-        stock: "100",
-        description: "Mô tả"
-    };
+    // Lưu danh sách các danh mục sản phẩm (lấy từ API)
+    const [categories, setCategories] = React.useState([]);
 
-    const categories = [
-        { id: 1, name: "Chăm sóc tóc" },
-        { id: 2, name: "Chăm sóc da mặt" },
-        { id: 3, name: "Trang điểm" },
-        { id: 4, name: "Chăm sóc cơ thể" },
-        { id: 5, name: "Chăm sóc da mắt" },
-        { id: 6, name: "Chăm sóc da môi" },
-    ];
-
+    // Lưu danh mục sản phẩm được chọn
     const [selectedCategory, setSelectedCategory] = React.useState('default');
+
+    // Lúc call API, lưu URL ảnh vào state này
     const [images, setImages] = React.useState([null, null, null]);
+
+    // Lưu lỗi của các trường input
     const [fieldErrors, setFieldErrors] = React.useState({});
     const [formFields, setFormFields] = React.useState({
         productName: '',
@@ -35,53 +27,51 @@ const EditProduct = () => {
         description: '',
     });
 
+    // Lấy dữ liệu từ API khi component mount
     useEffect(() => {
-        setFormFields({
-            productName: product.productName || '',
-            price: product.price || '',
-            stock: product.stock || '',
-            description: product.description || '',
-        });
+        async function fetchData() {
+            try {
+                // Giả sử đây là API bạn dùng để lấy dữ liệu sản phẩm và tất cả danh mục
+                const [productResponse, categoryResponse] = await Promise.all([
+                    axios.get(`http://152.42.232.101:5050/api/v1/shopping-service/product/60262d31-1a38-4840-839d-78e355484181`),
+                    axios.get('http://152.42.232.101:5050/api/v1/shopping-service/category/')
+                ]);
 
-        setSelectedCategory(product.category || 'default');
+                const productData = await productResponse.data.data;
+                const categoryData = await categoryResponse.data.data;
 
+                // Lưu danh sách các danh mục vào state
+                categoryData.map((category) => setCategories([{ id: category.id, name: category.name }]));
+
+                // Cập nhật state với dữ liệu từ API
+                setFormFields({
+                    productName: String(productData.name) || '',
+                    price: String(productData.price) || '',
+                    stock: String(productData.quantity) || '',
+                    description: String(productData.description) || '',
+                });
+
+                // Lưu danh mục sản phẩm được chọn
+                setSelectedCategory(productData.category.name || 'default');
+
+                // Chuyển đổi dữ liệu ảnh từ API (giả sử nó là URL)
+                const fetchedImages = productData.picture.map((imgUrl, index) => {
+                    return imgUrl ? new File([], imgUrl, { type: 'image/jpeg' }) : null;
+                });
+                setImages(fetchedImages);
+            } catch (error) {
+                console.error("Failed to fetch product details", error);
+            }
+        }
+
+        fetchData();
     }, []);
-
-    // // Lấy dữ liệu từ API khi component mount
-    // useEffect(() => {
-    //     async function fetchData() {
-    //         try {
-    //             // Giả sử đây là API bạn dùng để lấy dữ liệu sản phẩm
-    //             const response = await fetch('/api/getProductDetails');
-    //             const data = await response.json();
-    //
-    //             // Cập nhật state với dữ liệu từ API
-    //             setFormFields({
-    //                 productName: data.productName || '',
-    //                 price: data.price || '',
-    //                 stock: data.stock || '',
-    //                 description: data.description || '',
-    //             });
-    //
-    //             setSelectedCategory(data.category || 'default');
-    //
-    //             // Chuyển đổi dữ liệu ảnh từ API (giả sử nó là URL)
-    //             const fetchedImages = data.images.map((imgUrl, index) => {
-    //                 return imgUrl ? new File([], imgUrl, { type: 'image/jpeg' }) : null;
-    //             });
-    //             setImages(fetchedImages);
-    //         } catch (error) {
-    //             console.error("Failed to fetch product details", error);
-    //         }
-    //     }
-    //
-    //     fetchData();
-    // }, []);
 
     const handleCategoryChange = (e) => {
         setSelectedCategory(e.target.value);
     };
 
+    // Xử lý các lỗi thay đổi giá trị của các trường input
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         const positiveIntegerRegex = /^\d*$/;
@@ -109,6 +99,7 @@ const EditProduct = () => {
         }
     };
 
+    // Xử lý thay đổi ảnh
     const handleImageChange = (index, file) => {
         const validTypes = ["image/jpeg", "image/png", "image/jpg"];
         const maxSize = 2 * 1024 * 1024;
@@ -132,6 +123,7 @@ const EditProduct = () => {
         }
     };
 
+    // Xử lý khi người dùng chọn file ảnh
     const handleFileInputChange = (e, index) => {
         const file = e.target.files[0];
         if (file) {
@@ -139,7 +131,9 @@ const EditProduct = () => {
         }
     };
 
+    // Xử lý khi người dùng ấn nút "Cập nhật"
     const handleSubmit = () => {
+        // Kiểm tra xem các trường input có hợp lệ không
         let newFieldErrors = {};
         let imageErrorMessages = [];
 
@@ -182,7 +176,16 @@ const EditProduct = () => {
         setFieldErrors(newFieldErrors);
 
         if (Object.keys(newFieldErrors).length === 0) {
-            console.log("Đăng sản phẩm thành công với hình ảnh:", images);
+            // Call API để upload ảnh và trả về URL ảnh
+
+
+            // Call API để cập nhật sản phẩm
+            try {
+
+            }
+            catch (error) {
+                console.error("Failed to update product", error);
+            }
         }
     };
 
@@ -316,14 +319,12 @@ const EditProduct = () => {
                                                         <img
                                                             src={URL.createObjectURL(images[index])}
                                                             alt={`selected-${index}`}
-                                                            className="h-[120px] w-[120px] object-cover rounded-md"
+                                                            className="h-[120px] w-[120px] object-cover rounded-md border"
                                                         />
                                                     ) : (
-                                                        <img
-                                                            src={product_1}
-                                                            alt={`selected-${index}`}
-                                                            className="h-[120px] w-[120px] object-cover rounded-md"
-                                                        />
+                                                        <div className="h-[120px] w-[120px] border rounded-md bg-Light_gray flex items-center justify-center">
+                                                            <MdAddPhotoAlternate className="text-Gray h-[80px] w-[80px]"/>
+                                                        </div>
                                                     )}
                                                 </label>
                                                 <input
@@ -349,7 +350,7 @@ const EditProduct = () => {
                                 className="bg-Blue hover:bg-Dark_blue rounded-md py-1 px-10"
                                 onClick={handleSubmit}
                             >
-                                <span className="text-White">Đăng sản phẩm</span>
+                                <span className="text-White">Cập nhật</span>
                             </button>
                         </div>
                     </div>

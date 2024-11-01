@@ -3,11 +3,31 @@ import Footer from "../../components/General/Footer";
 import CartItemGroupByDate from "../../components/Shopper/CartItemGroupByDate";
 import SecondaryHeader from "../../components/General/SecondaryHeader";
 import CartItemListView from "../../components/Shopper/CartItemListView";
+import {useNavigate} from "react-router-dom";
 
 const ShopperCart = () => {
+    const [paymentMethod, setPaymentMethod] = useState("COD");
+
+    const handlePaymentMethodChange = (event) => {
+        setPaymentMethod(event.target.value);
+    }
+
     const [cartID, setCartID] = useState("");
     const [productCount, setProductCount] = useState(0);
     const [totalPrice, setTotalPrice] = useState(0);
+
+    const navigate = useNavigate();
+    const handleBuy = () => {
+        // Call API to delete all products in the cart
+
+        //Redirect to the other pages
+        if (paymentMethod === "VNPAY") {
+            navigate("/shopper/order");
+        }
+        else {
+            navigate("/shopper");
+        }
+    }
 
 
     const formatNumberWithDots = (number) => {
@@ -42,6 +62,7 @@ const ShopperCart = () => {
         // setTotalPrice = data.total; (from API)
         // setProductCount = data.products.length; (from API)
     }
+
     return (
         <div className="bg-Light_gray overflow-x-hidden h-screen">
             <SecondaryHeader head="Giỏ hàng"/>
@@ -82,42 +103,63 @@ const ShopperCart = () => {
                     </div>
 
                     <div>
-                        {productList.map((product) => (
-                            <CartItemListView key={product.id} id={product.id} name={product.name}
-                                              price={product.price} max_quantity={product.max_quantity}
-                                              onChange={onChange} cart_id={cartID}/>
-                        ))}
+                        {productList.length <= 0
+                            ?
+                            <div className="bg-Light_gray text-Gray p-5 flex items-center justify-center">
+                                Hiện tại giỏ hàng của bạn còn trống!
+                            </div>
+                            : productList.map((product) => (
+                                    <CartItemListView key={product.id} id={product.id} name={product.name} amount={product.amount}
+                                                      price={product.price} max_quantity={product.max_quantity}
+                                                      onChange={onChange} cart_id={cartID}/>
+                                ))}
+
                     </div>
 
-                    <div className="flex flex-row-reverse bg-White mt-5 sticky bottom-0 gap-5 transition-shadow border">
-                        <div className="mr-10 my-3">
-                            {productCount > 0
-                                ?
-                                <button className="bg-Blue rounded-sm py-2 px-6 hover:bg-Dark_blue">
-                                    <span className="text-White text-lg">
-                                        Mua hàng
+                    <div className="flex flex-row-reverse justify-around bg-White mt-5 sticky bottom-0 gap-5 transition-shadow border py-3">
+                        <div className="flex flex-row-reverse gap-5">
+                            <div>
+                                {productCount > 0
+                                    ?
+                                    <button className="bg-Blue rounded-sm py-2 px-6 hover:bg-Dark_blue" onClick={handleBuy}>
+                                        <span className="text-White text-lg">
+                                            Mua hàng
+                                        </span>
+                                    </button>
+                                    :
+                                    <button className="bg-Light_blue rounded-sm py-2 px-6 cursor-not-allowed" disabled>
+                                        <span className="text-White text-lg">
+                                            Mua hàng
+                                        </span>
+                                    </button>}
+                            </div>
+
+                            <div className="flex flex-col items-center justify-center">
+                                <div>
+                                    <span>
+                                        Tổng thanh toán: ({productCount ?? 0} sản phẩm)
                                     </span>
-                                </button>
-                                :
-                                <button className="bg-Light_blue rounded-sm py-2 px-6 cursor-not-allowed" disabled>
-                                    <span className="text-White text-lg">
-                                        Mua hàng
+                                </div>
+
+                                <div>
+                                    <span className="text-Red font-bold text-xl">
+                                        ₫ {formatNumberWithDots(totalPrice ?? 0)}
                                     </span>
-                                </button>}
+                                </div>
+                            </div>
                         </div>
 
-                        <div className="flex flex-col items-center justify-center">
+                        <div className="select-none flex items-center gap-3">
                             <div>
                                 <span>
-                                    Tổng thanh toán: ({productCount ?? 0} sản phẩm)
+                                    Phương thức thanh toán:
                                 </span>
                             </div>
 
-                            <div>
-                                <span className="text-Red font-bold text-xl">
-                                    ₫ {formatNumberWithDots(totalPrice ?? 0)}
-                                </span>
-                            </div>
+                            <select className="border focus:border-Blue focus:ring-1 focus:ring-Blue focus:outline-none rounded-sm px-2" value={paymentMethod} onChange={handlePaymentMethodChange}>
+                                <option value="COD">COD</option>
+                                <option value="VNPAY">VNPAY</option>
+                            </select>
                         </div>
                     </div>
                 </div>

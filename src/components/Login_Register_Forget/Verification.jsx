@@ -1,7 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import { IoArrowBack } from "react-icons/io5";
+import {useNavigate} from "react-router-dom";
 
 const Verification = (props) => {
+    const navigate = useNavigate();
+
     const [timeLeft, setTimeLeft] = useState(null);
     const [isResendDisabled, setIsResendDisabled] = useState(false);
     const [otp, setOtp] = useState("");
@@ -56,18 +59,26 @@ const Verification = (props) => {
         return true;
     };
 
-    const handleSubmit = async () => {
-        const isValid = await validateOtp();
+    const handleSubmit = () => {
+        const isValid = validateOtp();
         if (isValid) {
             // Logic tiếp theo nếu mã OTP hợp lệ
-            console.log("Mã OTP hợp lệ. Tiến hành bước tiếp theo.");
+
+
+            navigate(`${props.url}`);
+
         }
     };
+
+    const handleBackClick = () => {
+        // Xóa dữ liệu trong localStorage nếu có
+        navigate(-1);
+    }
 
     return (
         <div className="bg-White shadow rounded-lg h-auto w-[32rem] select-none flex flex-col items-center justify-items-center">
             <div className="flex items-center justify-items-center ml-8 mt-4 mb-6 h-auto w-full">
-                <div className="cursor-pointer">
+                <div className="cursor-pointer" onClick={handleBackClick}>
                     <IoArrowBack className="h-5 w-5 object-cover" />
                 </div>
 
@@ -97,8 +108,8 @@ const Verification = (props) => {
                     <input
                         value={otp}
                         onChange={(e) => setOtp(e.target.value)}
-                        className={`border-2 w-[22rem] rounded-sm h-8 focus:ring-Blue focus:ring-1 outline-none pl-2 focus:border-Blue ${
-                            otpError ? "border-Red text-Red" : ""
+                        className={`border-2 w-[22rem] rounded-sm h-8 outline-none pl-2 ${
+                            otpError ? "border-Red text-Red" : "focus:ring-Blue focus:ring-1 focus:border-Blue"
                         }`}
                         placeholder="Mã xác nhận"
                         type="text" // Có thể thay đổi thành 'text' hoặc 'phone' tùy thuộc vào mã OTP

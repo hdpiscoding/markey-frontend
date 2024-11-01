@@ -1,10 +1,16 @@
 import React from 'react';
 import sample_blog from '../../assets/sample_blog.png';
 import clock from '../../assets/clock.svg';
+import {useNavigate} from "react-router-dom";
 
 const BlogCardView = (props) => {
+    const navigate = useNavigate();
+
+    const handleClick = (blogId) => {
+        navigate(`/shopper/blog/${blogId}`);
+    }
     return (
-        <div className="bg-White rounded-md border h-[250px] w-[300px] select-none cursor-pointer duration-100 ease-sharp-motion-curve hover:shadow-hover active:shadow-active hover:-translate-y-[1px] active:translate-y-0 hover:border-Blue hover:ring-Blue hover:ring-2">
+        <div className="bg-White rounded-md border h-[250px] w-[300px] select-none cursor-pointer duration-100 ease-sharp-motion-curve hover:shadow-hover active:shadow-active hover:-translate-y-[1px] active:translate-y-0 hover:border-Blue hover:ring-Blue hover:ring-2" onClick={() => handleClick(props.id)}>
             <div className="grid grid-rows-[150px_50px_50px]">
                 <div className="row-start-1 flex relative">
                     <img src={sample_blog} alt="BlogCardView" className="object-cover rounded-t-md"/>

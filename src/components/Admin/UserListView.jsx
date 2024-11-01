@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import ConfirmModal from "../General/ConfirmModal";
 import avatar  from "../../assets/avatar_holder.svg";
+import {Link} from "react-router-dom";
 
 
 const UserListView = (props) => {
@@ -42,15 +43,19 @@ const UserListView = (props) => {
                         <img src={avatar} alt="avatar" className="object-cover w-16 h-16"/>}
                 </div>
 
-                <div className="cursor-pointer" onClick={handleView}>
-                    <span className="font-semibold text-lg">
-                        {props.email ?? "Nguyễn Văn A"}
-                    </span>
-                </div>
+                <Link to={`/admin/${props.role}/${props.id}`}>
+                    <div className="cursor-pointer" onClick={handleView}>
+                        <span className="font-semibold text-lg hover:text-Blue">
+                            {props.email ?? "Nguyễn Văn A"}
+                        </span>
+                    </div>
+                </Link>
+
             </div>
 
             <div className="flex items-center justify-center gap-4">
-                <button className={`${props.isLocked ? "bg-Blue hover:bg-Dark_blue" : "bg-Red hover:bg-Dark_red"} rounded-md text-center px-6 py-1.5`} onClick={openModal}>
+                <button
+                    className={`${props.isLocked ? "bg-Blue hover:bg-Dark_blue" : "bg-Red hover:bg-Dark_red"} rounded-md text-center px-6 py-1.5`} onClick={openModal}>
                     <span className="text-White">
                         {props.isLocked ? "Mở khóa" : "Khóa"}
                     </span>

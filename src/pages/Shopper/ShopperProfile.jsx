@@ -9,9 +9,16 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, {Dayjs} from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import ConfirmModal from "../../components/General/ConfirmModal";
+import {Link, useNavigate} from "react-router-dom";
 dayjs.extend(customParseFormat);
 
 const ShopperProfile = () => {
+    const navigate = useNavigate();
+
+    const onChangeInfo = (method) => {
+        navigate(`${method === "email" ? "/change-email" : "/change-phone"}`);
+    }
+
     // Store API data
     const [shopper, setShopper] = useState(null);
 
@@ -180,14 +187,13 @@ const ShopperProfile = () => {
 
                                     <td className="py-3">
                                         <div className="flex items-center gap-4">
-                                                <span className="font-semibold">
-                                                    placeholder@gmail.com
-                                                </span>
+                                            <span className="font-semibold">
+                                                placeholder@gmail.com
+                                            </span>
 
-                                            <span
-                                                className="text-sm underline text-Blue select-none cursor-pointer hover:text-Dark_blue">
-                                                    Thay đổi
-                                                </span>
+                                            <span className="text-sm underline text-Blue select-none cursor-pointer hover:text-Dark_blue" onClick={() => onChangeInfo("email")}>
+                                                Thay đổi
+                                            </span>
                                         </div>
                                     </td>
                                 </tr>
@@ -203,14 +209,13 @@ const ShopperProfile = () => {
 
                                     <td className="py-3">
                                         <div className="flex items-center gap-4">
-                                                <span className="font-semibold">
-                                                    0903039930
-                                                </span>
+                                            <span className="font-semibold">
+                                                0903039930
+                                            </span>
 
-                                            <span
-                                                className="text-sm underline text-Blue select-none cursor-pointer hover:text-Dark_blue">
+                                            <span className="text-sm underline text-Blue select-none cursor-pointer hover:text-Dark_blue" onClick={() => onChangeInfo("phone")}>
                                                     Thay đổi
-                                                </span>
+                                            </span>
                                         </div>
                                     </td>
                                 </tr>

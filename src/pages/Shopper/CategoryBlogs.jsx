@@ -4,9 +4,20 @@ import BlogListViewMd from "../../components/Shopper/BlogListViewMd";
 import {Pagination, Stack} from "@mui/material";
 import BlogCardView from "../../components/Shopper/BlogCardView";
 import Footer from "../../components/General/Footer";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 
 const CategoryBlogs = () => {
+    const navigate = useNavigate();
+
+    const handleHomeClick = () => {
+        navigate("/shopper/blog");
+    }
+
+    const handleMoreBlogs = () => {
+        navigate('/shopper/recommended-blogs');
+    }
+
+
     const categories = [
         { id: 1, name: "Chăm sóc tóc" },
         { id: 2, name: "Chăm sóc da mặt" },
@@ -105,7 +116,7 @@ const CategoryBlogs = () => {
                 <div className="grid grid-cols-[1fr_10fr_1fr] bg-White mb-4 select-none">
                     <div className="col-start-2 flex items-center py-2 gap-2">
                         <div>
-                            <span className="text-Blue font-semibold cursor-pointer">
+                            <span className="text-Blue font-semibold cursor-pointer" onClick={handleHomeClick}>
                                 Trang chủ
                             </span>
                         </div>
@@ -137,7 +148,7 @@ const CategoryBlogs = () => {
                             <div className="flex flex-col gap-4">
                                 {currentBlogs.map((blog) => (
                                     <BlogListViewMd key={blog.id} title={blog.title} author={blog.author}
-                                                    date={blog.date} category={blog.category}/>
+                                                    date={blog.date} category={blog.category} role="shopper"/>
                                 ))}
                             </div>
 
@@ -189,7 +200,7 @@ const CategoryBlogs = () => {
                             </div>
 
                             <div className="flex items-center justify-center">
-                                <button className="bg-White rounded-lg px-5 py-1 hover:bg-[#f9f9f9]">
+                                <button className="bg-White rounded-lg px-5 py-1 hover:bg-[#f9f9f9]" onClick={handleMoreBlogs}>
                                     <span className="text-Gray text-xl">
                                         Xem thêm
                                     </span>

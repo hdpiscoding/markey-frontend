@@ -1,6 +1,13 @@
 import React, {useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
 
 const Finished = (props) => {
+    const navigate = useNavigate();
+    const handleHome = () => {
+        // Delete token in localStorage
+        localStorage.removeItem("token");
+        navigate("/login");
+    }
     const [title, setTitle] = useState("");
 
     useEffect(() => {
@@ -30,11 +37,10 @@ const Finished = (props) => {
             </div>
 
             <div className="mb-4 bg-Blue hover:bg-Dark_blue rounded-sm">
-                <button
-                    className="w-[22rem] rounded-sm font-sans flex flex-col items-center justify-items-center">
-                                <span className="text-White my-1">
-                                    Trở về trang đăng nhập
-                                </span>
+                <button className="w-[22rem] rounded-sm font-sans flex flex-col items-center justify-items-center" onClick={handleHome}>
+                    <span className="text-White my-1">
+                        Trở về trang đăng nhập
+                    </span>
                 </button>
             </div>
         </div>

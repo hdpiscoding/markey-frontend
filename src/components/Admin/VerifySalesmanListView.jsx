@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import avatar  from "../../assets/avatar_holder.svg";
 import ConfirmModal from "../General/ConfirmModal";
+import {Link} from "react-router-dom";
 
 const VerifySalesmanListView = (props) => {
     // set up modal
@@ -33,11 +34,14 @@ const VerifySalesmanListView = (props) => {
                         <img src={avatar} alt="avatar" className="object-cover w-16 h-16"/>}
                 </div>
 
-                <div>
-                    <span className="font-semibold text-lg">
-                        {props.email ?? "Nguyễn Văn A"}
-                    </span>
-                </div>
+                <Link to={`/admin/verify-salesman/${props.id}`}>
+                    <div className="cursor-pointer">
+                        <span className="font-semibold text-lg hover:text-Blue">
+                            {props.email ?? "Nguyễn Văn A"}
+                        </span>
+                    </div>
+                </Link>
+
             </div>
 
             <div className="flex items-center justify-center gap-4">

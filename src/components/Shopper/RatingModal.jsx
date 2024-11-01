@@ -49,7 +49,7 @@ const RatingModal = ({open, onClose, productID, productName, isRating}) => {
                             Chất lượng sản phẩm:
                         </span>
 
-                        <Rating name="read-only" value={rating} precision={0.5} onChange={handleRatingChange} sx={{
+                        <Rating name="read-only" value={rating} onChange={handleRatingChange} sx={{
                             '& .MuiRating-iconFilled': {
                                 color: '#FABC3F',
                             }, '& .MuiRating-iconHover': {

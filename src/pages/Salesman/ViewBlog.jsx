@@ -3,6 +3,7 @@ import SecondaryHeader from "../../components/General/SecondaryHeader";
 import SalesmanNav from "../../components/Salesman/SalesmanNav";
 import product_1 from "../../assets/product_1.png";
 import Footer from "../../components/General/Footer";
+import {Link} from "react-router-dom";
 
 const ViewBlog = () => {
     const blog = { id: 1, title: "5 bí quyết chăm sóc tóc khỏe mạnh",  category: "Chăm sóc cơ thể", content: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.\n" +
@@ -30,9 +31,12 @@ const ViewBlog = () => {
                                 </div>
 
                                 <div className="flex items-center justify-center gap-10">
-                                    <span className="font-semibold text-Blue cursor-pointer hover:text-Dark_blue">
-                                        Sửa
-                                    </span>
+                                    <Link to={`/salesman/edit-blog/${blog.id}`}>
+                                        <span className="font-semibold text-Blue cursor-pointer hover:text-Dark_blue">
+                                            Sửa
+                                        </span>
+                                    </Link>
+
 
                                     <span className="font-semibold text-Red cursor-pointer hover:text-Dark_red">
                                         Xóa

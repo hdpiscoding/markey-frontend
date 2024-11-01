@@ -3,9 +3,10 @@ import SecondaryHeader from "../../components/General/SecondaryHeader";
 import SalesmanNav from "../../components/Salesman/SalesmanNav";
 import product_1 from "../../assets/product_1.png";
 import Footer from "../../components/General/Footer";
+import {Link} from "react-router-dom";
 
 const ViewShopInfo = () => {
-    const salesman = { id: "1", name: "Nguyễn Văn A", cccd: "123456789012", shopName: "Cửa hàng ABC", address: "123 Đường XYZ, Quận 1, TP.HCM", description: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.\n" +
+    const salesman = { id: "1", name: "Nguyễn Văn A", cccd: "123456789012", email: "abc@gmail.com", phone: "0909090909", shopName: "Cửa hàng ABC", address: "123 Đường XYZ, Quận 1, TP.HCM", description: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.\n" +
             "\n" +
             "In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus.\n" +
             "\n" + "Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc," };
@@ -30,9 +31,12 @@ const ViewShopInfo = () => {
                                 </div>
 
                                 <div className="flex items-center justify-center gap-10">
-                                    <span className="font-semibold text-Blue cursor-pointer hover:text-Dark_blue">
-                                        Sửa
-                                    </span>
+                                    <Link to="/salesman/edit-profile">
+                                        <span className="font-semibold text-Blue cursor-pointer hover:text-Dark_blue">
+                                            Sửa
+                                        </span>
+                                    </Link>
+
                                 </div>
                             </div>
 
@@ -64,6 +68,28 @@ const ViewShopInfo = () => {
                                 <td className="py-5">
                                     <span className="font-semibold">
                                         {salesman.cccd}
+                                    </span>
+                                </td>
+                            </tr>
+                            </tbody>
+
+                            <tbody>
+                            <tr>
+                                <td className="py-5">*Email:</td>
+                                <td className="py-5">
+                                    <span className="font-semibold">
+                                        {salesman.email}
+                                    </span>
+                                </td>
+                            </tr>
+                            </tbody>
+
+                            <tbody>
+                            <tr>
+                                <td className="py-5">*Số điện thoại:</td>
+                                <td className="py-5">
+                                    <span className="font-semibold">
+                                        {salesman.phone}
                                     </span>
                                 </td>
                             </tr>

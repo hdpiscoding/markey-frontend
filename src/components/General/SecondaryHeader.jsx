@@ -2,13 +2,14 @@ import React, {useState} from "react";
 import bell_svg from "../../assets/bell.svg";
 import {FiUser} from "react-icons/fi";
 import {Link} from "react-router-dom";
+import useLocalStorage from "./useLocalStorage";
 
 
 const SecondaryHeader = (props) => {
     // Get token from localStorage here and extract user_id and role (admin, shopper, salesman)
-
+    const roleStorage = useLocalStorage('role')
     // Store user role
-    const [role, setRole] = useState("admin");
+    const [role, setRole] = useState(String(roleStorage.get()));
 
     // Store avatar API data (URL)
     const [avatar, setAvatar] = useState(null);
@@ -36,7 +37,7 @@ const SecondaryHeader = (props) => {
                             <div>
                                 {role === "shopper"
                                     ?
-                                    <Link to="/shopper">
+                                    <Link to="/shopper/profile">
                                         <span className="text-White text-[0.75rem] font-sans text-center">
                                             {email ?? "placeholder@gmail.com"}
                                         </span>

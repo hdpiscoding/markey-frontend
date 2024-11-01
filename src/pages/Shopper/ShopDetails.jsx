@@ -248,8 +248,8 @@ const ShopDetails = () => {
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2">
                                     {currentProducts.map((product) => (
-                                        <ProductCardViewMd key={product.id} name={product.name} price={product.price}
-                                                           sold={product.sold}/>
+                                        <ProductCardViewMd key={product.id} id={product.id} name={product.name} price={product.price}
+                                                           image={product.image} rating={product.rating}/>
                                     ))}
                                 </div>
 

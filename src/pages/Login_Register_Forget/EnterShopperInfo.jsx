@@ -1,6 +1,5 @@
 import React from 'react';
 import RFHeader from "../../components/Login_Register_Forget/RFHeader";
-import CreatePassword from "../../components/Login_Register_Forget/CreatePassword";
 import ShopperInfo from "../../components/Login_Register_Forget/ShopperInfo";
 
 const EnterShopperInfo = () => {

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import PrimaryHeader from "../../components/General/PrimaryHeader";
 import Footer from "../../components/General/Footer";
 import product_1 from '../../assets/product_1.png';
@@ -11,9 +11,11 @@ import avatar from "../../assets/avatar_holder.svg";
 import { PiStorefrontLight } from "react-icons/pi";
 import RatingListItem from "../../components/Shopper/RatingListItem";
 import { Pagination, Stack } from "@mui/material";
+import {useNavigate} from "react-router-dom";
 
 
 const ProductDetails = (props) => {
+    const navigate = useNavigate();
     // calculate time difference
     const calculateTimeDifference = (inputDate) => {
         const currentDate = new Date();
@@ -62,26 +64,26 @@ const ProductDetails = (props) => {
     ];
 
     const rateList = [
-        { id: 1, name: 'Lionel Messi', rating: 4.5, date: '2024-10-01' },
+        { id: 1, name: 'Lionel Messi', rating: 5.0, date: '2024-10-01' },
         { id: 2, name: 'Cristiano Ronaldo', rating: 5.0, date: '2024-10-02' },
         { id: 3, name: 'Neymar Jr.', rating: 4.0, date: '2024-10-03' },
-        { id: 4, name: 'Kylian Mbappé', rating: 4.5, date: '2024-10-04' },
-        { id: 5, name: 'Kevin De Bruyne', rating: 3.5, date: '2024-10-05' },
+        { id: 4, name: 'Kylian Mbappé', rating: 4.0, date: '2024-10-04' },
+        { id: 5, name: 'Kevin De Bruyne', rating: 3.0, date: '2024-10-05' },
         { id: 6, name: 'Mohamed Salah', rating: 4.0, date: '2024-10-06' },
-        { id: 7, name: 'Robert Lewandowski', rating: 4.5, date: '2024-10-07' },
+        { id: 7, name: 'Robert Lewandowski', rating: 4.0, date: '2024-10-07' },
         { id: 8, name: 'Virgil van Dijk', rating: 3.0, date: '2024-10-08' },
         { id: 9, name: 'Sadio Mané', rating: 4.0, date: '2024-10-09' },
-        { id: 10, name: 'Karim Benzema', rating: 4.5, date: '2024-10-10' },
-        { id: 11, name: 'Gareth Bale', rating: 3.5, date: '2024-10-11' },
+        { id: 10, name: 'Karim Benzema', rating: 4.0, date: '2024-10-10' },
+        { id: 11, name: 'Gareth Bale', rating: 3.0, date: '2024-10-11' },
         { id: 12, name: 'Kaká', rating: 5.0, date: '2024-10-12' },
-        { id: 13, name: 'Zinedine Zidane', rating: 4.5, date: '2024-10-13' },
+        { id: 13, name: 'Zinedine Zidane', rating: 4.0, date: '2024-10-13' },
         { id: 14, name: 'Ronaldinho', rating: 5.0, date: '2024-10-14' },
         { id: 15, name: 'Pele', rating: 5.0, date: '2024-10-15' },
-        { id: 16, name: 'Diego Maradona', rating: 4.5, date: '2024-10-16' },
+        { id: 16, name: 'Diego Maradona', rating: 4.0, date: '2024-10-16' },
         { id: 17, name: 'Andrés Iniesta', rating: 4.0, date: '2024-10-17' },
-        { id: 18, name: 'Xavi Hernandez', rating: 4.5, date: '2024-10-18' },
-        { id: 19, name: 'Frank Lampard', rating: 3.5, date: '2024-10-19' },
-        { id: 20, name: 'Thierry Henry', rating: 4.5, date: '2024-10-20' },
+        { id: 18, name: 'Xavi Hernandez', rating: 4.0, date: '2024-10-18' },
+        { id: 19, name: 'Frank Lampard', rating: 3.0, date: '2024-10-19' },
+        { id: 20, name: 'Thierry Henry', rating: 4.0, date: '2024-10-20' },
     ];
 
     // state for quantity
@@ -104,8 +106,6 @@ const ProductDetails = (props) => {
             setQuantity(1);
             return;
         }
-
-
 
         // Chỉ cập nhật state nếu giá trị là một số hợp lệ
         if (value === '' || /^\d+$/.test(value)) {
@@ -136,8 +136,6 @@ const ProductDetails = (props) => {
 
     // state for image
     const [imgURL, setImgURL] = useState(product_1);
-
-    const tags = ["matna", "lamdep", "giare"];
 
     const [imgIndex, setImgIndex] = useState(1);
 
@@ -174,6 +172,24 @@ const ProductDetails = (props) => {
     const handleChange = (event, value) => {
         setPage(value);
     }
+
+    // Sample date
+
+    const handleAddToCart = () => {
+        // Call API to add product to cart
+    }
+
+    const handleViewShop = (shopId) => {
+        // Navigate to shop page
+        navigate(`/shopper/shop/${shopId}`);
+    }
+
+    // Call API to get product details data,
+    useEffect(() => {
+
+    }, [handleAddToCart]);
+
+
 
     return (
         <div className="bg-Light_gray w-screen">
@@ -239,13 +255,6 @@ const ProductDetails = (props) => {
                                 </span>
                             </div>
 
-                            <div className="flex gap-5">
-                                {tags.map((tag) => (
-                                    <span
-                                        className="text-md text-Blue font-semibold cursor-pointer hover:underline select-none">#{tag}</span>
-                                ))}
-                            </div>
-
                             <div className="flex items-center gap-3">
                                 <div>
                                     <span className="text-Star font-semibold text-xl">
@@ -253,7 +262,7 @@ const ProductDetails = (props) => {
                                     </span>
                                 </div>
 
-                                <Rating name="product_rating" value={props.rating ?? 5} readOnly precision={0.5} sx={{
+                                <Rating name="product_rating" value={props.rating ?? 5} readOnly sx={{
                                     '& .MuiRating-iconFilled': {
                                         color: '#FABC3F',
                                     }, '& .MuiRating-iconHover': {
@@ -270,18 +279,6 @@ const ProductDetails = (props) => {
 
                                     <span className="text-Gray text-md">
                                          đánh giá
-                                    </span>
-                                </div>
-
-                                <div className="border-l-2 border-Gray h-5 mt-0.5"></div>
-
-                                <div className="flex items-center justify-center gap-1">
-                                    <span className="text-Black font-semibold text-md">
-                                        {props.sold ?? convertNumber(777777)}
-                                    </span>
-
-                                    <span className="text-Gray text-md">
-                                         đã bán
                                     </span>
                                 </div>
                             </div>
@@ -413,7 +410,7 @@ const ProductDetails = (props) => {
 
                                     <div>
                                         <button
-                                            className="flex justify-center items-center border-2 border-Blue bg-Lighter_blue rounded-md px-2.5 py-0.5 gap-2 hover:bg-Lighterter_blue">
+                                            className="flex justify-center items-center border-2 border-Blue bg-Lighter_blue rounded-md px-2.5 py-0.5 gap-2 hover:bg-Lighterter_blue" onClick={() => handleViewShop(1)}>
                                             <PiStorefrontLight className="text-Blue h-4 w-4"/>
 
                                             <span className="text-Blue text-sm">

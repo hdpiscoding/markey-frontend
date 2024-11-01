@@ -1,7 +1,10 @@
 import {BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom';
-import React, {lazy, Suspense} from "react";
+import React, {lazy, Suspense, useContext, useEffect, useState} from "react";
 import {LinearProgress} from "@mui/material";
 import PrivateRoute from "./components/General/PrivateRoute";
+import ScrollToTop from "./components/General/ScrollToTop";
+import useLocalStorage from "./components/General/useLocalStorage";
+import {AppContext} from "./components/General/AppContext";
 const AboutMarkey = lazy(() => import("./pages/General/AboutMarkey"));
 const Terms = lazy(() => import("./pages/General/Terms"));
 const SecurityPolicy = lazy(() => import("./pages/General/SecurityPolicy"));
@@ -29,21 +32,20 @@ const ProductDetails = lazy(() => import("./pages/Shopper/ProductDetails"));
 const CategoryProducts = lazy(() => import("./pages/Shopper/CategoryProducts"));
 const CategoryBlogs = lazy(() => import("./pages/Shopper/CategoryBlogs"));
 const HomeBlog = lazy(() => import("./pages/Shopper/HomeBlog"));
-const BlogDetails = lazy(() => import("./pages/Shopper/HomeBlog"));
+const BlogDetails = lazy(() => import("./pages/Shopper/BlogDetails"));
 const ShopperCart = lazy(() => import("./pages/Shopper/ShopperCart"));
 const ShopperProfile = lazy(() => import("./pages/Shopper/ShopperProfile"));
 const ShopperChangePassword = lazy(() => import("./pages/Shopper/ShopperChangePassword"));
 const ShopperAddress = lazy(() => import("./pages/Shopper/ShopperAddress"));
 const ShopperNotification = lazy(() => import("./pages/Shopper/ShopperNotification"));
 const ShopperOrder = lazy(() => import("./pages/Shopper/ShopperOrder"));
-const PhoneVerificationR = lazy(() => import("./pages/Login_Register_Forget/PhoneVerificationR"));
+const PhoneVerification = lazy(() => import("./pages/Login_Register_Forget/PhoneVerification"));
 const EnterPasswordR = lazy(() => import("./pages/Login_Register_Forget/EnterPasswordR"));
 const EnterShopperInfo = lazy(() => import("./pages/Login_Register_Forget/EnterShopperInfo"));
 const EnterSalesmanInfo = lazy(() => import("./pages/Login_Register_Forget/EnterSalesmanInfo"));
 const RegisterFinished = lazy(() => import("./pages/Login_Register_Forget/RegisterFinished"));
 const SalesmanFinishedR = lazy(() => import("./pages/Login_Register_Forget/SalesmanFinishedR"));
 const EnterPhoneF = lazy(() => import("./pages/Login_Register_Forget/EnterPhoneF"));
-const PhoneVerificationF = lazy(() => import("./pages/Login_Register_Forget/PhoneVerificationF"));
 const EnterPasswordF = lazy(() => import("./pages/Login_Register_Forget/EnterPasswordF"));
 const ForgetFinished = lazy(() => import("./pages/Login_Register_Forget/ForgetFinished")) ;
 const ChangeEmail = lazy(() => import("./pages/Login_Register_Forget/ChangeEmail"));
@@ -60,41 +62,55 @@ const Login = lazy(() => import("./pages/Login_Register_Forget/Login"));
 const NotFound = lazy(() => import("./components/General/NotFound"));
 
 function App() {
-    const isAuthenticated = true;
-    const userRole = "admin";
+
+    const { triggerEffect } = useContext(AppContext);
+    // Get token from localStorage
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    const tokenStorage = useLocalStorage('token');
+    const roleStorage = useLocalStorage('role');
+
+    useEffect(() => {
+        if (tokenStorage) {
+            setIsAuthenticated(true);
+        }
+    }, [triggerEffect]);
+
   return (
     <>
         <Router>
             <Suspense fallback={<LinearProgress/>}>
+                <ScrollToTop/>
+
                 <Routes>
                     {/*Login, Register, Forget Password, Change email and phone number routes*/}
                     <Route path="/login" element={<Login/>}/>
 
                     {/*Register*/}
                     <Route path="/register" element={<Register/>}/>
-                    <Route path="/register/phone-verification" element={<PhoneVerificationR/>}/>
+                    <Route path="/register/phone-verification" element={<PhoneVerification method="register"/>}/>
                     <Route path="/register/enter-password" element={<EnterPasswordR/>}/>
                     <Route path="/register/enter-shopper-info" element={<EnterShopperInfo/>}/>
                     <Route path="/register/enter-salesman-info" element={<EnterSalesmanInfo/>}/>
-                    <Route path="register/shopper-finish" element={<RegisterFinished/>}/>
-                    <Route path="register/salesman-finish" element={<SalesmanFinishedR/>}/>
+                    <Route path="/register/shopper-finish" element={<RegisterFinished/>}/>
+                    <Route path="/register/salesman-finish" element={<SalesmanFinishedR/>}/>
 
                     {/*Forget password*/}
                     <Route path="/forget-password" element={<EnterPhoneF/>}/>
-                    <Route path="/forget-password/phone-verification" element={<PhoneVerificationF/>}/>
+                    <Route path="/forget-password/phone-verification" element={<PhoneVerification method="forget"/>}/>
                     <Route path="/forget-password/enter-password" element={<EnterPasswordF/>}/>
                     <Route path="/forget-password/finished" element={<ForgetFinished/>}/>
 
                     {/*Change email and phone*/}
                     <Route path="/change-email" element={<ChangeEmail/>}/>
                     <Route path="/change-phone" element={<ChangePhoneNumber/>}/>
-                    <Route path="/change-email/phone-verification" element={<PhoneVerificationR method="phone"/>}/>
-                    <Route path="/change-phone/phone-verification" element={<PhoneVerificationR method="email"/>}/>
+                    <Route path="/change-email/phone-verification" element={<PhoneVerification method="email"/>}/>
+                    <Route path="/change-phone/phone-verification" element={<PhoneVerification method="phone"/>}/>
                     <Route path="/change-email/finished" element={<ChangeEmailFinished/>}/>
                     <Route path="/change-phone/finished" element={<ChangePhoneFinished/>}/>
 
                     {/*Shopper*/}
-                    <Route element={<PrivateRoute isAuthenticated={isAuthenticated} userRole={userRole} requiredRole="shopper"/>}>
+                    <Route element={<PrivateRoute isAuthenticated={isAuthenticated} userRole={String(roleStorage.get())} requiredRole="shopper"/>}>
                         {/*// Shopper routes*/}
                         <Route path="/shopper" element={<HomeShopper/>}/>
 
@@ -115,14 +131,14 @@ function App() {
 
                         {/*Shopper Account*/}
                         <Route path="/shopper/profile" element={<ShopperProfile/>}/>
-                        <Route path="shopper/change-password" element={<ShopperChangePassword/>}/>
+                        <Route path="/shopper/change-password" element={<ShopperChangePassword/>}/>
                         <Route path="/shopper/address" element={<ShopperAddress/>}/>
                         <Route path="/shopper/notification" element={<ShopperNotification/>}/>
-                        <Route path="shopper/order" element={<ShopperOrder/>}/>
+                        <Route path="/shopper/order" element={<ShopperOrder/>}/>
                     </Route>
 
                     {/*Salesman*/}
-                    <Route element={<PrivateRoute isAuthenticated={isAuthenticated} userRole={userRole} requiredRole="salesman"/>}>
+                    <Route element={<PrivateRoute isAuthenticated={isAuthenticated} userRole={String(roleStorage.get())} requiredRole="salesman"/>}>
                         {/* Salesman routes*/}
                         <Route path="/salesman" element={<AllOrders/>}/>
 
@@ -146,7 +162,7 @@ function App() {
 
 
                     {/*Admin*/}
-                    <Route element={<PrivateRoute isAuthenticated={isAuthenticated} userRole={userRole} requiredRole="admin"/>}>
+                    <Route element={<PrivateRoute isAuthenticated={isAuthenticated} userRole={String(roleStorage.get())} requiredRole="admin"/>}>
                         {/* Admin routes*/}
                         <Route path="/admin" element={<VerifySalesman/>}/>
                         <Route path="/admin/verify-salesman/:shopID" element={<ViewShopDetailsVerify/>}/>
@@ -170,7 +186,7 @@ function App() {
                     <Route path="/policy" element={<SecurityPolicy/>}/>
 
                     {/* Route mặc định */}
-                    <Route path="/" element={<Navigate to={isAuthenticated ? (userRole === 'shopper' ? '/shopper' : userRole === 'admin' ? '/admin' : '/salesman') : '/login'} />} />
+                    <Route path="/" element={<Navigate to={isAuthenticated ? (String(roleStorage.get()) === 'shopper' ? '/shopper' : String(roleStorage.get()) === 'admin' ? '/admin' : '/salesman') : '/login'} />} />
 
                     {/* Route cho trang 404 */}
                     <Route path="/404" element={<NotFound />} />

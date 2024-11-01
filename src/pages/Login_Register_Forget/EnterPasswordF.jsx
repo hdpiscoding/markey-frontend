@@ -7,7 +7,7 @@ const EnterPasswordF = () => {
         <div>
             <RFHeader title="Đặt lại mật khẩu"/>
             <div className="flex flex-col items-center justify-items-center mt-32">
-                <CreatePassword/>
+                <CreatePassword method="forget"/>
             </div>
         </div>
     );

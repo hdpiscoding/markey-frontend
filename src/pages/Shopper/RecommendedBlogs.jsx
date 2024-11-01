@@ -1,6 +1,5 @@
 import React from "react";
 import SecondaryHeader from "../../components/General/SecondaryHeader";
-import BlogListViewMd from "../../components/Shopper/BlogListViewMd";
 import BlogListViewLg from "../../components/Shopper/BlogListViewLg";
 import {Pagination, Stack} from "@mui/material";
 
@@ -89,7 +88,7 @@ const RecommendedBlogs = () => {
 
                     <div className="flex flex-col gap-4">
                         {currentBlogs.map((blog) => (
-                            <BlogListViewLg key={blog.id} title={blog.title} author={blog.author} date={blog.date} category={blog.category}/>
+                            <BlogListViewLg key={blog.id} title={blog.title} author={blog.author} date={blog.date} category={blog.category} role="shopper"/>
                         ))}
                     </div>
 

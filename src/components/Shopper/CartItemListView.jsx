@@ -19,10 +19,10 @@ const CartItemListView = (props) => {
     const unit_price = props.price ?? 500000000;
 
     // state for quantity
-    const [amount, setQuantity] = useState(1);
+    const [amount, setAmount] = useState(props.amount ?? 1);
 
     // state for selling price
-    const [price, setPrice] = useState((unit_price * amount) ?? 0);
+    const [price, setPrice] = useState((props.unit_price * props.amount) ?? 0);
 
 
     const increaseQuantity = () => {
@@ -37,25 +37,25 @@ const CartItemListView = (props) => {
         props.onChange();
     };
 
-    const handleInputChange = (event) => {
-        const value = event.target.value;
-
-        value === '' ? setIsEmpty(true) : setIsEmpty(false);
-
-        if (value === '0') {
-            setQuantity(1);
-            return;
-        }
-        else if (value >= props.max_quantity) {
-            setQuantity(props.max_quantity);
-            return;
-        }
-
-        // Chỉ cập nhật state nếu giá trị là một số hợp lệ
-        if (value === '' || /^\d+$/.test(value)) {
-            setQuantity(value === '' ? '' : parseInt(value));
-        }
-    };
+    // const handleInputChange = (event) => {
+    //     const value = event.target.value;
+    //
+    //     value === '' ? setIsEmpty(true) : setIsEmpty(false);
+    //
+    //     if (value === '0') {
+    //         setAmount(1);
+    //         return;
+    //     }
+    //     else if (value >= props.max_quantity) {
+    //         setAmount(props.max_quantity);
+    //         return;
+    //     }
+    //
+    //     // Chỉ cập nhật state nếu giá trị là một số hợp lệ
+    //     if (value === '' || /^\d+$/.test(value)) {
+    //         setAmount(value === '' ? '' : parseInt(value));
+    //     }
+    // };
 
     const calculateSellingPrice = () => {
         return price * amount;
@@ -102,9 +102,9 @@ const CartItemListView = (props) => {
                                 <FaMinus className="object-cover"/>
                             </button>}
 
-                        <div className="col-start-2 flex items-center w-[75px] justify-center">
+                        <div className="col-start-2  w-[75px] flex items-center justify-center">
                             {/*<input type="text" className="border-none focus:outline-none w-full text-center"*/}
-                            {/*       value={quantity} onChange={handleInputChange}/>*/}
+                            {/*       value={amount} onChange={handleInputChange}/>*/}
                             <span>
                                 {amount ?? 1}
                             </span>
@@ -131,9 +131,7 @@ const CartItemListView = (props) => {
                 </div>
 
                 <div className="col-start-6 flex items-center justify-center cursor-pointer select-none">
-                    <span className="text-Red font-bold hover:underline hover:text-Dark_red" onClick={() => {
-                        props.onDelete(props.id);
-                    } }>
+                    <span className="text-Red font-bold hover:underline hover:text-Dark_red">
                         Xóa
                     </span>
                 </div>

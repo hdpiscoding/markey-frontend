@@ -5,8 +5,15 @@ import SalesmanNav from "../../components/Salesman/SalesmanNav";
 import {FiUser} from "react-icons/fi";
 import product_1 from "../../assets/product_1.png";
 import ConfirmModal from "../../components/General/ConfirmModal";
+import {useNavigate} from "react-router-dom";
 
 const EditShopInfo = () => {
+    const navigate = useNavigate();
+
+    const onChangeInfo = (method) => {
+        navigate(`${method === "email" ? "/change-email" : "/change-phone"}`);
+    }
+
     const salesman = { id: "1", name: "Nguyễn Văn A", cccd: "123456789012", shopName: "Cửa hàng ABC", address: "123 Đường XYZ, Quận 1, TP.HCM", description: "Cửa hàng ABC chuyên cung cấp các sản phẩm thời trang nam và nữ." };
     const [selectedImage, setSelectedImage] = useState(null);
     const [error, setError] = useState('');
@@ -34,6 +41,9 @@ const EditShopInfo = () => {
             setSelectedImage(URL.createObjectURL(file));
         }
     };
+
+    const [email, setEmail] = useState(null);
+    const [phone, setPhone] = useState(null);
 
     const [fieldErrors, setFieldErrors] = useState({});
     const [formFields, setFormFields] = useState({
@@ -170,12 +180,6 @@ const EditShopInfo = () => {
                                         Chỉnh sửa thông tin người bán
                                     </span>
                                 </div>
-
-                                <div className="flex items-center justify-center gap-10">
-                                    <span className="font-semibold text-Blue cursor-pointer hover:text-Dark_blue">
-                                        Sửa
-                                    </span>
-                                </div>
                             </div>
 
                             <div className="border-t-2 w-full border-Dark_gray"></div>
@@ -260,6 +264,54 @@ const EditShopInfo = () => {
 
                             <tbody>
                             <tr>
+                                <td className="py-5">
+                                    <label htmlFor="email">
+                                        *Email
+                                    </label>
+                                </td>
+
+                                <td className="py-5">
+                                    <div className="flex items-center gap-4">
+                                            <span className="font-semibold">
+                                                { email ?? "placeholder@gmail.com"}
+                                            </span>
+
+                                        <span
+                                            className="text-sm underline text-Blue select-none cursor-pointer hover:text-Dark_blue"
+                                            onClick={() => onChangeInfo("email")}>
+                                                Thay đổi
+                                            </span>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+
+                            <tbody>
+                            <tr>
+                                <td className="py-5">
+                                    <label htmlFor="email">
+                                        *Số điện thoại
+                                    </label>
+                                </td>
+
+                                <td className="py-5">
+                                    <div className="flex items-center gap-4">
+                                            <span className="font-semibold">
+                                                { phone ?? "0903039930"}
+                                            </span>
+
+                                        <span
+                                            className="text-sm underline text-Blue select-none cursor-pointer hover:text-Dark_blue"
+                                            onClick={() => onChangeInfo("phone")}>
+                                                    Thay đổi
+                                            </span>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+
+                            <tbody>
+                            <tr>
                                 <td className="py-5">*Tên cửa hàng:</td>
                                 <td className="py-5 relative">
                                     <input
@@ -322,7 +374,9 @@ const EditShopInfo = () => {
                         </div>
                     </div>
 
-                    <ConfirmModal isOpen={isModalOpen} onClose={closeModal} onConfirm={handleUpdate} title={"Xác nhận cập nhật thông tin"} message={"Bạn có chắc muốn cập nhật thông tin này?"}/>
+                    <ConfirmModal isOpen={isModalOpen} onClose={closeModal} onConfirm={handleUpdate}
+                                  title={"Xác nhận cập nhật thông tin"}
+                                  message={"Bạn có chắc muốn cập nhật thông tin này?"}/>
                 </div>
             </main>
 

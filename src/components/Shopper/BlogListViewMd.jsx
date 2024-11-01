@@ -1,25 +1,34 @@
 import React from 'react';
 import sample_blog from '../../assets/sample_blog.png';
 import clock from '../../assets/clock.svg';
+import {useNavigate} from "react-router-dom";
 
 const BlogListViewMd = (props) => {
+    const navigate = useNavigate();
+
+    const handleClick = (blogId) => {
+        if (props.role === "shopper") {
+            navigate(`/shopper/blog/${blogId}`);
+        }
+        else{
+            navigate(`/salesman/view-blog/${blogId}`);
+        }
+
+    }
+
     return (
         <article className="bg-White h-[130px] w-auto rounded-md">
             <div className="grid grid-cols-[30%_70%]">
                 <div className="col-start-1 select-none">
-                    <a href="#">
-                        <img src={sample_blog} alt="blog" className="object-cover h-[130px] rounded-l-md"/>
-                    </a>
+                    <img src={sample_blog} alt="blog" className="object-cover h-[130px] rounded-l-md"/>
                 </div>
 
                 <div className="col-start-2 mx-4 py-2">
                     <div className="flex flex-col gap-2">
-                        <div>
-                            <a href="#" className="hover:text-Blue">
-                                <span className="font-sans font-semibold text-lg text-pretty">
-                                    {props.title ?? "Nước tẩy trang Simple có tốt không? Review chi tiết từng loại conasodashjdjkdhjksdhfjksdjgfdsjhgwelhuirkfhjvxmcbvxbgjwehrtiuhfjs"}
-                                </span>
-                            </a>
+                        <div className="cursor-pointer">
+                            <span className="font-sans font-semibold text-lg text-pretty hover:text-Blue" onClick={() => handleClick(props.id)}>
+                                {props.title ?? "Nước tẩy trang Simple có tốt không? Review chi tiết từng loại conasodashjdjkdhjksdhfjksdjgfdsjhgwelhuirkfhjvxmcbvxbgjwehrtiuhfjs"}
+                            </span>
                         </div>
 
                         <div className="flex items-center gap-2">
