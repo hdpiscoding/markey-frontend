@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import avatar  from "../../assets/avatar_holder.svg";
 import ConfirmModal from "../General/ConfirmModal";
 import {Link} from "react-router-dom";
+import {instance} from "../../AxiosConfig";
 
 const VerifySalesmanListView = (props) => {
     // set up modal
@@ -16,13 +17,16 @@ const VerifySalesmanListView = (props) => {
     };
     // end set up modal
 
-    const handleApprove = () => {
-        props.onApprove(props.id);
-        closeModal();
-    }
+    const handleApprove = async () => {
+        // Call API to approve the salesman
+        try {
+            await instance.put(`v1/user-service/admin/approve-salesman/${props.id}`);
+        }
+        catch (error) {
+            console.log(error);
+        }
 
-    const handleReject = () => {
-        props.onReject(props.id);
+        props.onApprove();
         closeModal();
     }
 
@@ -45,12 +49,6 @@ const VerifySalesmanListView = (props) => {
             </div>
 
             <div className="flex items-center justify-center gap-4">
-                <button className="bg-Red hover:bg-Dark_red rounded-md text-center px-6 py-1.5" onClick={handleReject}>
-                    <span className="text-White">
-                        Từ chối
-                    </span>
-                </button>
-
                 <button className="bg-Blue hover:bg-Dark_blue rounded-md text-center px-6 py-1.5" onClick={openModal}>
                     <span className="text-White">
                         Duyệt

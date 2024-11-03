@@ -84,7 +84,7 @@ const CreatePassword = (props) => {
                         onChange={handleInputChange}
                         className={`border-2 w-[22rem] rounded-sm h-8 outline-none pl-2 
                             ${errors.newPassword ? "border-Red" : "focus:border-Blue focus:ring-Blue focus:ring-1"}`}
-                        placeholder="Mật khẩu mới"
+                        placeholder={`${props.method === 'forget' ? 'Mật khẩu mới' : 'Mật khẩu'}`}
                     />
                     {showPassword_new
                         ? <FaEye onClick={handleShowPassword_new} className="h-4 w-4 absolute right-2 select-none cursor-pointer"/>

@@ -79,7 +79,7 @@ const Register = () => {
                 emailStorage.set(email);
                 roleStorage.set(selectedRole);
                 // Thực hiện hành động chuyển trang hoặc xử lý tiếp theo
-                navigate('/register/phone-verification');
+                navigate('/register/enter-password');
             }
         }
     };

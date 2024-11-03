@@ -1,12 +1,14 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import ConfirmModal from "../General/ConfirmModal";
-import avatar  from "../../assets/avatar_holder.svg";
 import {Link} from "react-router-dom";
+import {instance} from "../../AxiosConfig";
+import {FiUser} from "react-icons/fi";
 
 
 const UserListView = (props) => {
     // set up modal
     const [isModalOpen, setModalOpen] = useState(false);
+    const [image, setImage] = useState(null);
 
     const openModal = () => {
         setModalOpen(true);
@@ -17,34 +19,64 @@ const UserListView = (props) => {
     };
     // end set up modal
 
-    const handleLock = (event) => {
+    const handleLock = async () => {
         // Call API to lock/unlock the user to set isActice = !isActive
-
+        if (!props.isLocked) {
+            try {
+                await instance.put(`v1/user-service/admin/block-${props.role}/${props.id}`);
+            }
+            catch (error) {
+                console.log(error);
+            }
+        }
+        else {
+            try {
+                await instance.put(`v1/user-service/admin/unblock-${props.role}/${props.id}`);
+            }
+            catch (error) {
+                console.log(error);
+            }
+        }
 
         // Callback to recall the API to get the updated list of users
         props.onUpdateData();
         closeModal();
     }
 
-    const handleView = () => {
-        if (props.role === "shopper") {
-            // Redirect to the shopper's details
+    useEffect(() => {
+        const fetchData = async () => {
+            let url = "";
+            if (props.role === "shopper") {
+                url = `v1/user-service/shopper/${props.id}`;
+            }
+            else {
+                url = `v1/shopping-service/shop/by-salesman/${props.id}`;
+            }
+
+            try {
+                const response = await instance.get(url);
+                setImage(response.data.data.profilePicture);
+            }
+            catch (error) {
+                console.log(error);
+            }
         }
-        else {
-            // Redirect to the salesman's details
-        }
-    }
+
+        fetchData();
+    }, []);
 
     return (
         <div className="col-start-3 bg-White shadow flex items-center justify-between p-2 h-fit rounded-md">
             <div className="flex items-center gap-5">
                 <div className="rounded-[50%]">
-                    {props.img ? <img src={props.img} alt="avatar" className="object-cover"/> :
-                        <img src={avatar} alt="avatar" className="object-cover w-16 h-16"/>}
+                    {image ? <img src={image} alt="avatar" className="object-cover w-16 h-16 rounded-[50%]"/> :
+                        <div className="flex items-center justify-center w-16 h-16 rounded-[50%] bg-Light_gray">
+                            <FiUser className="text-Dark_gray h-9 w-9"/>
+                        </div>}
                 </div>
 
                 <Link to={`/admin/${props.role}/${props.id}`}>
-                    <div className="cursor-pointer" onClick={handleView}>
+                    <div className="cursor-pointer">
                         <span className="font-semibold text-lg hover:text-Blue">
                             {props.email ?? "Nguyễn Văn A"}
                         </span>

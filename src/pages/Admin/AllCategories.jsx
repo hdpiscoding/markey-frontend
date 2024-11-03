@@ -1,34 +1,40 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import SecondaryHeader from "../../components/General/SecondaryHeader";
 import Footer from "../../components/General/Footer";
 import AdminNav from "../../components/Admin/AdminNav";
 import VerifySalesmanListView from "../../components/Admin/VerifySalesmanListView";
 import {Pagination, Stack} from "@mui/material";
 import CategoryListView from "../../components/Admin/CategoryListView";
+import {instance} from "../../AxiosConfig";
 
 const AllCategories = () => {
-    const [sampleCategories, setSampleCategories] = useState([
-        { id: 1, name: "Chăm sóc tóc" },
-        { id: 2, name: "Chăm sóc da mặt" },
-        { id: 3, name: "Trang điểm" },
-        { id: 4, name: "Chăm sóc cơ thể" },
-        { id: 5, name: "Chăm sóc da mắt" },
-        { id: 6, name: "Chăm sóc da môi" },
-    ]);
-
     const [categories, setCategories] = useState([]);
 
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await instance.get('v1/shopping-service/category/');
+                setCategories(response.data.data);
+            }
+            catch (error) {
+                console.log(error);
+            }
+        }
+
+        fetchData();
+    }, []);
 
     // set up pagination
     const [page, setPage] = useState(1);
 
     const itemsPerPage = 5;
-    const totalPages = Math.ceil(sampleCategories.length / itemsPerPage);
+    const totalPages = Math.ceil(categories.length / itemsPerPage);
 
     const indexOfLastItem = page * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
-    const currentCategories = sampleCategories.slice(indexOfFirstItem, indexOfLastItem);
+    const currentCategories = categories.slice(indexOfFirstItem, indexOfLastItem);
 
     const handlePageChange = (event, value) => {
         setPage(value);
@@ -36,8 +42,15 @@ const AllCategories = () => {
     }
     // end of set up pagination
 
-    const handleDelete = (id) => {
-        setSampleCategories(sampleCategories.filter((category) => category.id !== id));
+    const handleDelete = async () => {
+        // Call API to rerender the list
+        try {
+            const response = await instance.get('v1/shopping-service/category/');
+            setCategories(response.data.data);
+        }
+        catch (error) {
+            console.log(error);
+        }
     }
 
     return (
@@ -69,7 +82,7 @@ const AllCategories = () => {
                             </div>
                             : <div className="flex flex-col gap-4">
                                 {currentCategories.map((category) => (
-                                    <CategoryListView key={category.id} id={category.id} name={category.name} onDelete={handleDelete}/>
+                                    <CategoryListView key={category.id} id={category.id} name={category.name} img={category.picture} onDelete={handleDelete}/>
                                 ))}
                             </div>}
 

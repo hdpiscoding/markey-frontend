@@ -4,61 +4,118 @@ import UserListView from "../../components/Admin/UserListView";
 import {Pagination, Stack} from "@mui/material";
 import AdminNav from "../../components/Admin/AdminNav";
 import SecondaryHeader from "../../components/General/SecondaryHeader";
+import {instance} from "../../AxiosConfig";
+import LoadingModal from "../../components/General/LoadingModal";
 
 const ManageSalesman = () => {
-    const [sampleSalesmans, setSampleSalesmans] = useState([
-        { id: "1", email: "abc@gmail.com"},
-        { id: "2", email: "a@gmail.com"},
-        { id: "3", email: "b@gmail.com"},
-        { id: "4", email: "c@gmail.com"},
-        { id: "5", email: "d@gmail.com"},
-        { id: "6", email: "e@gmail.com"},
-    ]);
+    const [loading, setLoading] = useState(false);
 
-    // Store API data
-    const [salesman, setSalesmans] = useState([]);
-
-    useEffect(() => {
-        // Call API to get all salesmans with isActive = true and set to salesmans
-
-    }, []);
+    // Cache salesmans
+    const [activeSalesman, setActiveSalesmans] = useState([]);
+    const [blockedSalesman, setBlockedSalesmans] = useState([]);
 
     const [isActive, setIsActive] = useState(true);
-    const handleActiveChange = (bool) => {
-        setIsActive(bool);
-        if (bool) {
-            // Call API to get all salesmans with isActive = true and set to salesmans
-        }
-        else {
-            // Call API to get all salesmans with isActive = false and set to salesmans
-        }
-    }
 
     // set up pagination
-    const [page, setPage] = React.useState(1);
+    const [activePage, setActivePage] = React.useState(1);
+    const [blockedPage, setBlockedPage] = React.useState(1);
 
-    const itemsPerPage = 5;
-    const totalPages = Math.ceil(sampleSalesmans.length / itemsPerPage);
+    const [itemsPerPage, setItemsPerPage] = useState(5);
+    const [totalActivePages, setTotalActivePages] = useState(0);
+    const [totalBlockedPages, setTotalBlockedPages] = useState(0);
 
-    const indexOfLastItem = page * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const indexOfLastActiveItem = activePage * itemsPerPage;
+    const indexOfFirstActiveItem = indexOfLastActiveItem - itemsPerPage;
+    const currentActiveItems = activeSalesman.slice(indexOfFirstActiveItem, indexOfLastActiveItem);
 
-    const currentSalesmans = sampleSalesmans.slice(indexOfFirstItem, indexOfLastItem);
+    const indexOfLastBlockedItem = blockedPage * itemsPerPage;
+    const indexOfFirstBlockedItem = indexOfLastBlockedItem - itemsPerPage;
+    const currentBlockedItems = blockedSalesman.slice(indexOfFirstBlockedItem, indexOfLastBlockedItem);
+    // end set up pagination
 
+    const fetchSalesmenData = async () => {
+        try {
+            const response = await instance.get("v1/user-service/salesman/");
+            const items = response.data.data;
+
+            setActiveSalesmans(items.filter((item) => item.isBlocked === false));
+            setBlockedSalesmans(items.filter((item) => item.isBlocked === true));
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    // Update page counts in useEffect
+    useEffect(() => {
+        setTotalActivePages(Math.ceil(activeSalesman.length / itemsPerPage));
+        setTotalBlockedPages(Math.ceil(blockedSalesman.length / itemsPerPage));
+    }, [activeSalesman, blockedSalesman, itemsPerPage]);
+
+    // Fetch initial data on mount
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                await fetchSalesmenData();
+            }
+            catch (error) {
+                console.error(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
+
+        fetchData();
+    }, []);
+
+    // Handling active/blocked toggle
+    const handleActiveChange = (bool) => {
+        setIsActive(bool);
+        setActivePage(1);
+        setBlockedPage(1);
+        window.scrollTo(0, 0);  // Optional: Scroll to top on tab change
+    };
+
+    // Page change handler
     const handlePageChange = (event, value) => {
-        setPage(value);
-        window.scrollTo(0, 0)
-    }
-    // end of set up pagination
-
-    const handleUpdateData = () => {
         if (isActive) {
-            // Call API to get all shoppers with isActive = true and set to shoppers
+            setActivePage(value);
+        } else {
+            setBlockedPage(value);
         }
-        else {
-            // Call API to get all shoppers with isActive = false and set to shoppers
+    };
+
+
+    const handleUpdateData = async () => {
+        try {
+            setLoading(true);
+            openLoadingModal();
+            await fetchSalesmenData();
         }
+        catch (error) {
+            console.error(error);
+        }
+        finally {
+            setLoading(false);
+            closeLoadingModal();
+        }
+
     }
+
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
 
     return (
         <div className="bg-Light_gray w-screen overflow-x-hidden">
@@ -106,16 +163,16 @@ const ManageSalesman = () => {
                         </div>
 
                         <div className="flex flex-col gap-4">
-                            {currentSalesmans.map((salesman) => (
-                                <UserListView key={salesman.id} id={salesman.id} email={salesman.email} role="salesman" isLocked={!isActive} onUpdateData={handleUpdateData}/>
+                            {(isActive ? currentActiveItems : currentBlockedItems).map((salesman) => (
+                                <UserListView key={salesman.id} id={salesman.id} email={salesman.email} role="salesman" isLocked={salesman.isBlocked} onUpdateData={handleUpdateData}/>
                             ))}
                         </div>
 
                         <div className="flex items-center justify-center">
                             <Stack>
                                 <Pagination
-                                    count={totalPages}
-                                    page={page}
+                                    count={isActive ? totalActivePages : totalBlockedPages}
+                                    page={isActive ? activePage : blockedPage}
                                     onChange={handlePageChange}
                                     variant="text"
                                     shape="rounded"
@@ -139,6 +196,8 @@ const ManageSalesman = () => {
                             </Stack>
                         </div>
                     </div>
+
+                    {loading && <LoadingModal isOpen={isLoadingModalOpen} />}
                 </div>
             </main>
 

@@ -3,6 +3,7 @@ import right_arrow from '../../assets/right_arrow.svg';
 import left_arrow from '../../assets/left_arrow.svg';
 import CategoryCardView from "./CategoryCardView";
 import {useNavigate} from "react-router-dom";
+import axios from "axios";
 
 const CategoryCarousel = () => {
     const navigate = useNavigate();
@@ -42,11 +43,12 @@ const CategoryCarousel = () => {
 
     // Call API to get categories data and cache them in state categories
     useEffect(() => {
+        //Call API here
 
     }, []);
 
     const itemsPerPage = 10;
-    const totalPages = Math.ceil(categories.length / itemsPerPage);
+    const totalPages = Math.ceil(sampleCategories.length / itemsPerPage);
 
     const [currentPage, setCurrentPage] = React.useState(0);
 

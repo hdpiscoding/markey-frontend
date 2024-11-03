@@ -1,12 +1,18 @@
 import React, {useEffect, useState} from 'react';
 import SecondaryHeader from "../../components/General/SecondaryHeader";
 import AdminNav from "../../components/Admin/AdminNav";
-import {FiUser} from "react-icons/fi";
 import ConfirmModal from "../../components/General/ConfirmModal";
 import Footer from "../../components/General/Footer";
+import {MdAddPhotoAlternate} from "react-icons/md";
+import {instance} from "../../AxiosConfig";
+import {useParams} from "react-router-dom";
 
 const EditCategory = () => {
+    const {categoryId} = useParams();
+    // Store API data (image URL)
     const [image, setImage] = useState(null);
+
+    // Store selected image
     const [selectedImage, setSelectedImage] = useState(null);
     const [error, setError] = useState('');
 
@@ -30,7 +36,7 @@ const EditCategory = () => {
             }
 
             setError('');
-            setSelectedImage(URL.createObjectURL(file));
+            setSelectedImage(file);
         }
     };
 
@@ -40,12 +46,18 @@ const EditCategory = () => {
     });
 
     useEffect(() => {
-        // Call API here
-
-        // Sample data
-        setFormFields({
-            name: 'Chăm sóc tóc',
-        });
+        const fetchData = async () => {
+            try {
+                const response = await instance.get(`http://152.42.232.101:5050/api/v1/shopping-service/category/${categoryId}`);
+                setFormFields({name: response.data.data.name});
+                setImage(response.data.data.picture);
+                console.log(response.data.data.picture);
+            }
+            catch (error) {
+                console.log(error);
+            }
+        }
+        fetchData();
     }, []);
 
     const handleInputChange = (e) => {
@@ -134,15 +146,16 @@ const EditCategory = () => {
 
                         <div className="flex flex-col items-center justify-center gap-4">
                             <div
-                                className="rounded-[50%] bg-Light_gray h-[120px] w-[120px] flex items-center justify-center">
+                                className="rounded-[50%] bg-Gray h-[120px] w-[120px] flex items-center justify-center">
                                 {selectedImage ? (
-                                    <img src={selectedImage} alt="Selected"
+                                    <img src={URL.createObjectURL(selectedImage)} alt="Selected"
                                          className="w-full h-full rounded-[50%] object-cover"/>
                                 ) : (image
                                         ?
-                                        <img src={selectedImage} alt="Selected" className="w-full h-full rounded-[50%] object-cover"/>
+                                        <img src={image} alt="img" className="w-full h-full rounded-[50%] object-cover"/>
                                         :
-                                        <FiUser className="text-Dark_gray h-16 w-16"/>
+                                        <MdAddPhotoAlternate
+                                            className="h-16 w-16 text-Light_gray"/>
                                 )}
                             </div>
 

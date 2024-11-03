@@ -3,17 +3,38 @@ import {IoArrowBack} from "react-icons/io5";
 import {useNavigate} from "react-router-dom";
 import useLocalStorage from "../General/useLocalStorage";
 import axios from "axios";
+import LoadingModal from "../General/LoadingModal";
 
 const ShopperInfo = () => {
+    // Change phone number format from 0123456789 to +84123456789
+    const formatPhoneNumber = (phoneNumber) => {
+        return phoneNumber.replace(/^0/, '+84');
+    }
+
     const navigate = useNavigate();
+
+    const nameStorage = useLocalStorage('name');
+    const addressStorage = useLocalStorage('address');
     const emailStorage = useLocalStorage('email');
     const phoneStorage = useLocalStorage('phone');
-    const roleStorage = useLocalStorage('selectedRole');
     const passwordStorage = useLocalStorage('password');
 
+    const [loading, setLoading] = useState(false);
     const [name, setName] = useState("");
     const [address, setAddress] = useState("");
     const [errors, setErrors] = useState({ name: false, address: false });
+
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
 
     const handleNextClick = async (e) => {
         e.preventDefault();
@@ -28,39 +49,39 @@ const ShopperInfo = () => {
         // Nếu tất cả input đều hợp lệ thì chuyển sang bước tiếp theo
         const isValid = !newErrors.name && !newErrors.address;
         if (isValid) {
-            const data = {
-                email: emailStorage.get(),
-                phoneNumber: phoneStorage.get(),
-                role: roleStorage.get(),
-                password: passwordStorage.get(),
+            let data = {
                 fullname: name,
-                address: address
+                //address: address,
+                email: emailStorage.get(),
+                phoneNumber: formatPhoneNumber(phoneStorage.get()),
+                password: passwordStorage.get(),
             }
-            // Call API để lưu thông tin người dùng
             try {
-                const response = await axios.post('http://152.42.232.101:5050/api/v1/user-service/shopper/register', data);
-                if (response.data.code === 200) {
-                    // Xóa các dữ liệu liên quan trong localStorage
-                    emailStorage.remove();
-                    phoneStorage.remove();
-                    roleStorage.remove();
-                    passwordStorage.remove();
+                setLoading(true);
+                openLoadingModal();
+                nameStorage.set(name);
+                addressStorage.set(address);
 
-                    // Chuyển hướng đến trang hoàn thành
-                    navigate("/register/shopper-finish");
-                }
-                else {
-                    console.log(response.data.message);
-                }
+                // Call API để lưu thông tin người dùng
+                const response = await axios.post("http://152.42.232.101:5050/api/v1/user-service/shopper/register", data);
             }
             catch (error) {
+                setLoading(false);
+                closeLoadingModal();
                 console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+                navigate("/register/phone-verification");
             }
         }
     };
 
     const handleBackClick = () => {
         // Xóa dữ liệu trong localStorage nếu có
+        nameStorage.remove();
+        addressStorage.remove();
         navigate(-1);
     }
 
@@ -128,6 +149,8 @@ const ShopperInfo = () => {
                         <span className="text-White my-1">Hoàn thành</span>
                     </button>
                 </div>
+
+                {loading && <LoadingModal isOpen={isLoadingModalOpen} />}
             </div>
         </div>
     );

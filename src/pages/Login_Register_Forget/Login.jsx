@@ -7,13 +7,21 @@ import useLocalStorage from "../../components/General/useLocalStorage";
 import axios from "axios";
 import {jwtDecode} from "jwt-decode";
 import {AppContext} from "../../components/General/AppContext";
+import LoadingModal from "../../components/General/LoadingModal";
 
 const Login = () => {
+    // Change phone number format from 0123456789 to +84123456789
+    const formatPhoneNumber = (phoneNumber) => {
+        return phoneNumber.replace(/^0/, '+84');
+    }
+
+    const [loading, setLoading] = useState(false);
     const { setTriggerEffect } = useContext(AppContext);
 
     const navigate = useNavigate();
     const tokenStorage = useLocalStorage('token');
     const roleStorage = useLocalStorage('role');
+    const authStorage = useLocalStorage('auth');
 
     const [emailOrPhone, setEmailOrPhone] = useState('');
     const [password, setPassword] = useState('');
@@ -52,6 +60,18 @@ const Login = () => {
     }
 
 
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
+
     // set up modal
     const [isModalOpen, setModalOpen] = useState(false);
 
@@ -70,9 +90,11 @@ const Login = () => {
         // Call API to login and get token, then store it in localStorage if login successfully
         let url = "";
         let data = {
-            phoneNumberOrEmail: emailOrPhone,
+            phoneNumberOrEmail: `${(/^\d{10}$/).test(emailOrPhone) ? formatPhoneNumber(emailOrPhone) : emailOrPhone}`,
             password: password
         };
+
+        console.log(data.phoneNumberOrEmail);
 
         switch (selectedRole) {
             case "shopper":
@@ -93,12 +115,15 @@ const Login = () => {
         }
 
         try {
+            setLoading(true);
+            openLoadingModal();
             const response = await axios.post(url, data);
             // Successful login
             if (response.data.code === 200) {
                 // Store token in localStorage
                 console.log(response.data.message);
                 tokenStorage.set(response.data.data.token);
+                authStorage.set(true);
                 // Extract token from localStorage and decode it to get role
                 const token = tokenStorage.get();
                 const decodedData = jwtDecode(token);
@@ -122,7 +147,13 @@ const Login = () => {
             }
         }
         catch (error) {
+            setLoading(false);
+            closeLoadingModal();
             openModal();
+        }
+        finally {
+            setLoading(false);
+            closeLoadingModal();// Ẩn spinner khi API hoàn tất
         }
 
     }
@@ -171,7 +202,7 @@ const Login = () => {
                                 onChange={handlePasswordChange}
                             />
                             <span onClick={handleShowPassword} className="cursor-pointer absolute right-2 mt-2">
-                            {showPassword ? <FaEyeSlash className="h-4 w-4" /> : <FaEye className="h-4 w-4" />}
+                            {showPassword ? <FaEye className="h-4 w-4" /> : <FaEyeSlash className="h-4 w-4" />}
                         </span>
                             {errors.password && (
                                 <p className="text-Red text-sm absolute -bottom-5 left-0">Vui lòng nhập mật khẩu.</p>
@@ -220,6 +251,7 @@ const Login = () => {
 
                         <InfoModal isOpen={isModalOpen} onClose={closeModal} title="Đăng nhập thất bại"
                                    message="Thông tin đăng nhập không chính xác. Vui lòng đăng nhập lại!"/>
+                        {loading && <LoadingModal isOpen={isLoadingModalOpen} />}
                     </div>
                 </div>
             </div>

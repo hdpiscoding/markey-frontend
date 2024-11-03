@@ -5,12 +5,20 @@ import { BsBell } from "react-icons/bs";
 import { MdOutlineLogout } from "react-icons/md";
 import {Link, useNavigate} from "react-router-dom";
 import ConfirmModal from "../General/ConfirmModal";
+import useLocalStorage from "../General/useLocalStorage";
 
 const AccountNav = (props) => {
     const navigate = useNavigate();
+    const tokenStorage = useLocalStorage('token');
+    const roleStorage = useLocalStorage('role');
+    const authStorage = useLocalStorage('auth');
+
     const handleLogout = () => {
         // Remove token from localStorage
-        navigate("/login");
+        tokenStorage.remove();
+        roleStorage.remove();
+        authStorage.remove();
+        navigate("/login",{ replace: true });
     }
 
     // set up modal

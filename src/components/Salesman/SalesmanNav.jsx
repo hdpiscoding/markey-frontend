@@ -5,13 +5,21 @@ import { BsBoxSeam, BsPostcard } from "react-icons/bs";
 import { PiStorefrontLight } from "react-icons/pi";
 import {Link, useNavigate} from "react-router-dom";
 import ConfirmModal from "../General/ConfirmModal";
+import useLocalStorage from "../General/useLocalStorage";
 
 
 const SalesmanNav = (props) => {
     const navigate = useNavigate();
+    const authStorage = useLocalStorage('auth');
+    const tokenStorage = useLocalStorage('token');
+    const roleStorage = useLocalStorage('role');
+
     const handleLogout = () => {
         // Remove token from localStorage
-        navigate("/login");
+        tokenStorage.remove();
+        roleStorage.remove();
+        authStorage.remove();
+        navigate("/login", { replace: true });
     }
 
     // set up modal

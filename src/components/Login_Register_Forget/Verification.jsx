@@ -1,10 +1,27 @@
 import React, {useState, useEffect} from 'react';
 import { IoArrowBack } from "react-icons/io5";
 import {useNavigate} from "react-router-dom";
+import useLocalStorage from "../General/useLocalStorage";
+import LoadingModal from "../General/LoadingModal";
+import axios from "axios";
 
 const Verification = (props) => {
+    const formatPhoneNumber = (phoneNumber) => {
+        return phoneNumber.replace(/^0/, '84');
+    }
     const navigate = useNavigate();
 
+    const emailStorage = useLocalStorage('email');
+    const phoneStorage = useLocalStorage('phone');
+    const roleStorage = useLocalStorage('selectedRole');
+    const passwordStorage = useLocalStorage('password');
+    const nameStorage = useLocalStorage('name');
+    const addressStorage = useLocalStorage('address');
+    const shopNameStorage = useLocalStorage('shopName');
+    const cccdStorage = useLocalStorage('cccd');
+    const descriptionStorage = useLocalStorage('description');
+
+    const [loading, setLoading] = useState(false);
     const [timeLeft, setTimeLeft] = useState(null);
     const [isResendDisabled, setIsResendDisabled] = useState(false);
     const [otp, setOtp] = useState("");
@@ -41,30 +58,66 @@ const Verification = (props) => {
     };
 
     // Hàm kiểm tra mã OTP
-    const validateOtp = async () => {
+    const validateFrontend = () => {
         setOtpError(""); // Reset lỗi mỗi khi kiểm tra
         if (!otp) {
             setOtpError("Mã xác nhận không được để trống.");
             return false;
         }
-
-        // Gọi API để kiểm tra mã OTP (giả sử bạn có một endpoint để kiểm tra mã OTP)
-        // const response = await checkOtp(otp); // Giả sử đây là hàm gọi API của bạn
-        // if (!response.isValid) {
-        //     setOtpError("Mã xác nhận không hợp lệ.");
-        //     return false;
-        // }
-
-        // Nếu mã OTP hợp lệ
         return true;
     };
 
-    const handleSubmit = () => {
-        const isValid = validateOtp();
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const isValid = validateFrontend();
         if (isValid) {
             // Logic tiếp theo nếu mã OTP hợp lệ
+            // Xóa dữ liệu trong localStorage nếu có
+            if (props.method === "register") {
+                // Gọi API để kiểm tra mã OTP (giả sử bạn có một endpoint để kiểm tra mã OTP)
+                try {
+                    setLoading(true);
+                    openLoadingModal();
+                    const response = await axios.get(`http://152.42.232.101:5050/api/v1/user-service/${props.role}/activation/phone?phoneNumber=${formatPhoneNumber(phoneStorage.get())}&code=${otp}`);
+                }
+                catch (error) {
+                    setLoading(false);
+                    closeLoadingModal();
+                    if (error.response) {
+                        setOtpError("Mã xác nhận không hợp lệ.");
+                    }
+                    else {
+                        setOtpError("Có lỗi xảy ra khi kiểm tra mã xác nhận.");
+                    }
+                }
+                finally {
+                    setLoading(false);
+                    closeLoadingModal();
+                    emailStorage.remove();
+                    phoneStorage.remove();
+                    roleStorage.remove();
+                    passwordStorage.remove();
+                    nameStorage.remove();
+                    addressStorage.remove();
+                    shopNameStorage.remove();
+                    cccdStorage.remove();
+                    descriptionStorage.remove();
+                }
+            }
 
-
+            // Chuyển hướng đến trang tiếp theo
             navigate(`${props.url}`);
 
         }
@@ -151,6 +204,8 @@ const Verification = (props) => {
                         </span>
                     </button>
                 </div>
+
+                {loading && <LoadingModal isOpen={isLoadingModalOpen} />}
             </div>
         </div>
     );

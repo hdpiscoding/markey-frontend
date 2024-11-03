@@ -4,65 +4,158 @@ import Footer from "../../components/General/Footer";
 import AdminNav from "../../components/Admin/AdminNav";
 import {Pagination, Stack} from "@mui/material";
 import VerifySalesmanListView from "../../components/Admin/VerifySalesmanListView";
+import LoadingModal from "../../components/General/LoadingModal";
+import {instance} from "../../AxiosConfig";
 
 const VerifySalesman = () => {
-    const [sampleSalesmans, setSampleSalesmans] = useState([
-        { id: "1", email: "abc@gmail.com"},
-        { id: "2", email: "a@gmail.com"},
-        { id: "3", email: "b@gmail.com"},
-        { id: "4", email: "c@gmail.com"},
-        { id: "5", email: "d@gmail.com"},
-        { id: "6", email: "e@gmail.com"},
-    ]);
+    const [loading, setLoading] = useState(false);
 
     const [salesmans, setSalesmans] = useState([]);
 
     const [selectedDate, setSelectedDate] = useState('1');
 
-    const handleSelectedDateChange = (event) => {
+    const handleSelectedDateChange = async (event) => {
         setSelectedDate(event.target.value);
 
         setPage(1);
         if(event.target.value === '1') {
             // Call API to sort by newest date
+            try {
+                setLoading(true);
+                openLoadingModal();
+                const response = await instance.post(`v1/user-service/salesman/filter?page=${page}&rpp=${itemsPerPage}`,
+                    {sort: {
+                            "by": "createAt",
+                            "order": "DESC" },
+                            isApproved: false});
+                const items = response.data.data.items;
+                setTotalPages(Math.ceil(response.data.data.total / itemsPerPage));
+                setSalesmans(items);
+            }
+            catch (error) {
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
         }
         else if(event.target.value === '2') {
             // Call API to sort by oldest date
+            try {
+                setLoading(true);
+                openLoadingModal();
+                const response = await instance.post(`v1/user-service/salesman/filter?page=${page}&rpp=${itemsPerPage}`,
+                    {sort: {
+                            "by": "createAt",
+                            "order": "ASC" },
+                        isApproved: false});
+                const items = response.data.data.items;
+                setTotalPages(Math.ceil(response.data.data.total / itemsPerPage));
+                setSalesmans(items);
+            }
+            catch (error) {
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
         }
     };
 
-    useEffect(() => {
-        // Call API to get all salesmans with isApproved = false and set to salesmans
-    }, []);
-
-    // Callback function to approve salesman
-    const handleApprove = (id) => {
-        // Delete approved salesman from salesmans
-        setSampleSalesmans(sampleSalesmans.filter((salesman) => salesman.id !== id));
+    const fetchData = async () => {
+        try {
+            // Call API to get all salesmans with isApproved = false
+            const response = await instance.post(`v1/user-service/salesman/filter?page=${page}&rpp=${itemsPerPage}`, {sort: {
+                    "by": "createAt",
+                    "order": "DESC" },
+                isApproved: false});
+            const items = response.data.data.items;
+            setTotalPages(Math.ceil(response.data.data.total / itemsPerPage));
+            setSalesmans(items);
+        }
+        catch (error) {
+            console.log(error);
+        }
     }
 
-    // Callback function to reject salesman
-    const handleReject = (id) => {
-        // Delete rejected salesman from salesmans
-        setSampleSalesmans(sampleSalesmans.filter((salesman) => salesman.id !== id));
+    useEffect(() => {
+        // Call API to get all salesmans with isApproved = false and set to salesmans
+        const fetchSalesmans = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                await fetchData();
+
+            } catch (error) {
+                console.log(error);
+            } finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
+
+        fetchSalesmans();
+    }, []);
+
+    const handleApprove = async () => {
+        // Rerender the list of salesmans
+        try {
+            setLoading(true);
+            openLoadingModal();
+            await fetchData();
+        }
+        catch (error) {
+            console.log(error);
+        }
+        finally {
+            setLoading(false);
+            closeLoadingModal();
+        }
     }
 
     // set up pagination
-    const [page, setPage] = React.useState(1);
+    const [page, setPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(5);
+    const [totalPages, setTotalPages] = useState(0);
 
-    const itemsPerPage = 5;
-    const totalPages = Math.ceil(sampleSalesmans.length / itemsPerPage);
 
-    const indexOfLastItem = page * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-
-    const currentSalesmans = sampleSalesmans.slice(indexOfFirstItem, indexOfLastItem);
-
-    const handlePageChange = (event, value) => {
+    const handlePageChange = async (event, value) => {
         setPage(value);
+        try {
+            setLoading(true);
+            openLoadingModal();
+            const response = await instance.post(`v1/user-service/salesman/filter?page=${value}&rpp=${itemsPerPage}`, {sort: {
+                    "by": "createAt",
+                    "order": "DESC" },
+                isApproved: false});
+            const items = response.data.data.items;
+            setTotalPages(Math.ceil(response.data.data.total / itemsPerPage));
+            setSalesmans(items);
+        }
+        catch (error) {
+            console.log(error);
+        }
+        finally {
+            setLoading(false);
+            closeLoadingModal();
+        }
         window.scrollTo(0, 0)
     }
     // end of set up pagination
+
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
 
     return (
         <div className="bg-Light_gray w-screen overflow-x-hidden">
@@ -97,16 +190,16 @@ const VerifySalesman = () => {
                             </div>
                         </div>
 
-                        {currentSalesmans.length <= 0
+                        {salesmans.length <= 0
                             ? <div className="bg-White flex items-center justify-center p-4">
                                 <span className="text-Dark_gray text-center">
                                     Hiện tại không có người bán nào cần duyệt
                                 </span>
                             </div>
                             : <div className="flex flex-col gap-4">
-                                {currentSalesmans.map((salesman) => (
+                                {salesmans.map((salesman) => (
                                     <VerifySalesmanListView key={salesman.id} id={salesman.id} email={salesman.email}
-                                                            onApprove={handleApprove} onReject={handleReject}/>
+                                                            onApprove={handleApprove}/>
                                 ))}
                             </div>}
 
@@ -139,6 +232,8 @@ const VerifySalesman = () => {
                             </Stack>
                         </div>
                     </div>
+
+                    {loading && <LoadingModal isOpen={isLoadingModalOpen} />}
                 </div>
             </main>
 

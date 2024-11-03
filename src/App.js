@@ -65,14 +65,14 @@ function App() {
 
     const { triggerEffect } = useContext(AppContext);
     // Get token from localStorage
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+    const authStorage = useLocalStorage('auth');
     const tokenStorage = useLocalStorage('token');
     const roleStorage = useLocalStorage('role');
 
     useEffect(() => {
         if (tokenStorage) {
-            setIsAuthenticated(true);
+            authStorage.set(true);
         }
     }, [triggerEffect]);
 
@@ -88,10 +88,10 @@ function App() {
 
                     {/*Register*/}
                     <Route path="/register" element={<Register/>}/>
-                    <Route path="/register/phone-verification" element={<PhoneVerification method="register"/>}/>
                     <Route path="/register/enter-password" element={<EnterPasswordR/>}/>
                     <Route path="/register/enter-shopper-info" element={<EnterShopperInfo/>}/>
                     <Route path="/register/enter-salesman-info" element={<EnterSalesmanInfo/>}/>
+                    <Route path="/register/phone-verification" element={<PhoneVerification method="register"/>}/>
                     <Route path="/register/shopper-finish" element={<RegisterFinished/>}/>
                     <Route path="/register/salesman-finish" element={<SalesmanFinishedR/>}/>
 
@@ -110,7 +110,7 @@ function App() {
                     <Route path="/change-phone/finished" element={<ChangePhoneFinished/>}/>
 
                     {/*Shopper*/}
-                    <Route element={<PrivateRoute isAuthenticated={isAuthenticated} userRole={String(roleStorage.get())} requiredRole="shopper"/>}>
+                    <Route element={<PrivateRoute isAuthenticated={authStorage.get()} userRole={String(roleStorage.get())} requiredRole="shopper"/>}>
                         {/*// Shopper routes*/}
                         <Route path="/shopper" element={<HomeShopper/>}/>
 
@@ -138,7 +138,7 @@ function App() {
                     </Route>
 
                     {/*Salesman*/}
-                    <Route element={<PrivateRoute isAuthenticated={isAuthenticated} userRole={String(roleStorage.get())} requiredRole="salesman"/>}>
+                    <Route element={<PrivateRoute isAuthenticated={authStorage.get()} userRole={String(roleStorage.get())} requiredRole="salesman"/>}>
                         {/* Salesman routes*/}
                         <Route path="/salesman" element={<AllOrders/>}/>
 
@@ -162,10 +162,10 @@ function App() {
 
 
                     {/*Admin*/}
-                    <Route element={<PrivateRoute isAuthenticated={isAuthenticated} userRole={String(roleStorage.get())} requiredRole="admin"/>}>
+                    <Route element={<PrivateRoute isAuthenticated={authStorage.get()} userRole={String(roleStorage.get())} requiredRole="admin"/>}>
                         {/* Admin routes*/}
                         <Route path="/admin" element={<VerifySalesman/>}/>
-                        <Route path="/admin/verify-salesman/:shopID" element={<ViewShopDetailsVerify/>}/>
+                        <Route path="/admin/verify-salesman/:salesmanId" element={<ViewShopDetailsVerify/>}/>
 
                         {/*Admin Categories*/}
                         <Route path="/admin/all-categories" element={<AllCategories/>}/>
@@ -186,7 +186,7 @@ function App() {
                     <Route path="/policy" element={<SecurityPolicy/>}/>
 
                     {/* Route mặc định */}
-                    <Route path="/" element={<Navigate to={isAuthenticated ? (String(roleStorage.get()) === 'shopper' ? '/shopper' : String(roleStorage.get()) === 'admin' ? '/admin' : '/salesman') : '/login'} />} />
+                    <Route path="/" element={<Navigate to={authStorage.get() === true ? (String(roleStorage.get()) === 'shopper' ? '/shopper' : String(roleStorage.get()) === 'admin' ? '/admin' : '/salesman') : '/login'} />} />
 
                     {/* Route cho trang 404 */}
                     <Route path="/404" element={<NotFound />} />

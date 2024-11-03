@@ -1,15 +1,17 @@
 import React, {useEffect, useState} from 'react';
 import SecondaryHeader from "../../components/General/SecondaryHeader";
-import SalesmanNav from "../../components/Salesman/SalesmanNav";
-import product_1 from "../../assets/product_1.png";
 import ConfirmModal from "../../components/General/ConfirmModal";
 import Footer from "../../components/General/Footer";
-import {FiUser} from "react-icons/fi";
 import AdminNav from "../../components/Admin/AdminNav";
+import {MdAddPhotoAlternate} from "react-icons/md";
+import {instance, mediaInstance}  from "../../AxiosConfig";
+import LoadingModal from "../../components/General/LoadingModal";
 
 const AddCategory = () => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+
 
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
@@ -31,7 +33,7 @@ const AddCategory = () => {
             }
 
             setError('');
-            setSelectedImage(URL.createObjectURL(file));
+            setSelectedImage(file);
         }
     };
 
@@ -39,6 +41,18 @@ const AddCategory = () => {
     const [formFields, setFormFields] = useState({
         name: '',
     });
+
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -86,11 +100,50 @@ const AddCategory = () => {
     };
     // end set up modal
 
-    const handleUpdate = () => {
+    const getImagesUrl = async () => {
+        if (selectedImage) {
+            try {
+                const fileNameResponse = await mediaInstance.get("http://152.42.232.101:4099/media/media-url");
+                const fileName = fileNameResponse.data.data.fileName;
+
+                const formData = new FormData();
+                formData.append("file", selectedImage);
+
+                const response = await mediaInstance.post(`upload-media/${fileName}`, formData);
+                console.log(response.data.data.mediaUrl);
+                return response.data.data.mediaUrl;
+            }
+            catch (error) {
+                console.log(error);
+            }
+        }
+    }
+
+    const handleUpdate = async () => {
+        closeModal();
+        const pictureUrl = await getImagesUrl();
         if (Object.keys(fieldErrors).length <= 0) {
             // Call API here
-
-            closeModal();
+            let data = {
+                name: formFields.name,
+                picture: pictureUrl
+            }
+            try {
+                setLoading(true);
+                openLoadingModal();
+                const response = await instance.post('http://152.42.232.101:5050/api/v1/shopping-service/category', data)
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setFormFields({name: ''});
+                setSelectedImage(null);
+                setLoading(false);
+                closeLoadingModal();
+            }
         }
     }
 
@@ -126,12 +179,13 @@ const AddCategory = () => {
 
                         <div className="flex flex-col items-center justify-center gap-4">
                             <div
-                                className="rounded-[50%] bg-Light_gray h-[120px] w-[120px] flex items-center justify-center">
+                                className="rounded-[50%] bg-Gray h-[120px] w-[120px] flex items-center justify-center">
                                 {selectedImage ? (
-                                    <img src={selectedImage} alt="Selected"
+                                    <img src={URL.createObjectURL(selectedImage)} alt="Selected"
                                          className="w-full h-full rounded-[50%] object-cover"/>
                                 ) : (
-                                    <FiUser className="text-Dark_gray h-16 w-16"/>
+                                    <MdAddPhotoAlternate
+                                        className="h-16 w-16 text-Light_gray"/>
                                 )}
                             </div>
 
@@ -193,6 +247,7 @@ const AddCategory = () => {
                     </div>
 
                     <ConfirmModal isOpen={isModalOpen} onClose={closeModal} onConfirm={handleUpdate} title={"Xác nhận thêm danh mục"} message={"Bạn có chắc muốn thêm danh mục này?"}/>
+                    {loading && <LoadingModal isOpen={isLoadingModalOpen} />}
                 </div>
             </main>
 

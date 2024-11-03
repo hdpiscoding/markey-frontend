@@ -1,10 +1,20 @@
 import React, {useState} from 'react';
 import {IoArrowBack} from "react-icons/io5";
 import {useNavigate} from "react-router-dom";
+import useLocalStorage from "../General/useLocalStorage";
+import LoadingModal from "../General/LoadingModal";
+import {instance} from "../../AxiosConfig";
+import axios from "axios";
 
 const SalesmanInfo = () => {
     const navigate = useNavigate();
+    const nameStorage = useLocalStorage('name');
+    const addressStorage = useLocalStorage('address');
+    const shopNameStorage = useLocalStorage('shopName');
+    const cccdStorage = useLocalStorage('cccd');
+    const descriptionStorage = useLocalStorage('description');
 
+    const [loading, setLoading] = useState(false);
     const [name, setName] = useState("");
     const [address, setAddress] = useState("");
     const [shopName, setShopName] = useState("");
@@ -19,7 +29,21 @@ const SalesmanInfo = () => {
         description: false,
     });
 
-    const handleNextClick = () => {
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
+
+    const handleNextClick = async (e) => {
+        e.preventDefault();
+
         const newErrors = {
             name: name.trim() === "",
             address: address.trim() === "",
@@ -33,8 +57,37 @@ const SalesmanInfo = () => {
 
         const isValid = !Object.values(newErrors).includes(true);
         if (isValid) {
-            // Call API để lưu thông tin người dùng, sau đó xóa các dữ liệu liên quan trong localStorage
-            navigate("/register/salesman-finish");
+            let data = {
+                fullname: name,
+                address: address,
+                shopName: shopName,
+                cccd: cccd,
+                description: description,
+            }
+            try {
+                setLoading(true);
+                openLoadingModal();
+
+                // Lưu thông tin người dùng vào localStorage
+                nameStorage.set(name);
+                addressStorage.set(address);
+                shopNameStorage.set(shopName);
+                cccdStorage.set(cccd);
+                descriptionStorage.set(description);
+
+                // Call API để lưu thông tin người dùng
+                const response = await axios.post('http://152.42.232.101:5050/api/v1/salesman/register', data);
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+                navigate("/register/phone-verification");
+            }
         }
     };
 
@@ -47,6 +100,12 @@ const SalesmanInfo = () => {
 
     const handleBackClick = () => {
         // Xóa dữ liệu trong localStorage nếu có
+        nameStorage.remove();
+        addressStorage.remove();
+        shopNameStorage.remove();
+        cccdStorage.remove();
+        descriptionStorage.remove();
+
         navigate(-1);
     }
 
@@ -167,6 +226,8 @@ const SalesmanInfo = () => {
                         <span className="text-White my-1">Hoàn thành</span>
                     </button>
                 </div>
+
+                {loading && <LoadingModal isOpen={isLoadingModalOpen} />}
             </div>
         </div>
     );
