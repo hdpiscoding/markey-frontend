@@ -22,6 +22,7 @@ const Login = () => {
     const tokenStorage = useLocalStorage('token');
     const roleStorage = useLocalStorage('role');
     const authStorage = useLocalStorage('auth');
+    const userIdStorage = useLocalStorage('userId');
 
     const [emailOrPhone, setEmailOrPhone] = useState('');
     const [password, setPassword] = useState('');
@@ -128,6 +129,7 @@ const Login = () => {
                 const token = tokenStorage.get();
                 const decodedData = jwtDecode(token);
                 roleStorage.set(decodedData.roleName);
+                userIdStorage.set(decodedData.id);
                 setTriggerEffect((prev) => !prev);
 
                 // Redirect to user home page based on role

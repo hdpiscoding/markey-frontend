@@ -1,16 +1,45 @@
 import React, {useEffect, useState} from "react";
 import {IoArrowBack} from "react-icons/io5";
 import {useNavigate} from "react-router-dom";
+import useLocalStorage from "../General/useLocalStorage";
+import {instance} from "../../AxiosConfig";
+import axios from "axios";
+import LoadingModal from "../General/LoadingModal";
 
 
 const EnterEmailOrPhone = (props) => {
+    const formatPhoneNumber = (phoneNumber) => {
+        return phoneNumber.replace(/^0/, '+84');
+    }
     const navigate = useNavigate();
 
+    const phoneStorage = useLocalStorage('phone');
+    const emailStorage = useLocalStorage('email');
+    const roleStorage = useLocalStorage('selectedRole');
+
+    const [loading, setLoading] = useState(false);
+    const [selectedRole, setSelectedRole] = useState('shopper');
     const [title, setTitle] = useState("");
     const [method, setMethod] = useState("");
     const [inputValue, setInputValue] = useState("");
     const [error, setError] = useState("");
     const [url, setUrl] = useState("");
+
+    const handleRoleChange = (e) => {
+        setSelectedRole(e.target.value);
+    }
+
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
 
     useEffect(() => {
         if (props.method === "forget") {
@@ -32,7 +61,7 @@ const EnterEmailOrPhone = (props) => {
 
     const handleInputChange = (e) => {
         const value = e.target.value;
-        if (props.method === "phone" || props.method === "password") {
+        if (props.method === "phone" || props.method === "forget") {
             // Giới hạn chỉ cho phép nhập số
             const onlyNumbers = value.replace(/\D/g, "");
             setInputValue(onlyNumbers);
@@ -41,7 +70,7 @@ const EnterEmailOrPhone = (props) => {
         }
     };
 
-    const handleNextClick = () => {
+    const validateFrontend = () => {
         let newError = "";
 
         if (inputValue.trim() === "") {
@@ -60,13 +89,45 @@ const EnterEmailOrPhone = (props) => {
         }
 
         setError(newError);
-        if (!newError) {
-            navigate(`${url}`);
-        }
+        return !newError;
     };
+
+    const handleNextClick = async () => {
+        if (validateFrontend()) {
+            if (props.method === "phone" || props.method === "forget") {
+                phoneStorage.set(formatPhoneNumber(inputValue));
+            } else {
+                emailStorage.set(inputValue);
+            }
+
+            try {
+                setLoading(true);
+                openLoadingModal();
+                if (props.method === "forget") {
+                    roleStorage.set(selectedRole);
+                    await axios.post(`http://152.42.232.101:5050/api/v1/user-service/${selectedRole}/forget-password`, {phoneNumber: phoneStorage.get()})
+                }
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+                navigate(`${url}`);
+            }
+
+        }
+
+    }
 
     const handleBackClick = () => {
         // Xóa các dữ liệu liên quan trong localStorage
+        phoneStorage.remove();
+        emailStorage.remove();
+        roleStorage.remove();
         navigate(-1);
     }
 
@@ -86,8 +147,8 @@ const EnterEmailOrPhone = (props) => {
                 <div className="w-[3.25rem]"></div>
             </div>
 
-            <div className="flex flex-col items-center justify-items-center h-auto w-[22rem]">
-                <div className="my-10">
+            <div className="flex flex-col items-center justify-items-center h-auto w-[22rem] gap-8">
+                <div className="mt-10">
                     <input
                         className={`border-2 w-[22rem] rounded-sm h-8 focus:ring-Blue focus:ring-1 outline-none pl-2 focus:border-Blue ${
                             error ? "border-Red text-Red" : ""
@@ -101,6 +162,17 @@ const EnterEmailOrPhone = (props) => {
                     )}
                 </div>
 
+                {props.method === "forget"
+                    &&
+                    <div>
+                        <select
+                            className="border-2 w-[22rem] rounded-sm h-8 focus:ring-Blue focus:ring-1 outline-none pl-2 focus:border-Blue"
+                            onChange={handleRoleChange}>
+                            <option value="shopper">Khách hàng</option>
+                            <option value="salesman">Người bán</option>
+                        </select>
+                    </div>}
+
                 <div className="mb-4 bg-Blue hover:bg-Dark_blue rounded-sm">
                     <button
                         className="w-[22rem] rounded-sm font-sans flex flex-col items-center justify-items-center"
@@ -109,6 +181,8 @@ const EnterEmailOrPhone = (props) => {
                         <span className="text-White my-1">Tiếp theo</span>
                     </button>
                 </div>
+
+                {loading && <LoadingModal isOpen={isLoadingModalOpen} />}
             </div>
         </div>
     );

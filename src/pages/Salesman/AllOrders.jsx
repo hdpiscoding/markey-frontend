@@ -4,27 +4,67 @@ import Footer from "../../components/General/Footer";
 import SalesmanNav from "../../components/Salesman/SalesmanNav";
 import SalemansOrderItem from "../../components/Salesman/SalemansOrderItem";
 import {Pagination, Stack} from "@mui/material";
+import LoadingModal from "../../components/General/LoadingModal";
+import {instance} from "../../AxiosConfig";
 
 const AllOrders = () => {
-    const orderItems = [
-        { id: 1, name: "Son môi màu đỏ quyến rũ", price: 150000, quantity: 2500, status: "CHỜ XỬ LÝ" },
-        { id: 2, name: "Nước hoa hương chanh tươi mát", price: 800000, quantity: 1800, status: "ĐANG VẬN CHUYỂN" },
-        { id: 3, name: "Kem dưỡng da ban đêm chống lão hóa", price: 600000, quantity: 1500, status: "ĐÃ NHẬN HÀNG" },
-        { id: 4, name: "Sữa rửa mặt làm sạch sâu", price: 200000, quantity: 3200, status: "CHỜ XỬ LÝ" },
-        { id: 5, name: "Mặt nạ cấp ẩm chiết xuất thiên nhiên", price: 75000, quantity: 4800, status: "ĐANG VẬN CHUYỂN" },
-        { id: 6, name: "Phấn nền trang điểm tự nhiên", price: 500000, quantity: 3100, status: "ĐÃ NHẬN HÀNG" },
-        { id: 7, name: "Chì kẻ mắt chống nước", price: 120000, quantity: 5400, status: "CHỜ XỬ LÝ" },
-        { id: 8, name: "Nước tẩy trang dịu nhẹ", price: 250000, quantity: 900, status: "ĐANG VẬN CHUYỂN" },
-        { id: 9, name: "Son dưỡng môi SPF 15", price: 95000, quantity: 2200, status: "ĐÃ NHẬN HÀNG" },
-        { id: 10, name: "Kem chống nắng SPF 50", price: 400000, quantity: 3600, status: "CHỜ XỬ LÝ" },
-    ];
+    const [loading, setLoading] = useState(false);
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
 
     // store API data
     const [orders, setOrders] = useState([]);
 
+    // set up pagination
+    const [page, setPage] = useState(1);
+
+    const itemsPerPage = 5;
+    const [totalPages, setTotalPages] = useState(null);
+
+    const handlePageChange = (event, value) => {
+        setPage(value);
+        window.scrollTo(0, 0);
+    }
+
 
     useEffect(() => {
-        // Call API to get orders
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                let filter = {
+                    sort: {
+                        by: "createAt",
+                        order: "DESC" // DESC | ASC
+                    },
+                    status: "PENDING"
+                }
+                // Call API to get orders with status == "PENDING"
+                const response = await instance.post(`v1/order-service/order/filter?page=${page}&rpp=${itemsPerPage}`, filter);
+                setTotalPages(Math.ceil(response.data.data.total/itemsPerPage));
+                setOrders(await response.data.data.items);
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
+
+        fetchData();
     }, []);
 
     const handleApprove = () => {
@@ -33,21 +73,7 @@ const AllOrders = () => {
 
     }
 
-    // set up pagination
-    const [page, setPage] = useState(1);
 
-    const itemsPerPage = 5;
-    const totalPages = Math.ceil(orderItems.length / itemsPerPage);
-
-    const indexOfLastItem = page * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-
-    const currentItems = orderItems.filter((item) => item.status !== "CHỜ XỬ LÝ").slice(indexOfFirstItem, indexOfLastItem);
-
-    const handlePageChange = (event, value) => {
-        setPage(value);
-        window.scrollTo(0, 0);
-    }
 
     return (
         <div className="bg-Light_gray w-screen overflow-x-hidden">
@@ -71,7 +97,7 @@ const AllOrders = () => {
                         </div>
 
                         <div className="flex flex-col gap-4 px-4 col-start-3">
-                            {currentItems.map((item) => (
+                            {orders.map((item) => (
                                 <SalemansOrderItem key={item.id} productName={item.name} price={item.price}
                                                    quantity={item.quantity} status={item.status} onApprove={handleApprove}/>
                             ))}
@@ -106,6 +132,8 @@ const AllOrders = () => {
                         </div>
 
                     </div>
+
+                    {loading && <LoadingModal isOpen={isLoadingModalOpen} />}
                 </div>
 
             </main>

@@ -1,14 +1,40 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import SecondaryHeader from "../../components/General/SecondaryHeader";
 import SalesmanNav from "../../components/Salesman/SalesmanNav";
 import {MdAddPhotoAlternate} from "react-icons/md";
 import Footer from "../../components/General/Footer";
-import product_1 from "../../assets/product_1.png";
-import product_2 from "../../assets/product_2.png";
-import product_3 from "../../assets/product_3.png";
-import axios from "axios";
+import {instance, mediaInstance} from "../../AxiosConfig";
+import ConfirmModal from "../../components/General/ConfirmModal";
+import LoadingModal from "../../components/General/LoadingModal";
+import {useParams} from "react-router-dom";
 
 const EditProduct = () => {
+    const {productId} = useParams();
+    const [loading, setLoading] = useState(false);
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
+
+    // set up modal
+    const [isModalOpen, setModalOpen] = useState(false);
+
+    const openModal = () => {
+        setModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalOpen(false);
+    };
+    // end set up modal
+
     // Lưu danh sách các danh mục sản phẩm (lấy từ API)
     const [categories, setCategories] = React.useState([]);
 
@@ -17,6 +43,9 @@ const EditProduct = () => {
 
     // Lúc call API, lưu URL ảnh vào state này
     const [images, setImages] = React.useState([null, null, null]);
+    const [product, setProduct] = React.useState({});
+
+    const [selectedImages, setSelectedImages] = React.useState([null, null, null]);
 
     // Lưu lỗi của các trường input
     const [fieldErrors, setFieldErrors] = React.useState({});
@@ -29,43 +58,40 @@ const EditProduct = () => {
 
     // Lấy dữ liệu từ API khi component mount
     useEffect(() => {
-        async function fetchData() {
+        // Call API to get all shop's products and set to state
+        const fetchData = async () => {
             try {
-                // Giả sử đây là API bạn dùng để lấy dữ liệu sản phẩm và tất cả danh mục
-                const [productResponse, categoryResponse] = await Promise.all([
-                    axios.get(`http://152.42.232.101:5050/api/v1/shopping-service/product/60262d31-1a38-4840-839d-78e355484181`),
-                    axios.get('http://152.42.232.101:5050/api/v1/shopping-service/category/')
-                ]);
-
-                const productData = await productResponse.data.data;
-                const categoryData = await categoryResponse.data.data;
-
-                // Lưu danh sách các danh mục vào state
-                categoryData.map((category) => setCategories([{ id: category.id, name: category.name }]));
-
-                // Cập nhật state với dữ liệu từ API
-                setFormFields({
-                    productName: String(productData.name) || '',
-                    price: String(productData.price) || '',
-                    stock: String(productData.quantity) || '',
-                    description: String(productData.description) || '',
-                });
-
-                // Lưu danh mục sản phẩm được chọn
-                setSelectedCategory(productData.category.name || 'default');
-
-                // Chuyển đổi dữ liệu ảnh từ API (giả sử nó là URL)
-                const fetchedImages = productData.picture.map((imgUrl, index) => {
-                    return imgUrl ? new File([], imgUrl, { type: 'image/jpeg' }) : null;
-                });
-                setImages(fetchedImages);
-            } catch (error) {
-                console.error("Failed to fetch product details", error);
+                setLoading(true);
+                openLoadingModal();
+                const categoriesResponse = await instance.get("v1/shopping-service/category");
+                setCategories(categoriesResponse.data.data);
+                const response = await instance.get(`v1/shopping-service/product/${productId}`);
+                setProduct(response.data.data);
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
             }
         }
 
         fetchData();
     }, []);
+
+    useEffect(() => {
+        setFormFields({
+            productName: product.name || '',
+            price: String(product.price) || '',
+            stock: String(product.quantity) || '',
+            description: product.description || '',
+        })
+
+        setSelectedCategory(product.categoryId || 'default');
+    }, [product]);
 
     const handleCategoryChange = (e) => {
         setSelectedCategory(e.target.value);
@@ -105,7 +131,7 @@ const EditProduct = () => {
         const maxSize = 2 * 1024 * 1024;
 
         if (file && validTypes.includes(file.type) && file.size <= maxSize) {
-            const newImages = [...images];
+            const newImages = [...selectedImages];
             newImages[index] = file;
             setImages(newImages);
             setFieldErrors(prevErrors => ({
@@ -132,48 +158,60 @@ const EditProduct = () => {
     };
 
     // Xử lý khi người dùng ấn nút "Cập nhật"
-    const handleSubmit = () => {
+    const Validate = () => {
         // Kiểm tra xem các trường input có hợp lệ không
         let newFieldErrors = {};
         let imageErrorMessages = [];
+        let isValid = true;
 
         if (selectedCategory === 'default') {
             newFieldErrors.category = "Vui lòng chọn danh mục.";
+            isValid = false;
         }
 
         if (formFields.productName.trim() === '') {
             newFieldErrors.productName = "Tên sản phẩm không được để trống.";
+            isValid = false;
         }
         if (formFields.price.trim() === '') {
             newFieldErrors.price = "Giá không được để trống.";
+            isValid = false;
         } else if (!/^[1-9]\d*$/.test(formFields.price)) {
             newFieldErrors.price = "Giá phải là số nguyên dương.";
+            isValid = false;
         }
         if (formFields.stock.trim() === '') {
             newFieldErrors.stock = "Tồn kho không được để trống.";
+            isValid = false;
         } else if (!/^[1-9]\d*$/.test(formFields.stock)) {
             newFieldErrors.stock = "Tồn kho phải là số nguyên dương.";
+            isValid = false;
         }
         if (formFields.description.trim() === '') {
             newFieldErrors.description = "Mô tả sản phẩm không được để trống.";
+            isValid = false;
         }
 
-        const selectedImagesCount = images.filter(img => img).length;
-        if (selectedImagesCount < 3) {
+        const selectedImagesCount = selectedImages.filter(img => img).length;
+        if (selectedImagesCount < 3 && images.every(img => img === null)) {
             imageErrorMessages.push("Vui lòng chọn đủ 3 ảnh.");
+            isValid = false;
         }
 
-        images.forEach((img, index) => {
+        selectedImages.forEach((img, index) => {
             if (fieldErrors[`image-${index}`]) {
                 imageErrorMessages.push(fieldErrors[`image-${index}`]);
+                isValid = false;
             }
         });
 
         if (imageErrorMessages.length > 0) {
             newFieldErrors.images = imageErrorMessages.join(" ");
+            isValid = false;
         }
 
         setFieldErrors(newFieldErrors);
+        return isValid;
 
         if (Object.keys(newFieldErrors).length === 0) {
             // Call API để upload ảnh và trả về URL ảnh
@@ -188,6 +226,63 @@ const EditProduct = () => {
             }
         }
     };
+
+    const handleValidate = () => {
+        const isValid = Validate();
+        if (isValid) {
+            openModal();
+        }
+    };
+
+    const getImagesUrl = async () => {
+        if (selectedImages.length > 0) {
+            const imageUrls = [];
+            for (let i = 0; i < selectedImages.length; i++) {
+                try {
+                    const fileNameResponse = await mediaInstance.get("media-url");
+                    const fileName = fileNameResponse.data.data.fileName;
+
+                    const formData = new FormData();
+                    formData.append("file", selectedImages[i]);
+
+                    const response = await mediaInstance.post(`upload-media/${fileName}`, formData);
+                    imageUrls.push(response.data.data.mediaUrl);
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+
+            return imageUrls;
+        }
+    }
+
+    const handleSubmit = async () => {
+        closeModal();
+        const imageUrls = await getImagesUrl();
+        if (Object.keys(fieldErrors).length <= 0) {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                let data = {
+                    name: formFields.productName,
+                    price: formFields.price,
+                    quantity: formFields.stock,
+                    description: formFields.description,
+                    categoryId: selectedCategory,
+                    picture: imageUrls,
+                }
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.error("Failed to update product", error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
+    }
 
     return (
         <div className="bg-Light_gray w-screen overflow-x-hidden">
@@ -240,7 +335,7 @@ const EditProduct = () => {
                                     >
                                         <option value={'default'} hidden disabled>Tên danh mục</option>
                                         {categories.map((category) => (
-                                            <option key={category.id} value={category.name}>{category.name}</option>
+                                            <option key={category.id} value={category.id}>{category.name}</option>
                                         ))}
 
                                     </select>
@@ -312,19 +407,21 @@ const EditProduct = () => {
                                         {[0, 1, 2].map((index) => (
                                             <div
                                                 key={index}
-                                                className={`flex items-center justify-center gap-2 h-[120px] w-[120px] ${images[index] ? 'border-Blue' : 'bg-Gray'} rounded-md`}
+                                                className={`flex items-center justify-center gap-2 h-[120px] w-[120px] ${selectedImages[index] ? 'border-Blue' : 'bg-Gray'} rounded-md`}
                                             >
                                                 <label htmlFor={`file-${index}`} className="cursor-pointer">
-                                                    {images[index] ? (
+                                                    {selectedImages[index] ? (
                                                         <img
-                                                            src={URL.createObjectURL(images[index])}
+                                                            src={URL.createObjectURL(selectedImages[index])}
                                                             alt={`selected-${index}`}
                                                             className="h-[120px] w-[120px] object-cover rounded-md border"
                                                         />
                                                     ) : (
-                                                        <div className="h-[120px] w-[120px] border rounded-md bg-Light_gray flex items-center justify-center">
-                                                            <MdAddPhotoAlternate className="text-Gray h-[80px] w-[80px]"/>
-                                                        </div>
+                                                        <img
+                                                            src={images[index]}
+                                                            alt={`selected-${index}`}
+                                                            className="h-[120px] w-[120px] object-cover rounded-md border"
+                                                        />
                                                     )}
                                                 </label>
                                                 <input
@@ -348,12 +445,15 @@ const EditProduct = () => {
                         <div className="flex items-center justify-center">
                             <button
                                 className="bg-Blue hover:bg-Dark_blue rounded-md py-1 px-10"
-                                onClick={handleSubmit}
+                                onClick={handleValidate}
                             >
-                                <span className="text-White">Cập nhật</span>
+                                <span className="text-White">Lưu thay đổi</span>
                             </button>
                         </div>
                     </div>
+
+                    <ConfirmModal isOpen={isModalOpen} onClose={closeModal} onConfirm={handleSubmit} title={"Xác nhận chỉnh sửa sản phẩm"} message={"Bạn có chắc muốn chỉnh sửa sản phẩm này?"}/>
+                    {loading && <LoadingModal isOpen={isLoadingModalOpen} />}
                 </div>
             </main>
 

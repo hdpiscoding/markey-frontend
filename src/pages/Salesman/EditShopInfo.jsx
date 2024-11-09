@@ -6,15 +6,47 @@ import {FiUser} from "react-icons/fi";
 import product_1 from "../../assets/product_1.png";
 import ConfirmModal from "../../components/General/ConfirmModal";
 import {useNavigate} from "react-router-dom";
+import LoadingModal from "../../components/General/LoadingModal";
+import {instance, mediaInstance} from "../../AxiosConfig";
+import useLocalStorage from "../../components/General/useLocalStorage";
 
 const EditShopInfo = () => {
+    function formatPhoneNumber(phoneNumber) {
+        if (phoneNumber?.length === 11) {
+            return '0' + phoneNumber?.slice(2); // Thay 3 ký tự đầu bằng '0'
+        }
+        // Kiểm tra nếu chuỗi có 12 ký tự
+        else if (phoneNumber?.length === 12) {
+            return '0' + phoneNumber?.slice(3); // Thay 2 ký tự đầu bằng '0'
+        }
+        // Trả về chuỗi không thay đổi nếu không thỏa mãn điều kiện trên
+        else {
+            return phoneNumber;
+        }
+    }
+
     const navigate = useNavigate();
 
     const onChangeInfo = (method) => {
         navigate(`${method === "email" ? "/change-email" : "/change-phone"}`);
     }
 
-    const salesman = { id: "1", name: "Nguyễn Văn A", cccd: "123456789012", shopName: "Cửa hàng ABC", address: "123 Đường XYZ, Quận 1, TP.HCM", description: "Cửa hàng ABC chuyên cung cấp các sản phẩm thời trang nam và nữ." };
+    const [loading, setLoading] = useState(false);
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
+
+    const [salesman, setSalesman] = useState({});
+    const [shop, setShop] = useState({});
+    const [image, setImage] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
     const [error, setError] = useState('');
 
@@ -38,7 +70,7 @@ const EditShopInfo = () => {
             }
 
             setError('');
-            setSelectedImage(URL.createObjectURL(file));
+            setSelectedImage(file);
         }
     };
 
@@ -55,14 +87,44 @@ const EditShopInfo = () => {
     });
 
     useEffect(() => {
-        setFormFields({
-            name: salesman.name || '',
-            cccd: salesman.cccd || '',
-            shopName: salesman.shopName || '',
-            address: salesman.address || '',
-            description: salesman.description || ''
-        });
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                // Call API to get salesman info and shop info
+                const [salesmanResponse, shopResponse] = await Promise.all([
+                    await instance.get('v1/user-service/salesman/me'),
+                    await instance.get('v1/shopping-service/shop/me')
+                ]);
+                setSalesman(await salesmanResponse.data.data);
+                setShop(await shopResponse.data.data);
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
+
+        fetchData();
     }, []);
+
+    useEffect(() => {
+        setImage(shop.profilePicture);
+        setEmail(salesman.email);
+        setPhone(formatPhoneNumber(salesman.phoneNumber));
+        setFormFields({
+            name: salesman.fullname || '',
+            cccd: salesman.cccd || '',
+            address: salesman.address || '',
+            shopName: shop.name || '',
+            description: shop.description || ''
+        });
+    }, [salesman, shop])
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -147,10 +209,58 @@ const EditShopInfo = () => {
     };
     // end set up modal
 
-    const handleUpdate = () => {
+    const getImagesUrl = async () => {
+        if (selectedImage) {
+            try {
+                const fileNameResponse = await mediaInstance.get("media-url");
+                const fileName = fileNameResponse.data.data.fileName;
+
+                const formData = new FormData();
+                formData.append("file", selectedImage);
+
+                const response = await mediaInstance.post(`upload-media/${fileName}`, formData);
+                console.log(response.data.data.mediaUrl);
+                return response.data.data.mediaUrl;
+            }
+            catch (error) {
+                console.log(error);
+            }
+        }
+    };
+
+
+    const handleUpdate = async () => {
         if (Object.keys(fieldErrors).length <= 0) {
             // Call API here
+            try {
+                const pictureUrl = await getImagesUrl();
+                let salesmanRequest = {
+                    fullname: formFields.name,
+                    cccd: formFields.cccd,
+                    address: formFields.address
+                }
 
+                let shopRequest = {
+                    name: formFields.shopName,
+                    description: formFields.description,
+                    profilePicture: pictureUrl ?? image
+                }
+
+                setLoading(true);
+                openLoadingModal();
+                await instance.put(`v1/user-service/salesman/${salesman.id}`, salesmanRequest);
+                await instance.put(`v1/shopping-service/shop/salesman-update-shop/${shop.id}`, shopRequest);
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+                navigate('/salesman/profile');
+            }
             closeModal();
         }
     }
@@ -172,7 +282,7 @@ const EditShopInfo = () => {
                         <SalesmanNav currentPage={6}/>
                     </div>
 
-                    <div className="col-start-3 bg-White round-sm py-4 px-6 flex flex-col gap-4">
+                    <div className="col-start-3 bg-White round-sm py-4 px-6 flex flex-col gap-4 select-none">
                         <div className="flex flex-col">
                             <div className="flex items-center justify-between">
                                 <div>
@@ -189,10 +299,13 @@ const EditShopInfo = () => {
                             <div
                                 className="rounded-[50%] bg-Light_gray h-[120px] w-[120px] flex items-center justify-center">
                                 {selectedImage ? (
-                                    <img src={selectedImage} alt="Selected"
+                                    <img src={URL.createObjectURL(selectedImage)} alt="Selected"
                                          className="w-full h-full rounded-[50%] object-cover"/>
-                                ) : (
-                                    <FiUser className="text-Dark_gray h-16 w-16"/>
+                                ) : (image
+                                        ?
+                                        <img src={image} alt="img" className="w-full h-full rounded-[50%] object-cover"/>
+                                        :
+                                        <FiUser className="text-Dark_gray h-16 w-16"/>
                                 )}
                             </div>
 
@@ -369,7 +482,7 @@ const EditShopInfo = () => {
                         <div className="flex items-center justify-center select-none">
                             <button className="bg-Blue text-white py-1 px-8 rounded hover:bg-Dark_blue text-center"
                                     onClick={handleValidate}>
-                                Cập nhật
+                                Lưu thay đổi
                             </button>
                         </div>
                     </div>
@@ -377,6 +490,7 @@ const EditShopInfo = () => {
                     <ConfirmModal isOpen={isModalOpen} onClose={closeModal} onConfirm={handleUpdate}
                                   title={"Xác nhận cập nhật thông tin"}
                                   message={"Bạn có chắc muốn cập nhật thông tin này?"}/>
+                    {loading && <LoadingModal isOpen={isLoadingModalOpen} />}
                 </div>
             </main>
 

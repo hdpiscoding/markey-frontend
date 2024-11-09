@@ -7,7 +7,14 @@ import {instance} from "../../AxiosConfig";
 import axios from "axios";
 
 const SalesmanInfo = () => {
+    const formatPhoneNumber = (phoneNumber) => {
+        return phoneNumber.replace(/^0/, '+84');
+    }
+
     const navigate = useNavigate();
+    const emailStorage = useLocalStorage('email');
+    const phoneStorage = useLocalStorage('phone');
+    const passwordStorage = useLocalStorage('password');
     const nameStorage = useLocalStorage('name');
     const addressStorage = useLocalStorage('address');
     const shopNameStorage = useLocalStorage('shopName');
@@ -57,13 +64,6 @@ const SalesmanInfo = () => {
 
         const isValid = !Object.values(newErrors).includes(true);
         if (isValid) {
-            let data = {
-                fullname: name,
-                address: address,
-                shopName: shopName,
-                cccd: cccd,
-                description: description,
-            }
             try {
                 setLoading(true);
                 openLoadingModal();
@@ -75,8 +75,21 @@ const SalesmanInfo = () => {
                 cccdStorage.set(cccd);
                 descriptionStorage.set(description);
 
+                let data = {
+                    phoneNumber: formatPhoneNumber(phoneStorage.get()),
+                    email: emailStorage.get(),
+                    fullname: nameStorage.get(),
+                    address: addressStorage.get(),
+                    password: passwordStorage.get(),
+                    cccd: cccdStorage.get(),
+                    shop: {
+                        name: shopNameStorage.get(),
+                        description: descriptionStorage.get(),
+                    }
+                };
+
                 // Call API để lưu thông tin người dùng
-                const response = await axios.post('http://152.42.232.101:5050/api/v1/salesman/register', data);
+                const response = await axios.post('http://152.42.232.101:5050/api/v1/user-service/salesman/register', data);
             }
             catch (error) {
                 setLoading(false);
@@ -223,7 +236,7 @@ const SalesmanInfo = () => {
                         onClick={handleNextClick}
                         className="rounded-sm w-full font-sans flex flex-col items-center justify-items-center"
                     >
-                        <span className="text-White my-1">Hoàn thành</span>
+                        <span className="text-White my-1">Tiếp theo</span>
                     </button>
                 </div>
 

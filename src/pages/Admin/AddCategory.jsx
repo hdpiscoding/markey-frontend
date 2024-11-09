@@ -103,7 +103,7 @@ const AddCategory = () => {
     const getImagesUrl = async () => {
         if (selectedImage) {
             try {
-                const fileNameResponse = await mediaInstance.get("http://152.42.232.101:4099/media/media-url");
+                const fileNameResponse = await mediaInstance.get("media-url");
                 const fileName = fileNameResponse.data.data.fileName;
 
                 const formData = new FormData();
@@ -131,7 +131,7 @@ const AddCategory = () => {
             try {
                 setLoading(true);
                 openLoadingModal();
-                const response = await instance.post('http://152.42.232.101:5050/api/v1/shopping-service/category', data)
+                const response = await instance.post('v1/shopping-service/category', data)
             }
             catch (error) {
                 setLoading(false);

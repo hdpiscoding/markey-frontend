@@ -20,6 +20,7 @@ const Verification = (props) => {
     const shopNameStorage = useLocalStorage('shopName');
     const cccdStorage = useLocalStorage('cccd');
     const descriptionStorage = useLocalStorage('description');
+    const codeStorage = useLocalStorage('code');
 
     const [loading, setLoading] = useState(false);
     const [timeLeft, setTimeLeft] = useState(null);
@@ -27,12 +28,36 @@ const Verification = (props) => {
     const [otp, setOtp] = useState("");
     const [otpError, setOtpError] = useState("");
 
+    // Gọi API resend OTP
+    const resendCode = async () => {
+        try {
+            setOtpError("");  // Xóa thông báo lỗi cũ (nếu có)
+            let data = {
+                phoneNumber: formatPhoneNumber(phoneStorage.get()),
+                email: emailStorage.get(),
+                fullname: nameStorage.get(),
+                address: addressStorage.get(),
+                password: passwordStorage.get(),
+                cccd: cccdStorage.get(),
+                shop: {
+                    name: shopNameStorage.get(),
+                    description: descriptionStorage.get(),
+                }
+            };
+            const response = await axios.post('http://152.42.232.101:5050/api/v1/user-service/salesman/register', data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     // Handle resend code
-    const handleResendCode = () => {
+    const handleResendCode = async () => {
         if (!isResendDisabled) {
             setIsResendDisabled(true);
             setTimeLeft(180); // Đặt thời gian còn lại là 3 phút (180 giây)
         }
+
+        await resendCode();
     }
 
     // Timer for resend code
@@ -91,16 +116,20 @@ const Verification = (props) => {
                     setLoading(true);
                     openLoadingModal();
                     const response = await axios.get(`http://152.42.232.101:5050/api/v1/user-service/${props.role}/activation/phone?phoneNumber=${formatPhoneNumber(phoneStorage.get())}&code=${otp}`);
+
+                    // Chuyển hướng đến trang tiếp theo
+                    navigate(`${props.url}`);
                 }
                 catch (error) {
                     setLoading(false);
                     closeLoadingModal();
                     if (error.response) {
-                        setOtpError("Mã xác nhận không hợp lệ.");
+                        setOtpError(error.response ? "Mã xác nhận không hợp lệ." : "Có lỗi xảy ra khi kiểm tra mã xác nhận.");
                     }
                     else {
                         setOtpError("Có lỗi xảy ra khi kiểm tra mã xác nhận.");
                     }
+                    console.error(error);
                 }
                 finally {
                     setLoading(false);
@@ -114,17 +143,44 @@ const Verification = (props) => {
                     shopNameStorage.remove();
                     cccdStorage.remove();
                     descriptionStorage.remove();
+
                 }
             }
+            else if (props.method === "forget") {
+                try {
+                    let data = {
+                        code: otp,
+                        phoneNumber: phoneStorage.get().replace(/^0/, '+84')
+                    }
+                    setLoading(true);
+                    openLoadingModal();
+                    await axios.post(`http://152.42.232.101:5050/api/v1/user-service/${roleStorage.get()}/reset-password`, data);
 
-            // Chuyển hướng đến trang tiếp theo
-            navigate(`${props.url}`);
-
+                    codeStorage.set(otp);
+                    navigate(`${props.url}`);
+                }
+                catch (error) {
+                    console.error(error);
+                    setLoading(false);
+                    closeLoadingModal();
+                    if (error.response) {
+                        setOtpError(error.response ? "Mã xác nhận không hợp lệ." : "Có lỗi xảy ra khi kiểm tra mã xác nhận.");
+                    }
+                    else {
+                        setOtpError("Có lỗi xảy ra khi kiểm tra mã xác nhận.");
+                    }
+                }
+                finally {
+                    setLoading(false);
+                    closeLoadingModal();
+                }
+            }
         }
     };
 
     const handleBackClick = () => {
         // Xóa dữ liệu trong localStorage nếu có
+        codeStorage.remove();
         navigate(-1);
     }
 
@@ -157,7 +213,7 @@ const Verification = (props) => {
                     </span>
                 </div>
 
-                <div className="mb-4">
+                <div className="mb-4 relative">
                     <input
                         value={otp}
                         onChange={(e) => setOtp(e.target.value)}
@@ -168,7 +224,7 @@ const Verification = (props) => {
                         type="text" // Có thể thay đổi thành 'text' hoặc 'phone' tùy thuộc vào mã OTP
                     />
                     {otpError && (
-                        <p className="text-Red text-sm w-full mt-1">{otpError}</p>
+                        <p className="text-Red text-sm absolute">{otpError}</p>
                     )}
                 </div>
 

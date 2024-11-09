@@ -6,19 +6,40 @@ import VerifySalesmanListView from "../../components/Admin/VerifySalesmanListVie
 import {Pagination, Stack} from "@mui/material";
 import CategoryListView from "../../components/Admin/CategoryListView";
 import {instance} from "../../AxiosConfig";
+import LoadingModal from "../../components/General/LoadingModal";
 
 const AllCategories = () => {
     const [categories, setCategories] = useState([]);
+    const [loading, setLoading] = useState(false);
 
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
 
     useEffect(() => {
         const fetchData = async () => {
             try {
+                setLoading(true);
+                openLoadingModal();
                 const response = await instance.get('v1/shopping-service/category/');
                 setCategories(response.data.data);
             }
             catch (error) {
+                setLoading(false);
+                closeLoadingModal();
                 console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
             }
         }
 
@@ -114,6 +135,8 @@ const AllCategories = () => {
                                     }}/>
                             </Stack>
                         </div>
+
+                        {loading && <LoadingModal isOpen={isLoadingModalOpen} />}
                     </div>
                 </div>
             </main>

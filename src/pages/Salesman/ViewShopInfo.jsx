@@ -1,15 +1,74 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import SecondaryHeader from "../../components/General/SecondaryHeader";
 import SalesmanNav from "../../components/Salesman/SalesmanNav";
 import product_1 from "../../assets/product_1.png";
 import Footer from "../../components/General/Footer";
 import {Link} from "react-router-dom";
+import LoadingModal from "../../components/General/LoadingModal";
+import {instance} from "../../AxiosConfig";
+import useLocalStorage from "../../components/General/useLocalStorage";
+import {FiUser} from "react-icons/fi";
 
 const ViewShopInfo = () => {
-    const salesman = { id: "1", name: "Nguyễn Văn A", cccd: "123456789012", email: "abc@gmail.com", phone: "0909090909", shopName: "Cửa hàng ABC", address: "123 Đường XYZ, Quận 1, TP.HCM", description: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.\n" +
-            "\n" +
-            "In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus.\n" +
-            "\n" + "Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc," };
+    //const userIdStorage = useLocalStorage('userId');
+    function formatPhoneNumber(phoneNumber) {
+        if (phoneNumber?.length === 11) {
+            return '0' + phoneNumber?.slice(2); // Thay 3 ký tự đầu bằng '0'
+        }
+        // Kiểm tra nếu chuỗi có 12 ký tự
+        else if (phoneNumber?.length === 12) {
+            return '0' + phoneNumber?.slice(3); // Thay 2 ký tự đầu bằng '0'
+        }
+        // Trả về chuỗi không thay đổi nếu không thỏa mãn điều kiện trên
+        else {
+            return phoneNumber;
+        }
+    }
+
+    const [loading, setLoading] = useState(false);
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
+
+    const [salesman, setSalesman] = useState({});
+    const [shop, setShop] = useState({});
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                // Call API to get salesman info and shop info
+                const [salesmanResponse, shopResponse] = await Promise.all([
+                    await instance.get('v1/user-service/salesman/me'),
+                    await instance.get('v1/shopping-service/shop/me')
+                ]);
+                setSalesman(await salesmanResponse.data.data);
+                setShop(await shopResponse.data.data);
+
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
+
+        fetchData();
+    }, []);
+
 
     return (
         <div className="bg-Light_gray w-screen overflow-x-hidden">
@@ -26,7 +85,7 @@ const ViewShopInfo = () => {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <span className="text-[2rem] font-semibold">
-                                        Chỉnh sửa thông tin người bán
+                                        Thông tin người bán
                                     </span>
                                 </div>
 
@@ -45,8 +104,12 @@ const ViewShopInfo = () => {
 
                         <div className="flex flex-col items-center justify-center gap-4">
                             <div className="rounded-[50%] bg-Light_gray h-[120px] w-[120px] flex items-center justify-center">
-                                <img src={product_1} alt="Selected"
-                                     className="w-full h-full border rounded-[50%] object-cover"/>
+                                {shop.profilePicture
+                                    ?
+                                    <img src={shop.profilePicture} alt="Selected"
+                                         className="w-full h-full border rounded-[50%] object-cover"/>
+                                    :
+                                    <FiUser className="text-Dark_gray h-16 w-16"/>}
                             </div>
                         </div>
 
@@ -56,7 +119,7 @@ const ViewShopInfo = () => {
                                 <td className="py-5">*Họ và tên:</td>
                                 <td className="py-5">
                                     <span className="font-semibold">
-                                        {salesman.name}
+                                        {salesman.fullname ?? ""}
                                     </span>
                                 </td>
                             </tr>
@@ -67,7 +130,7 @@ const ViewShopInfo = () => {
                                 <td className="py-5">*Căn cước công dân:</td>
                                 <td className="py-5">
                                     <span className="font-semibold">
-                                        {salesman.cccd}
+                                        {salesman.cccd ?? ""}
                                     </span>
                                 </td>
                             </tr>
@@ -78,7 +141,7 @@ const ViewShopInfo = () => {
                                 <td className="py-5">*Email:</td>
                                 <td className="py-5">
                                     <span className="font-semibold">
-                                        {salesman.email}
+                                        {salesman.email ?? ""}
                                     </span>
                                 </td>
                             </tr>
@@ -89,7 +152,7 @@ const ViewShopInfo = () => {
                                 <td className="py-5">*Số điện thoại:</td>
                                 <td className="py-5">
                                     <span className="font-semibold">
-                                        {salesman.phone}
+                                        {formatPhoneNumber(salesman.phoneNumber) ?? ""}
                                     </span>
                                 </td>
                             </tr>
@@ -100,7 +163,7 @@ const ViewShopInfo = () => {
                                 <td className="py-5">*Tên cửa hàng:</td>
                                 <td className="py-5">
                                     <span className="font-semibold">
-                                        {salesman.shopName}
+                                        {shop.name ?? ""}
                                     </span>
                                 </td>
                             </tr>
@@ -111,7 +174,7 @@ const ViewShopInfo = () => {
                                 <td className="py-5">*Địa chỉ:</td>
                                 <td className="py-5">
                                     <span className="font-semibold">
-                                        {salesman.address}
+                                        {salesman.address ?? ""}
                                     </span>
                                 </td>
                             </tr>
@@ -122,7 +185,7 @@ const ViewShopInfo = () => {
                                 <td className="py-5">*Mô tả của hàng:</td>
                                 <td className="py-5 w-[80%]">
                                     <p className="whitespace-pre-line">
-                                        {salesman.description}
+                                        {shop.description ?? ""}
                                     </p>
                                 </td>
                             </tr>
@@ -130,6 +193,8 @@ const ViewShopInfo = () => {
                         </table>
                     </div>
                 </div>
+
+                {loading && <LoadingModal isOpen={isLoadingModalOpen} />}
             </main>
 
             <Footer/>

@@ -4,10 +4,12 @@ import AdminNav from "../../components/Admin/AdminNav";
 import ConfirmModal from "../../components/General/ConfirmModal";
 import Footer from "../../components/General/Footer";
 import {MdAddPhotoAlternate} from "react-icons/md";
-import {instance} from "../../AxiosConfig";
-import {useParams} from "react-router-dom";
+import {instance, mediaInstance} from "../../AxiosConfig";
+import {useNavigate, useParams} from "react-router-dom";
+import LoadingModal from "../../components/General/LoadingModal";
 
 const EditCategory = () => {
+    const navigate = useNavigate();
     const {categoryId} = useParams();
     // Store API data (image URL)
     const [image, setImage] = useState(null);
@@ -15,6 +17,7 @@ const EditCategory = () => {
     // Store selected image
     const [selectedImage, setSelectedImage] = useState(null);
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
@@ -48,13 +51,21 @@ const EditCategory = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                setLoading(true);
+                openLoadingModal();
                 const response = await instance.get(`http://152.42.232.101:5050/api/v1/shopping-service/category/${categoryId}`);
                 setFormFields({name: response.data.data.name});
                 setImage(response.data.data.picture);
                 console.log(response.data.data.picture);
             }
             catch (error) {
+                setLoading(false);
+                closeLoadingModal();
                 console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
             }
         }
         fetchData();
@@ -77,16 +88,10 @@ const EditCategory = () => {
 
     const Validate = () => {
         let newFieldErrors = {};
-        let imageErrorMessages = [];
         let isValid = true;
 
         if (formFields.name.trim() === '') {
             newFieldErrors.name = "Vui lòng nhập tên danh mục.";
-            isValid = false;
-        }
-
-        if (!selectedImage) {
-            imageErrorMessages.push('Vui lòng chọn ảnh.');
             isValid = false;
         }
 
@@ -106,11 +111,63 @@ const EditCategory = () => {
     };
     // end set up modal
 
-    const handleUpdate = () => {
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
+
+
+    const getImagesUrl = async () => {
+        if (selectedImage) {
+            try {
+                const fileNameResponse = await mediaInstance.get("media-url");
+                const fileName = fileNameResponse.data.data.fileName;
+
+                const formData = new FormData();
+                formData.append("file", selectedImage);
+
+                const response = await mediaInstance.post(`upload-media/${fileName}`, formData);
+                console.log(response.data.data.mediaUrl);
+                return response.data.data.mediaUrl;
+            }
+            catch (error) {
+                console.log(error);
+            }
+        }
+    }
+
+    const handleUpdate = async () => {
+        closeModal();
+        const pictureUrl = await getImagesUrl();
         if (Object.keys(fieldErrors).length <= 0) {
             // Call API here
+            try {
+                setLoading(true);
+                openLoadingModal();
+                let data = {
+                    name: formFields.name,
+                    picture: pictureUrl ?? image,
+                }
+                await instance.put(`v1/shopping-service/category/${categoryId}`, data)
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
 
-            closeModal();
+                navigate(-1);
+            }
         }
     }
 
@@ -211,12 +268,13 @@ const EditCategory = () => {
                         <div className="flex items-center justify-center select-none">
                             <button className="bg-Blue text-white py-1 px-8 rounded hover:bg-Dark_blue text-center"
                                     onClick={handleValidate}>
-                                Cập nhật
+                                Lưu thay đổi
                             </button>
                         </div>
                     </div>
 
                     <ConfirmModal isOpen={isModalOpen} onClose={closeModal} onConfirm={handleUpdate} title={"Xác nhận cập nhật danh mục"} message={"Bạn có chắc muốn cập nhật danh mục này?"}/>
+                    {loading && <LoadingModal isOpen={isLoadingModalOpen} />}
                 </div>
             </main>
 

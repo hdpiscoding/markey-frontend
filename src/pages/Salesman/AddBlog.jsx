@@ -1,17 +1,46 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import SecondaryHeader from "../../components/General/SecondaryHeader";
 import Footer from "../../components/General/Footer";
 import SalesmanNav from "../../components/Salesman/SalesmanNav";
 import {MdAddPhotoAlternate} from "react-icons/md";
+import ConfirmModal from "../../components/General/ConfirmModal";
+import LoadingModal from "../../components/General/LoadingModal";
+import {instance, mediaInstance} from "../../AxiosConfig";
 
 const AddBlog = () => {
     const [selectedCategory, setSelectedCategory] = useState('default');
-    const [image, setImage] = useState(null);
+    const [selectedImage, setSelectedImage] = useState(null);
     const [fieldErrors, setFieldErrors] = useState({});
     const [formFields, setFormFields] = useState({
         title: '',
         content: '',
     });
+    const [categories, setCategories] = useState([]);
+
+    // set up modal
+    const [isModalOpen, setModalOpen] = useState(false);
+
+    const openModal = () => {
+        setModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalOpen(false);
+    };
+    // end set up modal
+
+    // set up loading modal
+    const [loading, setLoading] = useState(false);
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
 
     const handleCategoryChange = (e) => {
         setSelectedCategory(e.target.value);
@@ -36,7 +65,7 @@ const AddBlog = () => {
         const maxSize = 2 * 1024 * 1024;
 
         if (file && validTypes.includes(file.type) && file.size <= maxSize) {
-            setImage(file);
+            setSelectedImage(file);
             setFieldErrors(prevErrors => ({
                 ...prevErrors,
                 [`image`]: ""
@@ -59,32 +88,120 @@ const AddBlog = () => {
         }
     };
 
-    const handleSubmit = () => {
+    const Validate = () => {
         let newFieldErrors = {};
         let imageErrorMessages = [];
+        let isValid = true;
 
         if (selectedCategory === 'default') {
             newFieldErrors.category = "Vui lòng chọn danh mục.";
+            isValid = false;
         }
 
         if (formFields.title.trim() === '') {
             newFieldErrors.title = "Tiêu đề không được để trống.";
+            isValid = false;
         }
 
         if (formFields.content.trim() === '') {
             newFieldErrors.content = "Nội dung không được để trống.";
+            isValid = false;
         }
 
-        if (!image) {
+        if (!selectedImage) {
             imageErrorMessages.push("Vui lòng chọn ảnh bìa.");
+            isValid = false;
         }
 
         if (imageErrorMessages.length > 0) {
             newFieldErrors.images = imageErrorMessages.join(" ");
+            isValid = false;
         }
 
         setFieldErrors(newFieldErrors);
+        return isValid;
     };
+
+    const getImagesUrl = async () => {
+        if (selectedImage) {
+            try {
+                const fileNameResponse = await mediaInstance.get("media-url");
+                const fileName = fileNameResponse.data.data.fileName;
+
+                const formData = new FormData();
+                formData.append("file", selectedImage);
+
+                const response = await mediaInstance.post(`upload-media/${fileName}`, formData);
+                console.log(response.data.data.mediaUrl);
+                return response.data.data.mediaUrl;
+            }
+            catch (error) {
+                console.log(error);
+            }
+        }
+    }
+
+    const handleValidate = () => {
+        const isValid = Validate();
+        if (isValid) {
+            openModal();
+        }
+    };
+
+    const handleSubmit = async () => {
+        closeModal();
+        const pictureUrl = await getImagesUrl();
+        if (Object.keys(fieldErrors).length <= 0) {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                let data = {
+                    title: formFields.title,
+                    content: formFields.content,
+                    categoryId: selectedCategory,
+                    thumbnail: pictureUrl,
+                    lang_type: "VN"
+                }
+                await instance.post('v1/shopping-service/post', data);
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+                setFormFields({
+                    title: '',
+                    content: '',
+                });
+                setSelectedCategory('default');
+                setSelectedImage(null);
+            }
+        }
+    }
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                // Call API to get all categories
+                const response = await instance.get('v1/shopping-service/category');
+                setCategories(await response.data.data);
+            }
+            catch (error) {
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
+
+        fetchData();
+    }, []);
 
     return (
         <div className="bg-Light_gray w-screen overflow-x-hidden">
@@ -136,8 +253,9 @@ const AddBlog = () => {
                                         onChange={handleCategoryChange}
                                     >
                                         <option value={'default'} hidden disabled>Tên danh mục</option>
-                                        <option value="1">Loại 1</option>
-                                        <option value="2">Loại 2</option>
+                                        {categories.map((category) => (
+                                            <option key={category.id} value={category.id}>{category.name}</option>
+                                        ))}
                                     </select>
                                     {fieldErrors.category && (
                                         <p className="text-Red text-sm">{fieldErrors.category}</p>
@@ -168,12 +286,12 @@ const AddBlog = () => {
                                 <td className="py-3">*Ảnh bìa:</td>
                                 <td className="py-3">
                                     <div className="flex items-center gap-5">
-                                            <div className={`flex items-center justify-center gap-2 h-[135px] w-[276px] ${image ? 'border-Blue bg-Light_gray' : 'bg-Gray'} rounded-md`}
+                                            <div className={`flex items-center justify-center gap-2 h-[135px] w-[276px] ${selectedImage ? 'border-Blue bg-Light_gray' : 'bg-Gray'} rounded-md`}
                                             >
                                                 <label htmlFor={`file`} className="cursor-pointer">
-                                                    {image ? (
+                                                    {selectedImage ? (
                                                         <img
-                                                            src={URL.createObjectURL(image)}
+                                                            src={URL.createObjectURL(selectedImage)}
                                                             alt={`selected`}
                                                             className="h-[135px] w-[276px] object-cover rounded-md"
                                                         />
@@ -202,12 +320,15 @@ const AddBlog = () => {
                         <div className="flex items-center justify-center">
                             <button
                                 className="bg-Blue hover:bg-Dark_blue rounded-md py-1 px-10"
-                                onClick={handleSubmit}
+                                onClick={handleValidate}
                             >
-                                <span className="text-White">Đăng sản phẩm</span>
+                                <span className="text-White">Tạo bài viết</span>
                             </button>
                         </div>
                     </div>
+
+                    <ConfirmModal isOpen={isModalOpen} onClose={closeModal} onConfirm={handleSubmit} title={"Xác nhận thêm bài viết"} message={"Bạn có chắc muốn thêm bài viết này?"}/>
+                    {loading && <LoadingModal isOpen={isLoadingModalOpen} />}
                 </div>
             </main>
 

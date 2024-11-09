@@ -4,10 +4,13 @@ import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
 import {useNavigate} from "react-router-dom";
 import useLocalStorage from "../General/useLocalStorage";
+import axios from "axios";
+import LoadingModal from "../General/LoadingModal";
 
 const CreatePassword = (props) => {
     const navigate = useNavigate();
 
+    const [loading, setLoading] = useState(false);
     const [showPassword_new, setShowPassword_new] = useState(false);
     const [showPassword_confirm, setShowPassword_confirm] = useState(false);
     const [formFields, setFormFields] = useState({
@@ -16,6 +19,21 @@ const CreatePassword = (props) => {
     });
     const [errors, setErrors] = useState({});
     const passwordStorage = useLocalStorage('password');
+    const phoneStorage = useLocalStorage('phone');
+    const codeStorage = useLocalStorage('code');
+    const roleStorage = useLocalStorage('selectedRole');
+
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
 
     const handleShowPassword_new = () => setShowPassword_new(!showPassword_new);
     const handleShowPassword_confirm = () => setShowPassword_confirm(!showPassword_confirm);
@@ -32,7 +50,7 @@ const CreatePassword = (props) => {
         }));
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         const newErrors = {};
 
         // Kiểm tra xem có trường nào trống không
@@ -50,9 +68,44 @@ const CreatePassword = (props) => {
             // Gọi API hoặc tiếp tục quy trình
             // Lưu dữ liệu tam thời vào localStorage
             passwordStorage.set(formFields.confirmPassword);
+            if (props.method === 'forget') {
+                try {
+                    setLoading(true);
+                    openLoadingModal();
+                    await handleChangePassword();
+                }
+                catch (error) {
+                    setLoading(false);
+                    closeLoadingModal();
+                    console.log(error);
+                }
+                finally {
+                    setLoading(false);
+                    closeLoadingModal();
+                    phoneStorage.remove();
+                    codeStorage.remove();
+                    roleStorage.remove();
+                }
+            }
+
             navigate(`${props.method === 'register' ? (props.role === "shopper" ? '/register/enter-shopper-info' : '/register/enter-salesman-info') : '/forget-password/finished'}`);
         }
     };
+
+    const handleChangePassword = async () => {
+        try {
+            let data = {
+                password: formFields.confirmPassword,
+                code: codeStorage.get(),
+                phoneNumber: phoneStorage.get()
+            }
+
+            await axios.post(`http://152.42.232.101:5050/api/v1/user-service/${roleStorage.get()}/reset-password`, data)
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
 
     const handleBackClick = () => {
         // Xóa dữ liệu trong localStorage nếu có
@@ -124,6 +177,8 @@ const CreatePassword = (props) => {
                         <span className="text-White my-1">Tiếp theo</span>
                     </button>
                 </div>
+
+                {loading && <LoadingModal isOpen={isLoadingModalOpen} />}
             </div>
         </div>
     );

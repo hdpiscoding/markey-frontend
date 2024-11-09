@@ -51,7 +51,7 @@ const ShopperInfo = () => {
         if (isValid) {
             let data = {
                 fullname: name,
-                //address: address,
+                address: address,
                 email: emailStorage.get(),
                 phoneNumber: formatPhoneNumber(phoneStorage.get()),
                 password: passwordStorage.get(),
@@ -146,7 +146,7 @@ const ShopperInfo = () => {
                         onClick={handleNextClick}
                         className="rounded-sm w-full font-sans flex flex-col items-center justify-items-center"
                     >
-                        <span className="text-White my-1">Hoàn thành</span>
+                        <span className="text-White my-1">Tiếp theo</span>
                     </button>
                 </div>
 

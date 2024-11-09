@@ -183,9 +183,9 @@ const VerifySalesman = () => {
                                 <select
                                     className={`rounded-sm px-5 py-1 cursor-pointer border border-Blue outline-none ring-2 ring-Blue text-Blue`}
                                     value={selectedDate} onChange={handleSelectedDateChange}>
-                                    <option value="default" disabled hidden>Ngày tạo:</option>
-                                    <option value="1">Ngày tạo: Mới nhất</option>
-                                    <option value="2">Ngày tạo: Cũ nhất</option>
+                                    <option value="default" disabled hidden>Ngày gửi:</option>
+                                    <option value="1">Ngày gửi: Mới nhất</option>
+                                    <option value="2">Ngày gửi: Cũ nhất</option>
                                 </select>
                             </div>
                         </div>

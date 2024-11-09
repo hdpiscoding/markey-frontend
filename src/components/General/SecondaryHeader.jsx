@@ -1,8 +1,9 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import bell_svg from "../../assets/bell.svg";
 import {FiUser} from "react-icons/fi";
 import {Link} from "react-router-dom";
 import useLocalStorage from "./useLocalStorage";
+import {instance} from "../../AxiosConfig";
 
 
 const SecondaryHeader = (props) => {
@@ -17,16 +18,44 @@ const SecondaryHeader = (props) => {
     // Store email API data
     const [email, setEmail] = useState(null);
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                if (roleStorage.get() === "shopper")
+                {
+                    const response = await instance.get(`v1/user-service/shopper/me`);
+                    const item = response.data.data;
+                    setEmail(item.email);
+                    setAvatar(item.profilePicture);
+                }
+                else if (roleStorage.get() === "salesman"){
+                    const response = await instance.get(`v1/user-service/salesman/me`);
+                    const shopResponse = await instance.get('v1/shopping-service/shop/me');
+                    const shop = shopResponse.data.data;
+                    const item = response.data.data;
+                    setEmail(item.email);
+                    setAvatar(shop.profilePicture);
+                }
+
+            }
+            catch (error) {
+                console.log(error);
+            }
+        }
+
+        fetchData();
+    }, []);
+
     return (
         <header className="grid grid-rows-[auto_1fr] w-screen h-auto select-none">
             <div className="bg-gradient-to-b from-Blue to-Light_blue py-2">
                 <div className="grid grid-cols-[1fr_10fr_1fr]">
                     <div className="flex flex-row-reverse gap-10 col-start-2">
-                        <div className="flex items-center justify-items-center ml-4 mr-0.5">
-                            <div className="mr-2 w-[2rem] h-[2rem]">
+                        <div className="flex items-center justify-items-center gap-2 mr-0.5">
+                            <div className="w-[2rem] h-[2rem] rounded-[50%]">
                                 {avatar
                                     ?
-                                    <img src={avatar} alt="avatar" className="w-[2rem] h-[2rem]"/>
+                                    <img src={avatar} alt="avatar" className="w-[2rem] h-[2rem] rounded-[50%]"/>
                                     :
                                     <div className="bg-Light_gray w-[2rem] h-[2rem] rounded-[50%] flex items-center justify-center">
                                         <FiUser className="text-Dark_gray h-[1.25rem] w-[1.25rem]"/>
@@ -38,51 +67,55 @@ const SecondaryHeader = (props) => {
                                 {role === "shopper"
                                     ?
                                     <Link to="/shopper/profile">
-                                        <span className="text-White text-[0.75rem] font-sans text-center">
-                                            {email ?? "placeholder@gmail.com"}
-                                        </span>
+                                        <div className="pb-1.5">
+                                            <span className="text-White text-[0.75rem] font-sans text-center">
+                                                {email ?? "placeholder@gmail.com"}
+                                            </span>
+                                        </div>
+
                                     </Link> : null}
 
                                 {role === "salesman"
                                     ?
                                     <Link to="/salesman">
-                                        <span className="text-White text-[0.75rem] font-sans text-center">
-                                            {email ?? "placeholder@gmail.com"}
-                                        </span>
+                                        <div className="pb-1.5">
+                                            <span className="text-White text-[0.75rem] font-sans text-center">
+                                                {email ?? "placeholder@gmail.com"}
+                                            </span>
+                                        </div>
                                     </Link> : null}
 
                                 {role === "admin"
                                     ?
                                     <Link to="/admin">
-                                        <span className="text-White text-[0.75rem] font-sans text-center">
-                                            {email ?? "placeholder@gmail.com"}
-                                        </span>
+                                        <div className="pb-1.5">
+                                            <span className="text-White text-[0.75rem] font-sans text-center">
+                                                {"admin"}
+                                            </span>
+                                        </div>
+
                                     </Link> : null}
 
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-items-center">
-                            <div className="mr-2">
-                                <img src={bell_svg} alt="bell" className="w-[1.2rem] h-[1.2rem]"/>
-                            </div>
-
-                            {role === "shopper"
-                                ?
-                                <Link to="/shopper/notification">
-                                    <div>
-                                        <span className="text-White text-[0.75rem] font-sans text-center">
-                                            Thông báo
-                                        </span>
-                                    </div>
-                                </Link>
-                                :
+                        {role === "shopper"
+                            ?
+                            <div className="flex items-center justify-center gap-2">
                                 <div>
+                                    <img src={bell_svg} alt="bell" className="w-[1.4rem] h-[1.4rem]"/>
+                                </div>
+
+                                <Link to="/shopper/notification">
+                                    <div className="pb-1">
                                     <span className="text-White text-[0.75rem] font-sans text-center">
                                         Thông báo
                                     </span>
-                                </div>}
-                        </div>
+                                    </div>
+                                </Link>
+                            </div>
+                            :
+                            null}
                     </div>
                 </div>
             </div>

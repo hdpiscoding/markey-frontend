@@ -5,6 +5,7 @@ import {useNavigate} from "react-router-dom";
 
 const ProductCardViewMd = (props) => {
     const navigate = useNavigate();
+    //const [pictures, setPictures] = React.useState(props.picture);
     // format number with dots
     const formatNumberWithDots = (number) => {
         // Convert the number to a string
@@ -45,7 +46,7 @@ const ProductCardViewMd = (props) => {
             <div className="bg-White border h-[300px] w-[190px] select-none cursor-pointer duration-100 ease-sharp-motion-curve hover:shadow-hover active:shadow-active hover:-translate-y-[1px] active:translate-y-0 hover:border-Blue hover:ring-Blue hover:ring-2" onClick={() => handleClick(props.id)}>
                 <div className="grid grid-rows-[200px_50px_50px]">
                     <div className="row-start-1 flex items-center justify-center mb-1">
-                        <img src={props.image ?? sample2} alt="ProductCardViewLg"
+                        <img src={sample2} alt="ProductCardViewLg"
                              className="object-cover w-[200px] h-[200px]"/>
                     </div>
 
@@ -64,7 +65,7 @@ const ProductCardViewMd = (props) => {
 
                         <div className="flex items-center">
                         <span className="text-[0.75rem] font-sans text-Star font-semibold">
-                            {props.rating ?? "5.0"}/5.0
+                            {props.ratingAverage ?? "0.0"}/5.0
                         </span>
 
                             <IoMdStar className="text-Star"/>

@@ -99,7 +99,7 @@ const ViewShopDetailsVerify = () => {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <span className="text-[2rem] font-semibold">
-                                        Chỉnh sửa thông tin người bán
+                                        Thông tin người bán
                                     </span>
                                 </div>
 

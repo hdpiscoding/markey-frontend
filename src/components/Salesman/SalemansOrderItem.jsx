@@ -13,7 +13,7 @@ const SalemansOrderItem = (props) => {
     }
 
     const handleApprove = () => {
-        // Call API to update status of the order to "ĐANG GIAO HÀNG"
+        // Call API to update status of the order to "DELIVERING"
 
         // Callback to re-render the list of orders
         props.onApprove();
@@ -32,16 +32,26 @@ const SalemansOrderItem = (props) => {
                             {props.productName ?? "Versace Cologne - Đẳng cấp từ nước Ý"}
                         </span>
 
-                        <span className="text-sm">
+                        <div className="flex items-center gap-1">
+                            <span className="text-[0.8rem]">
+                                Đơn giá:
+                            </span>
+
+                            <span className="text-[0.8rem] text-Red font-semibold">
+                                đ {formatNumberWithDots(props.price ?? 100000)}
+                            </span>
+                        </div>
+
+
+                        <span className="text-[0.8rem]">
                             Số lượng: {props.quantity ?? 10}
                         </span>
                     </div>
                 </div>
 
                 <div className="flex items-center justify-end">
-                    <span className="font-semibold text-pretty text-lg text-Red">
-                        đ {//formatNumberWithDots(props.price) ??
-                        formatNumberWithDots(1000000)}
+                    <span className="font-semibold text-pretty text-xl text-Red">
+                        đ {formatNumberWithDots(props.price * props.quantity ?? 1000000)}
                     </span>
                 </div>
             </div>

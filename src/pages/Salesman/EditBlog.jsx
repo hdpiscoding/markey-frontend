@@ -2,41 +2,81 @@ import React, {useEffect, useState} from 'react';
 import SecondaryHeader from "../../components/General/SecondaryHeader";
 import SalesmanNav from "../../components/Salesman/SalesmanNav";
 import Footer from "../../components/General/Footer";
-import product_1 from "../../assets/product_1.png";
+import ConfirmModal from "../../components/General/ConfirmModal";
+import LoadingModal from "../../components/General/LoadingModal";
+import {instance, mediaInstance} from "../../AxiosConfig";
+import {useNavigate, useParams} from "react-router-dom";
 
 const EditBlog = () => {
-    const categories = [
-        { id: 1, name: "Chăm sóc tóc" },
-        { id: 2, name: "Chăm sóc da mặt" },
-        { id: 3, name: "Trang điểm" },
-        { id: 4, name: "Chăm sóc cơ thể" },
-        { id: 5, name: "Chăm sóc da mắt" },
-        { id: 6, name: "Chăm sóc da môi" },
-    ];
-
-    const blog = { id: 1, title: "5 bí quyết chăm sóc tóc khỏe mạnh",  category: "Chăm sóc cơ thể", content: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.\n" +
-            "\n" +
-            "In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus.\n" +
-            "\n" + "Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc," };
-
+    const navigate = useNavigate();
+    const {blogId} = useParams();
+    const [blog, setBlog] = useState(null);
+    const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('default');
     const [image, setImage] = useState(null);
+    const [selectedImage, setSelectedImage] = useState(null);
     const [fieldErrors, setFieldErrors] = useState({});
     const [formFields, setFormFields] = useState({
         title: '',
         content: '',
     });
 
+    // set up modal
+    const [isModalOpen, setModalOpen] = useState(false);
+
+    const openModal = () => {
+        setModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalOpen(false);
+    };
+    // end set up modal
+
+    // set up loading modal
+    const [loading, setLoading] = useState(false);
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                const categoriesResponse = await instance.get("v1/shopping-service/category");
+                setCategories(await categoriesResponse.data.data);
+
+                const blogResponse = await instance.get(`v1/shopping-service/post/${blogId}`);
+                setBlog(await blogResponse.data.data);
+            }
+            catch (error) {
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
+
+        fetchData();
+    }, []);
+
     useEffect(() => {
         setFormFields({
-            title: blog.title || '',
-            content: blog.content || '',
+            title: blog?.title || '',
+            content: blog?.content || '',
         });
-
-        setSelectedCategory(blog.category || 'default');
-
-        //image
-    }, []);
+        setImage(blog?.thumbnail || null);
+        setSelectedCategory(blog?.categoryId || 'default');
+    }, [blog, categories]);
 
     const handleCategoryChange = (e) => {
         setSelectedCategory(e.target.value);
@@ -61,7 +101,7 @@ const EditBlog = () => {
         const maxSize = 2 * 1024 * 1024;
 
         if (file && validTypes.includes(file.type) && file.size <= maxSize) {
-            setImage(file);
+            setSelectedImage(file);
             setFieldErrors(prevErrors => ({
                 ...prevErrors,
                 [`image`]: ""
@@ -84,32 +124,95 @@ const EditBlog = () => {
         }
     };
 
-    const handleSubmit = () => {
+    const Validate = () => {
         let newFieldErrors = {};
         let imageErrorMessages = [];
+        let isValid = true;
 
         if (selectedCategory === 'default') {
             newFieldErrors.category = "Vui lòng chọn danh mục.";
+            isValid = false;
         }
 
         if (formFields.title.trim() === '') {
             newFieldErrors.title = "Tiêu đề không được để trống.";
+            isValid = false;
         }
 
         if (formFields.content.trim() === '') {
             newFieldErrors.content = "Nội dung không được để trống.";
+            isValid = false;
         }
 
-        if (!image) {
+        if (!(selectedImage || image)) {
             imageErrorMessages.push("Vui lòng chọn ảnh bìa.");
+            isValid = false;
         }
 
         if (imageErrorMessages.length > 0) {
             newFieldErrors.images = imageErrorMessages.join(" ");
+            isValid = false;
         }
 
         setFieldErrors(newFieldErrors);
+        return isValid;
     };
+
+    const getImagesUrl = async () => {
+        if (selectedImage) {
+            try {
+                const fileNameResponse = await mediaInstance.get("media-url");
+                const fileName = fileNameResponse.data.data.fileName;
+
+                const formData = new FormData();
+                formData.append("file", selectedImage);
+
+                const response = await mediaInstance.post(`upload-media/${fileName}`, formData);
+                console.log(response.data.data.mediaUrl);
+                return response.data.data.mediaUrl;
+            }
+            catch (error) {
+                console.log(error);
+            }
+        }
+    }
+
+    const handleValidate = () => {
+        const isValid = Validate();
+        if (isValid) {
+            openModal();
+        }
+    };
+
+    const handleSubmit = async () => {
+        closeModal();
+        const pictureUrl = await getImagesUrl();
+        if (Object.keys(fieldErrors).length <= 0) {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                let data = {
+                    title: formFields.title,
+                    content: formFields.content,
+                    categoryId: selectedCategory,
+                    thumbnail: pictureUrl ?? image,
+                    lang_type: "VN"
+                }
+                await instance.put(`v1/shopping-service/post/${blogId}`, data);
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+                navigate('/salesman/all-blogs');
+            }
+        }
+
+    }
 
     return (
         <div className="bg-Light_gray w-screen overflow-x-hidden">
@@ -162,7 +265,7 @@ const EditBlog = () => {
                                     >
                                         <option value={'default'} hidden disabled>Tên danh mục</option>
                                         {categories.map((category) => (
-                                            <option key={category.id} value={category.name}>{category.name}</option>
+                                            <option key={category.id} value={category.id}>{category.name}</option>
                                         ))}
                                     </select>
                                     {fieldErrors.category && (
@@ -197,15 +300,15 @@ const EditBlog = () => {
                                         <div className={`flex items-center justify-center gap-2 h-[135px] w-[276px] ${image ? 'border-Blue bg-Light_gray' : 'bg-Gray'} rounded-md`}
                                         >
                                             <label htmlFor={`file`} className="cursor-pointer">
-                                                {image ? (
+                                                {selectedImage ? (
                                                     <img
-                                                        src={URL.createObjectURL(image)}
+                                                        src={URL.createObjectURL(selectedImage)}
                                                         alt={`selected`}
                                                         className="h-[135px] w-[276px] object-cover rounded-md"
                                                     />
                                                 ) : (
                                                     <img
-                                                        src={product_1}
+                                                        src={image}
                                                         alt={`selected`}
                                                         className="h-[135px] w-[276px] object-cover rounded-md"
                                                     />
@@ -231,12 +334,15 @@ const EditBlog = () => {
                         <div className="flex items-center justify-center">
                             <button
                                 className="bg-Blue hover:bg-Dark_blue rounded-md py-1 px-10"
-                                onClick={handleSubmit}
+                                onClick={handleValidate}
                             >
-                                <span className="text-White">Cập nhật</span>
+                                <span className="text-White">Lưu thay đổi</span>
                             </button>
                         </div>
                     </div>
+
+                    <ConfirmModal isOpen={isModalOpen} onClose={closeModal} onConfirm={handleSubmit} title={"Xác nhận chỉnh sửa bài viết"} message={"Bạn có chắc muốn chỉnh sửa bài viết này?"}/>
+                    {loading && <LoadingModal isOpen={isLoadingModalOpen} />}
                 </div>
             </main>
 

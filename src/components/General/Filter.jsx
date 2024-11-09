@@ -29,6 +29,13 @@ const Filter = (props) => {
         }
     }
 
+    const handleApplyPrice = () => {
+        checkPrices();
+        if (checkPrice) {
+            // Call API to filter by price
+        }
+    }
+
     const ratingFilters = [
         { id: 1, value: 5, isFiveStar: true },
         { id: 2, value: 4, isFiveStar: false },
@@ -38,7 +45,18 @@ const Filter = (props) => {
     ];
 
     const handleRatingFilter = (id) => {
-        ratingFilter === id ? setRatingFilter(0) : setRatingFilter(id);
+        // ratingFilter === id ? setRatingFilter(0) : setRatingFilter(id);
+        setRatingFilter(id);
+        // Call API to filter by rating
+
+    }
+
+    const handleRemoveFilter = () => {
+        setFromPrice('');
+        setToPrice('');
+        setRatingFilter(0);
+        // Call API to reset filter
+
     }
 
     return (
@@ -76,7 +94,7 @@ const Filter = (props) => {
                     <div className="flex flex-col gap-4">
                         {checkPrice ? null : <span className="text-Red text-sm">Vui lòng điền khoảng giá phù hợp</span>}
 
-                        <button className="bg-Blue rounded-md w-full py-0.5 hover:bg-Dark_blue select-none" onClick={() => checkPrices()}>
+                        <button className="bg-Blue rounded-md w-full py-0.5 hover:bg-Dark_blue select-none" onClick={handleApplyPrice}>
                             <span className="text-White">
                                 ÁP DỤNG
                             </span>
@@ -97,7 +115,7 @@ const Filter = (props) => {
                                 key={rating.id}
                                 onClick={() => { handleRatingFilter(rating.id); }}
                                 className={`py-1 flex items-center justify-around rounded-md ${rating.id === ratingFilter ? "bg-White" : ""}`}>
-                                <Rating name={rating.id} value={rating.value} readOnly precision={0.5}/>
+                                <Rating name={rating.id} value={rating.value} readOnly/>
 
                                 {rating.isFiveStar
                                     ?
@@ -115,7 +133,7 @@ const Filter = (props) => {
                     <div className="border-t-2 w-full border-Black opacity-30"></div>
 
                     <div className="select-none">
-                        <button className="bg-Red rounded-md w-full py-0.5 hover:bg-Dark_red">
+                        <button className="bg-Red rounded-md w-full py-0.5 hover:bg-Dark_red" onClick={handleRemoveFilter}>
                             <span className="text-White">
                                 XÓA TẤT CẢ
                             </span>

@@ -123,13 +123,13 @@ const ShopperCart = () => {
                                     ?
                                     <button className="bg-Blue rounded-sm py-2 px-6 hover:bg-Dark_blue" onClick={handleBuy}>
                                         <span className="text-White text-lg">
-                                            Mua hàng
+                                            Đặt hàng
                                         </span>
                                     </button>
                                     :
                                     <button className="bg-Light_blue rounded-sm py-2 px-6 cursor-not-allowed" disabled>
                                         <span className="text-White text-lg">
-                                            Mua hàng
+                                            Đặt hàng
                                         </span>
                                     </button>}
                             </div>

@@ -54,10 +54,10 @@ instance.interceptors.response.use(
             // Lỗi từ server (4xx, 5xx)
             console.error('API Error:', error.response);
             // Tùy chọn: Xử lý lỗi xác thực
-            if (error.response.status === 401) {
-                // Điều hướng đến trang login hoặc xử lý logout nếu token không hợp lệ
-                window.location.href = '/login';
-            }
+            // if (error.response.status === 401) {
+            //     // Điều hướng đến trang login hoặc xử lý logout nếu token không hợp lệ
+            //     window.location.href = '/login';
+            // }
         } else if (error.request) {
             // Không có phản hồi từ server
             console.error('No response received:', error.request);

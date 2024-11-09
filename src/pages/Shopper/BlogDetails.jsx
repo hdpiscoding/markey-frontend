@@ -4,6 +4,7 @@ import Footer from "../../components/General/Footer";
 import { FaRegClock } from "react-icons/fa";
 import sample_blog from "../../assets/sample_blog.png";
 import BlogCardView from "../../components/Shopper/BlogCardView";
+import {Link} from "react-router-dom";
 
 const BlogDetails = () => {
     const suggestedBlogs = [
@@ -93,11 +94,13 @@ const BlogDetails = () => {
                             </div>
 
                             <div className="flex items-center justify-center">
-                                <button className="bg-Lighter_gray rounded-lg px-5 py-1 hover:bg-[#f9f9f9]">
-                                    <span className="text-Gray text-xl">
-                                        Xem thêm
-                                    </span>
-                                </button>
+                                <Link to="/shopper/recommended-blogs">
+                                    <button className="bg-Lighter_gray rounded-lg px-5 py-1 hover:bg-[#f9f9f9]">
+                                        <span className="text-Gray text-xl">
+                                            Xem thêm
+                                        </span>
+                                    </button>
+                                </Link>
                             </div>
                         </div>
                     </div>

@@ -94,7 +94,7 @@ const SalesmanNav = (props) => {
 
                 <div>
                     <span className="font-semibold text-lg">
-                        Quản lý blog
+                        Quản lý bài viết
                     </span>
                 </div>
 
@@ -104,7 +104,7 @@ const SalesmanNav = (props) => {
                 <Link to="/salesman/all-blogs">
                     <div className="cursor-pointer select-none">
                         <span className={`${props.currentPage === 4 ? "text-Blue" : "text-Dark_gray"}`}>
-                            Tất cả blog
+                            Tất cả bài viết
                         </span>
                     </div>
                 </Link>
@@ -113,7 +113,7 @@ const SalesmanNav = (props) => {
                 <Link to="/salesman/add-blog">
                     <div className="cursor-pointer select-none">
                         <span className={`${props.currentPage === 5 ? "text-Blue" : "text-Dark_gray"}`}>
-                            Thêm blog
+                            Thêm bài viết
                         </span>
                     </div>
                 </Link>
@@ -125,7 +125,7 @@ const SalesmanNav = (props) => {
 
                 <div>
                     <span className="font-semibold text-lg">
-                        Quản lý Shop
+                        Quản lý cửa hàng
                     </span>
                 </div>
 

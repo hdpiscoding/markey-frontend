@@ -1,23 +1,86 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import PrimaryHeader from "../../components/General/PrimaryHeader";
 import Footer from "../../components/General/Footer";
 import AccountNav from "../../components/Shopper/AccountNav";
 import AddressModal from "../../components/Shopper/AddressModal";
+import LoadingModal from "../../components/General/LoadingModal";
+import {instance} from "../../AxiosConfig";
 
 const ShopperAddress = () => {
-    const [haveAddress, setHaveAddress] = React.useState(false);
+    const convertPhoneNumber = (phoneNumber) => {
+        if (phoneNumber?.startsWith('+84')) {
+            return '0' + phoneNumber?.slice(3);
+        }
+        return phoneNumber;
+    }
 
     const [open, setOpen] = React.useState(false);
 
     const [name, setName] = React.useState(null);
     const [phone, setPhone] = React.useState(null);
     const [address, setAddress] = React.useState(null);
+    const [id, setId] = React.useState(null);
 
-    const getInfoCallback = (name, phone, address) => {
-        setName(name);
-        setPhone(phone);
-        setAddress(address);
-        setHaveAddress(true);
+
+    const [loading, setLoading] = useState(false);
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
+
+    useEffect(() => {
+        // Call API to get address
+        // If have address, setHaveAddress(true) else setHaveAddress(false)
+
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                const response = await instance.get(`v1/user-service/shopper/me`);
+                setName(response.data.data.fullname);
+                setPhone(response.data.data.phoneNumber);
+                setId(response.data.data.id);
+                if (response.data.data.address) {
+                    setAddress(response.data.data.address);
+                }
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
+
+        fetchData();
+    }, []);
+
+    const handleUpdate = async () => {
+        try {
+            setLoading(true);
+            openLoadingModal();
+            const response = await instance.get(`v1/user-service/shopper/me`);
+            setAddress(response.data.data.address);
+        }
+        catch (error) {
+            setLoading(false);
+            closeLoadingModal();
+            console.log(error);
+        }
+        finally {
+            setLoading(false);
+            closeLoadingModal();
+        }
     }
 
     return (
@@ -38,54 +101,45 @@ const ShopperAddress = () => {
 
                             <div className="border-t-2 w-full text-Dark_gray"></div>
 
-                            {!haveAddress
-                                ?
-                                <div className="select-none">
-                                    <button className="bg-Blue rounded-sm p-2 hover:bg-Dark_blue"
+                            <div className="flex justify-between items-center">
+                                <div className="flex flex-col gap-1">
+                                    <div className="flex items-center gap-2">
+                                        <span className="font-semibold">
+                                            {name}
+                                        </span>
+
+                                        <div className="border-l-2 h-5 border-Dark_gray"></div>
+
+                                        <div>
+                                            {convertPhoneNumber(phone)}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <span className="text-sm">
+                                            {address}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-center">
+                                    <button className="bg-Blue rounded-md py-2 px-4 hover:bg-Dark_blue"
                                             onClick={() => setOpen(true)}>
                                         <span className="text-White">
-                                            Thêm địa chỉ mới
+                                            Cập nhật
                                         </span>
                                     </button>
                                 </div>
-                                :
-                                <div className="flex justify-between items-center">
-                                    <div className="flex flex-col gap-1">
-                                        <div className="flex items-center gap-2">
-                                            <span className="font-semibold">
-                                                {name}
-                                            </span>
-
-                                            <div className="border-l-2 h-5 border-Dark_gray"></div>
-
-                                            <div>
-                                                {phone}
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <span className="text-sm">
-                                                {address}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center justify-center">
-                                        <button className="bg-Blue rounded-md py-2 px-4 hover:bg-Dark_blue"
-                                                onClick={() => setOpen(true)}>
-                                            <span className="text-White">
-                                                Cập nhật
-                                            </span>
-                                        </button>
-                                    </div>
-                                </div>}
+                            </div>
 
                             <div>
-                                <AddressModal open={open} onClose={() => setOpen(false)} name={name} phone={phone}
-                                              address={address} onUpdateInfo={getInfoCallback}/>
+                                <AddressModal open={open} onClose={() => setOpen(false)}
+                                              address={address} id={id} onUpdate={handleUpdate}/>
                             </div>
                         </div>
                     </div>
+
+                    {loading && <LoadingModal isOpen={isLoadingModalOpen} />}
                 </div>
             </main>
 

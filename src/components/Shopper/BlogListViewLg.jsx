@@ -4,6 +4,15 @@ import clock from '../../assets/clock.svg';
 import {useNavigate} from "react-router-dom";
 
 const BlogListViewLg = (props) => {
+    const formatDateTime = (inputDateTime) => {
+        // Tách chuỗi ngày và thời gian
+        const [date, time] = inputDateTime.split(' ');
+        // Tách chuỗi ngày thành các phần tử năm, tháng, ngày
+        const [year, month, day] = date.split('-');
+        // Trả về chuỗi ngày theo định dạng DD/MM/YYYY HH:MM:SS
+        return `${day}/${month}/${year} ${time}`;
+    }
+
     const navigate = useNavigate();
 
     const handleClick = (blogId) => {
@@ -19,9 +28,7 @@ const BlogListViewLg = (props) => {
         <article className="bg-White h-[200px] w-auto rounded-md">
             <div className="grid grid-cols-[30%_70%]">
                 <div className="col-start-1 select-none">
-                    <a href="#">
-                        <img src={sample_blog} alt="blog" className="object-cover h-[200px] rounded-l-md"/>
-                    </a>
+                    <img src={props.thumbnail} alt="blog" className="object-cover h-[200px] w-full rounded-l-md"/>
                 </div>
 
                 <div className="col-start-2 mx-4">
@@ -59,7 +66,7 @@ const BlogListViewLg = (props) => {
                                 </div>
 
                                 <span className="text-[0.875rem] text-Dark_gray">
-                                    {props.date ?? "18/04/2024"}
+                                    {formatDateTime(props.date) ?? "18/04/2024"}
                                 </span>
                             </div>
                         </div>

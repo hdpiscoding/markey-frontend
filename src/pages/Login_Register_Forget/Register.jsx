@@ -2,8 +2,13 @@ import React, {useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import useLocalStorage from "../../components/General/useLocalStorage";
 import axios from "axios";
+import InfoModal from "../../components/General/InfoModal";
+import LoadingModal from "../../components/General/LoadingModal";
 
 const Register = () => {
+    const formatPhoneNumber = (phoneNumber) => {
+        return phoneNumber.replace(/^0/, '+84');
+    }
     const navigate = useNavigate();
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
@@ -13,6 +18,31 @@ const Register = () => {
     const phoneStorage = useLocalStorage('phone');
     const emailStorage = useLocalStorage('email');
     const roleStorage = useLocalStorage('selectedRole');
+
+    const [loading, setLoading] = useState(false);
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
+
+    // set up modal
+    const [isModalOpen, setModalOpen] = useState(false);
+
+    const openModal = () => {
+        setModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalOpen(false);
+    };
+    // end set up modal
 
     const handleRoleChange = (e) => {
         setSelectedRole(e.target.value);
@@ -35,6 +65,9 @@ const Register = () => {
         if (!phone) {
             newErrors.phone = 'Vui lòng nhập số điện thoại.';
         }
+        else if (phone.length !== 10) {
+            newErrors.phone = 'Số điện thoại phải đủ 10 chữ số.';
+        }
 
         // Kiểm tra email không được để trống
         if (!email) {
@@ -55,22 +88,27 @@ const Register = () => {
             let newErrors = {};
             // Call API kiểm tra xem số điện thoại và email đã tồn tại trong hệ thống chưa
             try {
-                const data = {
+                setLoading(true);
+                openLoadingModal();
+                let data = {
                     email: email,
-                    phoneNumber: phone
+                    phoneNumber: formatPhoneNumber(phone),
                 }
                 const response = await axios.post('http://152.42.232.101:5050/api/v1/user-service/shopper/register/validation', data);
-                if (response.data.code === 400) {
-                    newErrors.email = 'Email hoặc số điện thoại đã tồn tại';
-                    newErrors.phone = 'Email hoặc số điện thoại đã tồn tại';
-                    console.log(response.data.message);
-                }
-                else {
-                    console.log(response.data.message)
-                }
             }
             catch (error) {
+                if (error.response) {
+                    newErrors.email = 'Email hoặc số điện thoại đã tồn tại';
+                    newErrors.phone = 'Email hoặc số điện thoại đã tồn tại';
+                }
+                setLoading(false);
+                closeLoadingModal();
+                openModal();
                 console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
             }
 
             // Chỉ tiếp tục nếu không có lỗi
@@ -144,13 +182,17 @@ const Register = () => {
                 </div>
 
                 <div className="mb-4 select-none">
-          <span>
-            Bạn đã có tài khoản?
-            <Link to="/login">
-              <span className="ml-2 text-Red">Đăng nhập</span>
-            </Link>
-          </span>
+                  <span>
+                    Bạn đã có tài khoản?
+                    <Link to="/login">
+                      <span className="ml-2 text-Red">Đăng nhập</span>
+                    </Link>
+                  </span>
                 </div>
+
+                <InfoModal isOpen={isModalOpen} onClose={closeModal} title="Đăng ký thất bại"
+                           message="Email hoặc số điện thoại đã tồn tại. Vui lòng đăng ký lại!"/>
+                {loading && <LoadingModal isOpen={isLoadingModalOpen} />}
             </div>
         </div>
     );

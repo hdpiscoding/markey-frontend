@@ -1,15 +1,98 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import SecondaryHeader from "../../components/General/SecondaryHeader";
 import SalesmanNav from "../../components/Salesman/SalesmanNav";
 import product_1 from "../../assets/product_1.png";
 import Footer from "../../components/General/Footer";
-import {Link} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
+import LoadingModal from "../../components/General/LoadingModal";
+import {instance} from "../../AxiosConfig";
+import ConfirmModal from "../../components/General/ConfirmModal";
 
 const ViewBlog = () => {
-    const blog = { id: 1, title: "5 bí quyết chăm sóc tóc khỏe mạnh",  category: "Chăm sóc cơ thể", content: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.\n" +
-            "\n" +
-            "In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus.\n" +
-            "\n" + "Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc," };
+    const navigate = useNavigate();
+    const {blogId} = useParams();
+    const [blog, setBlog] = useState();
+    const [category, setCategory] = useState();
+
+    const [loading, setLoading] = useState(false);
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
+
+    // set up modal
+    const [isModalOpen, setModalOpen] = useState(false);
+
+    const openModal = () => {
+        setModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalOpen(false);
+    };
+    // end set up modal
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                const response = await instance.get(`v1/shopping-service/post/${blogId}`);
+                setBlog(await response.data.data);
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await instance.get(`v1/shopping-service/category/${blog?.categoryId}`);
+                setCategory(await response.data.data.name);
+            }
+            catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchData();
+    }, [blog]);
+
+    const handleDelete = async () => {
+        try {
+            setLoading(true);
+            openLoadingModal();
+            await instance.delete(`v1/shopping-service/post/${blogId}`);
+
+        }
+        catch (error) {
+            setLoading(false);
+            closeLoadingModal();
+            console.log(error);
+        }
+        finally {
+            setLoading(false);
+            closeLoadingModal();
+            navigate('/salesman/all-blogs');
+        }
+    }
 
     return (
         <div className="bg-Light_gray w-screen overflow-x-hidden">
@@ -31,14 +114,14 @@ const ViewBlog = () => {
                                 </div>
 
                                 <div className="flex items-center justify-center gap-10">
-                                    <Link to={`/salesman/edit-blog/${blog.id}`}>
+                                    <Link to={`/salesman/edit-blog/${blogId}`}>
                                         <span className="font-semibold text-Blue cursor-pointer hover:text-Dark_blue">
                                             Sửa
                                         </span>
                                     </Link>
 
 
-                                    <span className="font-semibold text-Red cursor-pointer hover:text-Dark_red">
+                                    <span className="font-semibold text-Red cursor-pointer hover:text-Dark_red" onClick={openModal}>
                                         Xóa
                                     </span>
                                 </div>
@@ -53,7 +136,7 @@ const ViewBlog = () => {
                                 <td className="py-3">*Tiêu đề:</td>
                                 <td className="py-3">
                                     <span className="font-semibold">
-                                        {blog.title}
+                                        {blog?.title}
                                     </span>
                                 </td>
                             </tr>
@@ -64,7 +147,7 @@ const ViewBlog = () => {
                                 <td className="py-3">*Danh mục:</td>
                                 <td className="py-3">
                                     <span className="font-semibold">
-                                        {blog.category}
+                                        {category}
                                     </span>
                                 </td>
                             </tr>
@@ -75,7 +158,7 @@ const ViewBlog = () => {
                                 <td className="py-3">*Nội dung:</td>
                                 <td className="py-3 w-[80%]">
                                     <p className="whitespace-pre-line">
-                                        {blog.content}
+                                        {blog?.content}
                                     </p>
                                 </td>
                             </tr>
@@ -88,13 +171,8 @@ const ViewBlog = () => {
                                     <div className="flex items-center gap-5">
                                         <div className={`flex items-center justify-center gap-2 h-[135px] w-[276px] bg-Light_gray rounded-md`}
                                         >
-                                            {/*<img*/}
-                                            {/*    src={URL.createObjectURL(image)}*/}
-                                            {/*    alt={`selected`}*/}
-                                            {/*    className="h-[135px] w-[276px] object-cover rounded-md"*/}
-                                            {/*/>*/}
                                             <img
-                                                src={product_1}
+                                                src={blog?.thumbnail}
                                                 alt={`selected`}
                                                 className="h-[135px] w-[276px] object-cover rounded-md"
                                             />
@@ -105,6 +183,9 @@ const ViewBlog = () => {
                             </tbody>
                         </table>
                     </div>
+
+                    <ConfirmModal isOpen={isModalOpen} onClose={closeModal} onConfirm={handleDelete} title={"Xác nhận xóa bài viết"} message={"Bạn có chắc muốn xóa bài viết này?"}/>
+                    {loading && <LoadingModal isOpen={isLoadingModalOpen} />}
                 </div>
             </main>
 

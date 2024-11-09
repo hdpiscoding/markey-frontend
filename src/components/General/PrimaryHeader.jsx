@@ -5,14 +5,16 @@ import find_svg from "../../assets/find.svg";
 import cart_svg from "../../assets/cart.svg";
 import {FiUser} from "react-icons/fi";
 import {Link, useNavigate} from "react-router-dom";
+import useLocalStorage from "./useLocalStorage";
+import {instance} from "../../AxiosConfig";
 
 const PrimaryHeader = (props) => {
     //const navigate = useNavigate();
 
-    // Create a transition to prevent the UI from freezing
-    const [isPending, startTransition] = useTransition();
-
     // Get token from localStorage here and extract shopper_id and role
+    const tokenStorage = useLocalStorage('token');
+    const roleStorage = useLocalStorage('role');
+    const userStorage = useLocalStorage('userId');
 
     // Store email API data
     const [email, setEmail] = useState(null);
@@ -22,7 +24,19 @@ const PrimaryHeader = (props) => {
 
     useEffect(() => {
         // Call API to get email, avatar from shopper_id
+        const fetchData = async () => {
+            try {
+                const response = await instance.get("v1/user-service/shopper/me");
+                const item = response.data.data;
+                setEmail(item.email);
+                setAvatar(item.profilePicture);
+            }
+            catch (error) {
+                console.log(error);
+            }
+        }
 
+        fetchData();
     },[])
 
     return (
@@ -30,11 +44,11 @@ const PrimaryHeader = (props) => {
             <div className="col-start-2">
                 <div className="grid grid-rows-[auto_1fr] my-3">
                     <div className="flex flex-row-reverse gap-10 mb-1">
-                        <div className="flex items-center justify-items-center ml-4 mr-0.5">
-                            <div className="mr-2 w-[2rem] h-[2rem]">
+                        <div className="flex items-center justify-center gap-2 mr-0.5">
+                            <div className="w-[2rem] h-[2rem] rounded-[50%]">
                                 {avatar
                                     ?
-                                    <img src={avatar} alt="avatar" className="w-[2rem] h-[2rem]"/>
+                                    <img src={avatar} alt="avatar" className="w-[2rem] h-[2rem] rounded-[50%]"/>
                                     :
                                     <div className="bg-Light_gray w-[2rem] h-[2rem] rounded-[50%] flex items-center justify-center">
                                         <FiUser className="text-Dark_gray h-[1.25rem] w-[1.25rem]"/>
@@ -43,7 +57,7 @@ const PrimaryHeader = (props) => {
 
                             </div>
 
-                            <div>
+                            <div className="pb-1.5">
                                 <Link to="/shopper/profile">
                                     <span className="text-White text-[0.75rem] font-sans text-center">
                                         {email ?? "placeholder@gmail.com"}
@@ -52,19 +66,18 @@ const PrimaryHeader = (props) => {
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-items-center ml-4">
-                            <div className="mr-2">
-                                <img src={bell_svg} alt="bell" className="w-[1.2rem] h-[1.2rem]"/>
+                        <div className="flex items-center justify-center gap-2">
+                            <div>
+                                <img src={bell_svg} alt="bell" className="w-[1.4rem] h-[1.4rem]"/>
                             </div>
 
-                            <a href="#">
-                                <Link to="/shopper/notification">
+                            <Link to="/shopper/notification">
+                                <div className="pb-1">
                                     <span className="text-White text-[0.75rem] font-sans text-center">
                                         Thông báo
                                     </span>
-                                </Link>
-                            </a>
-
+                                </div>
+                            </Link>
                         </div>
                     </div>
 
