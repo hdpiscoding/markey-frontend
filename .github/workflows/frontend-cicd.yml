@@ -1,9 +1,9 @@
-name: Eduhub Frontend CI/CD Pipeline
+name: Frontend CI/CD Pipeline
 
 on:
   push:
     branches:
-      - frontend/release
+      - release
 
 jobs:
   deploy:
