@@ -119,8 +119,6 @@ const ManageSalesman = () => {
 
     return (
         <div className="bg-Light_gray w-screen overflow-x-hidden">
-            <SecondaryHeader head="Quản trị viên"/>
-
             <main className="grid grid-cols-[1fr_10fr_1fr] my-4">
                 <div className="col-start-2 grid grid-cols-[15%_2%_83%]">
                     <div className="col-start-1 flex justify-center">

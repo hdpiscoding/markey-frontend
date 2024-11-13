@@ -1,23 +1,41 @@
 import React, {useEffect, useState} from 'react';
-import PrimaryHeader from "../../components/General/PrimaryHeader";
 import Footer from "../../components/General/Footer";
 import AccountNav from "../../components/Shopper/AccountNav";
-import OrderItem from "../../components/Shopper/OrderItem";
+import LoadingModal from "../../components/General/LoadingModal";
+import {instance} from "../../AxiosConfig";
+import {Pagination, Stack} from "@mui/material";
+import OrderWrapper from "../../components/Shopper/OrderWrapper";
+import useLocalStorage from "../../components/General/useLocalStorage";
 
 const ShopperOrder = () => {
-    const orderItems = [
-        { id: 1, name: "Son môi màu đỏ quyến rũ", price: 150000, quantity: 2500, status: "CHƯA THANH TOÁN" },
-        { id: 2, name: "Nước hoa hương chanh tươi mát", price: 800000, quantity: 1800, status: "CHƯA THANH TOÁN" },
-        { id: 3, name: "Kem dưỡng da ban đêm chống lão hóa", price: 600000, quantity: 1500, status: "CHƯA THANH TOÁN" },
-        { id: 4, name: "Sữa rửa mặt làm sạch sâu", price: 200000, quantity: 3200, status: "CHƯA THANH TOÁN" },
-        { id: 5, name: "Mặt nạ cấp ẩm chiết xuất thiên nhiên", price: 75000, quantity: 4800, status: "CHƯA THANH TOÁN" },
-        { id: 6, name: "Phấn nền trang điểm tự nhiên", price: 500000, quantity: 3100, status: "CHƯA THANH TOÁN" },
-        { id: 7, name: "Chì kẻ mắt chống nước", price: 120000, quantity: 5400, status: "CHƯA THANH TOÁN" },
-        { id: 8, name: "Nước tẩy trang dịu nhẹ", price: 250000, quantity: 900, status: "CHƯA THANH TOÁN" },
-        { id: 9, name: "Son dưỡng môi SPF 15", price: 95000, quantity: 2200, status: "CHƯA THANH TOÁN" },
-        { id: 10, name: "Kem chống nắng SPF 50", price: 400000, quantity: 3600, status: "CHƯA THANH TOÁN" },
-    ];
-    const [status, setStatus] = useState("CHƯA THANH TOÁN");
+    const userIdStorage = useLocalStorage("userId");
+    // set up pagination
+    const [page, setPage] = useState(1);
+
+    const [itemsPerPage, setItemsPerPage] = useState(5);
+    const [totalPages, setTotalPages] = useState(null);
+
+    const handlePageChange = (event, value) => {
+        setPage(value);
+        window.scrollTo(0, 0)
+    }
+    // end of set up pagination
+
+    const [loading, setLoading] = useState(false);
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
+
+    const [orderItems, setOrderItems] = useState([]);
+    const [status, setStatus] = useState("NOT_PAID"); // NOT_PAID: chưa thanh toán, PENDING: đang chờ xử lý, DELIVERING: đang giao hàng, COMPLETED: hoàn thành
 
     const handleStatusChange = (newStatus) => {
         setStatus(newStatus);
@@ -26,12 +44,98 @@ const ShopperOrder = () => {
     // Tải dữ liệu ban đầu
     useEffect(() => {
         // Call API để lấy dữ liệu
+        setPage(1);
+        setItemsPerPage(5);
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                let filter = {
+                    sort: {
+                        "by": "createAt",
+                        "order": "DESC" // DESC | ASC
+                    },
+                    status: "NOT_PAID",
+                    shopperId: userIdStorage.get()
+                }
+                const response = await instance.post(`v1/order-service/order/filter?page=${page}&rpp=${itemsPerPage}`, filter);
+                setOrderItems(response.data.data.items);
+                setTotalPages(Math.ceil(response.data.data.total / itemsPerPage));
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
+
+        fetchData();
     }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                let filter = {
+                    sort: {
+                        "by": "createAt",
+                        "order": "DESC" // DESC | ASC
+                    },
+                    status: status,
+                    shopperId: userIdStorage.get()
+                }
+                const response = await instance.post(`v1/order-service/order/filter?page=${page}&rpp=${itemsPerPage}`, filter);
+                setOrderItems(response.data.data.items);
+                setTotalPages(Math.ceil(response.data.data.total / itemsPerPage));
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
+
+        fetchData();
+    }, [status, page]);
+
+    const handlePayment = async () => {
+        try {
+            setLoading(true);
+            openLoadingModal();
+            let filter = {
+                sort: {
+                    "by": "createAt",
+                    "order": "DESC" // DESC | ASC
+                },
+                status: status,
+                shopperId: userIdStorage.get()
+            }
+            const response = await instance.post(`v1/order-service/order/filter?page=${page}&rpp=${itemsPerPage}`, filter);
+            setOrderItems(response.data.data.items);
+            setTotalPages(Math.ceil(response.data.data.total / itemsPerPage));
+        }
+        catch (error) {
+            setLoading(false);
+            closeLoadingModal();
+            console.log(error);
+        }
+        finally {
+            setLoading(false);
+            closeLoadingModal();
+        }
+    }
 
     return (
         <div className="bg-Light_gray w-screen overflow-x-hidden">
-            <PrimaryHeader/>
-
             <main className="grid grid-cols-[1fr_10fr_1fr] my-4">
                 <div className="col-start-2 grid grid-cols-[15%_2%_83%]">
                     <div className="col-start-1 flex justify-center">
@@ -43,64 +147,101 @@ const ShopperOrder = () => {
                             <div className="grid grid-cols-[25%_25%_25%_25%]">
                                 <div className="flex flex-col text-center gap-2 select-none">
                                     <span
-                                        className={`cursor-pointer font-semibold text-xl ${status === "CHƯA THANH TOÁN" ? "text-Blue" : "text-Black"}`}
-                                        onClick={() => handleStatusChange("CHƯA THANH TOÁN")}>
+                                        className={`cursor-pointer font-semibold text-xl ${status === "NOT_PAID" ? "text-Blue" : "text-Black"}`}
+                                        onClick={() => handleStatusChange("NOT_PAID")}>
                                         CHƯA THANH TOÁN
                                     </span>
 
-                                    {status === "CHƯA THANH TOÁN" && <div className="border-t-2 w-full border-Blue"></div>}
+                                    {status === "NOT_PAID" && <div className="border-t-2 w-full border-Blue"></div>}
 
                                 </div>
 
                                 <div className="select-none flex flex-col text-center gap-2">
                                     <span
-                                        className={`cursor-pointer font-semibold text-xl ${status === "CHỜ XỬ LÝ" ? "text-Blue" : "text-Black"}`}
-                                        onClick={() => handleStatusChange("CHỜ XỬ LÝ")}>
+                                        className={`cursor-pointer font-semibold text-xl ${status === "PENDING" ? "text-Blue" : "text-Black"}`}
+                                        onClick={() => handleStatusChange("PENDING")}>
                                         CHỜ XỬ LÝ
                                     </span>
 
-                                    {status === "CHỜ XỬ LÝ" && <div className="border-t-2 w-full border-Blue"></div>}
+                                    {status === "PENDING" && <div className="border-t-2 w-full border-Blue"></div>}
                                 </div>
 
                                 <div className="flex flex-col text-center gap-2 select-none">
                                 <span
-                                    className={`cursor-pointer font-semibold text-xl ${status === "ĐANG GIAO HÀNG" ? "text-Blue" : "text-Black"}`}
-                                    onClick={() => handleStatusChange("ĐANG GIAO HÀNG")}>
+                                    className={`cursor-pointer font-semibold text-xl ${status === "DELIVERING" ? "text-Blue" : "text-Black"}`}
+                                    onClick={() => handleStatusChange("DELIVERING")}>
                                     ĐANG GIAO HÀNG
                                 </span>
 
-                                    {status === "ĐANG GIAO HÀNG" &&
+                                    {status === "DELIVERING" &&
                                         <div className="border-t-2 w-full border-Blue"></div>}
                                 </div>
 
                                 <div className="flex flex-col text-center gap-2 select-none">
                                 <span
-                                    className={`cursor-pointer font-semibold text-xl ${status === "ĐÃ NHẬN HÀNG" ? "text-Blue" : "text-Black"}`}
-                                    onClick={() => handleStatusChange("ĐÃ NHẬN HÀNG")}>
+                                    className={`cursor-pointer font-semibold text-xl ${status === "COMPLETED" ? "text-Blue" : "text-Black"}`}
+                                    onClick={() => handleStatusChange("COMPLETED")}>
                                     ĐÃ NHẬN HÀNG
                                 </span>
 
-                                    {status === "ĐÃ NHẬN HÀNG" && <div className="border-t-2 w-full border-Blue"></div>}
+                                    {status === "COMPLETED" && <div className="border-t-2 w-full border-Blue"></div>}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="flex flex-col gap-4 px-4 col-start-3">
+                        {orderItems.length === 0
+                            ?
+                            <div className="flex bg-Lighter_gray items-center justify-center py-2">
+                                <span className="text-Dark_gray">
+                                    Hiện tại bạn chưa có đơn hàng nào!
+                                </span>
+                            </div>
+                            :
+                            <div className="flex flex-col gap-4 px-4 col-start-3">
                             {orderItems.map((item) => (
-                                <OrderItem
+                                <OrderWrapper
                                     key={item.id}
-                                    id={item.id}
-                                    productName={item.name}
-                                    price={item.price}
-                                    quantity={item.quantity}
+                                    orderId={item.id}
+                                    order={item}
                                     status={item.status}
+                                    onPayment={handlePayment}
                                 />
                             ))}
+                        </div>}
+
+
+                        <div className="flex items-center justify-center">
+                            <Stack>
+                                <Pagination
+                                    count={totalPages}
+                                    page={page}
+                                    onChange={handlePageChange}
+                                    variant="text"
+                                    shape="rounded"
+                                    sx={{
+                                        "& .MuiPaginationItem-root": {
+                                            color: "#AAAAAA",            // Màu văn bản mặc định
+                                        },
+                                        '& .MuiPaginationItem-root:hover': {
+                                            // Màu khi hover
+                                            backgroundColor: '#008DDA', // Màu nền khi hover
+                                            color: 'white', // Màu chữ khi hover
+                                        },
+                                        "& .Mui-selected": {
+                                            backgroundColor: "#008DDA !important", // Màu nền cho item được chọn
+                                            color: "white",              // Màu chữ cho item được chọn
+                                        },
+                                        "& .MuiPaginationItem-ellipsis": {
+                                            color: "#AAAAAA"              // Màu sắc cho dấu ba chấm (ellipsis)
+                                        }
+                                    }}/>
+                            </Stack>
                         </div>
                     </div>
 
-                </div>
+                    {loading && <LoadingModal isOpen={isLoadingModalOpen}/>}
 
+                </div>
             </main>
 
             <Footer/>

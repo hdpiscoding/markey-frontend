@@ -28,7 +28,7 @@ const BlogListViewLg = (props) => {
         <article className="bg-White h-[200px] w-auto rounded-md">
             <div className="grid grid-cols-[30%_70%]">
                 <div className="col-start-1 select-none">
-                    <img src={props.thumbnail} alt="blog" className="object-cover h-[200px] w-full rounded-l-md"/>
+                    <img src={props.picture} alt="blog" className="object-cover h-[200px] w-full rounded-l-md"/>
                 </div>
 
                 <div className="col-start-2 mx-4">

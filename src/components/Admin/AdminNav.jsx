@@ -1,8 +1,6 @@
 import React, {useState} from 'react';
 import { TfiMenuAlt } from "react-icons/tfi";
 import { FaRegUser } from "react-icons/fa";
-import {BsBoxSeam, BsPostcard} from "react-icons/bs";
-import {PiStorefrontLight} from "react-icons/pi";
 import {MdOutlineLogout} from "react-icons/md";
 import { AiOutlineHome } from "react-icons/ai";
 import {Link, useNavigate} from "react-router-dom";
@@ -14,11 +12,13 @@ const AdminNav = (props) => {
     const tokenStorage = useLocalStorage('token');
     const roleStorage = useLocalStorage('role');
     const authStorage = useLocalStorage('auth');
+    const userIdStorage = useLocalStorage('userId');
     const handleLogout = () => {
         // Remove token from localStorage
         tokenStorage.remove();
         roleStorage.remove();
         authStorage.remove();
+        userIdStorage.remove();
         navigate("/login", { replace: true });
     }
 

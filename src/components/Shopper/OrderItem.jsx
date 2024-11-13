@@ -1,38 +1,69 @@
-import React from 'react';
-import AccountNav from "./AccountNav";
-import versace from "../../assets/versace_cologne.svg";
+import React, {useEffect} from 'react';
 import RatingModal from "./RatingModal";
+import useLocalStorage from "../General/useLocalStorage";
+import {instance} from "../../AxiosConfig";
 
 const OrderItem = (props) => {
     const formatNumberWithDots = (number) => {
         // Convert the number to a string
-        let numberStr = number.toString();
+        let numberStr = number?.toString();
 
         // Use a regular expression to add dots every three digits from the end
-        let formattedStr = numberStr.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        let formattedStr = numberStr?.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
         return formattedStr;
     }
 
-    const [isRating, setIsRating] = React.useState(false);
+    const userIdStorage = useLocalStorage("userId");
+    const [ratingId, setRatingId] = React.useState(null);
+
+    const [isRating, setIsRating] = React.useState(null);
 
     const [open, setOpen] = React.useState(false);
 
+    useEffect(() => {
+        const checkRating = async () => {
+            try {
+                const response = await instance.get(`v1/shopping-service/product-rating/have-rated?productId=${props.productId}&shopperId=${userIdStorage.get()}`);
+                setIsRating(true);
+                setRatingId(response.data.data.id);
+                console.log(props.productId + " " + userIdStorage.get());
+            }
+            catch (error) {
+                setIsRating(false);
+                console.log(error);
+            }
+        }
+
+        checkRating();
+    }, []);
+
+    useEffect(() => {
+        //console.log(isRating + " " + rating + " " + comment);
+    }, [isRating]);
+
+    const handleRate = () => {
+        const checkRating = async () => {
+            try {
+                const response = await instance.get(`v1/shopping-service/product-rating/have-rated?productId=${props.productId}&shopperId=${userIdStorage.get()}`);
+                setIsRating(true);
+                setRatingId(response.data.data.id);
+            }
+            catch (error) {
+                setIsRating(false);
+                console.log(error);
+            }
+        }
+
+        checkRating();
+    }
+
     return (
         <div className="bg-White rounded-md flex flex-col gap-3 shadow">
-            <div className="flex flex-col px-4 py-2 gap-1">
-                <div>
-                    <span
-                        className="font-semibold text-xl text-Blue">{props.status ?? "CHỜ DUYỆT HÀNG"}</span>
-                </div>
-
-                <div className="border-t-2 w-full border-Dark_gray"></div>
-            </div>
-
-            <div className="grid grid-cols-[85%_15%] px-4">
+            <div className="grid grid-cols-[85%_15%] pr-4">
                 <div className="flex gap-4 col-start-1">
                     <div>
-                        <img src={versace} alt="product_img" className="object-cover h-[100px] w-[100px]"/>
+                        <img src={props.picture} alt="product_img" className="object-cover h-[100px] w-[100px] p-2"/>
                     </div>
 
                     <div className="flex flex-col justify-around">
@@ -40,67 +71,46 @@ const OrderItem = (props) => {
                             {props.productName ?? "Versace Cologne - Đẳng cấp từ nước Ý"}
                         </span>
 
-                        <span className="text-sm">
-                            Số lượng: {props.quantity ?? 10}
+                        <div className="flex items-center gap-1">
+                            <span className="text-[0.8rem]">
+                                Đơn giá:
+                            </span>
+
+                            <span className="text-[0.8rem] text-Red font-semibold">
+                                đ {formatNumberWithDots(props.price)}
+                            </span>
+                        </div>
+
+                        <span className="text-[0.8rem]">
+                            Số lượng: {props.quantity}
                         </span>
                     </div>
                 </div>
 
                 <div className="flex items-center justify-end">
                     <span className="font-semibold text-pretty text-lg text-Red">
-                        đ {formatNumberWithDots(props.price) ?? formatNumberWithDots(1000000)}
+                        đ {formatNumberWithDots(props.price * props.quantity ?? 0)}
                     </span>
                 </div>
             </div>
 
-            <div className="flex flex-col items-end px-4">
-                <div className="flex flex-row-reverse items-center gap-5">
-                    <span className="text-Red text-xl font-bold">
-                        đ {formatNumberWithDots((props.price * props.quantity)) ?? formatNumberWithDots(10000000)}
-                    </span>
-
-                    <span className="text-Black">
-                        Thành tiền:
-                    </span>
-                </div>
-            </div>
-
-            <div className="flex flex-row-reverse items-end gap-8 px-4 pb-4">
-                <div>
-                    <button className="bg-Blue hover:bg-Dark_blue rounded-md text-center px-6 py-1.5">
-                            <span className="text-White">
-                                Mua lại
-                            </span>
+            {props.status?.toLowerCase() === "hoàn thành"
+                ?
+                <div className="flex flex-row-reverse w-full pr-3">
+                    <button className="bg-Lighter_blue border border-Blue hover:bg-Lighterter_blue rounded-md text-center px-6 py-1.5"
+                            onClick={() => {
+                                setOpen(true)
+                            }}>
+                        <span className="text-Blue">
+                            {isRating ? "Xem đánh giá" : "Đánh giá"}
+                        </span>
                     </button>
                 </div>
-
-                {props.status === "CHƯA THANH TOÁN"
-                    ?
-                    <div>
-                        <button className="bg-Red hover:bg-Dark_red rounded-md text-center px-6 py-1.5">
-                                <span className="text-White">
-                                    Thanh toán
-                                </span>
-                        </button>
-                    </div>
-                    : null}
-
-                {props.status === "ĐÃ NHẬN HÀNG"
-                    ?
-                    <div>
-                        <button
-                            className="bg-Lighter_blue border border-Blue hover:bg-Lighterter_blue rounded-md text-center px-6 py-1.5"
-                            onClick={() => {setOpen(true)}}>
-                                <span className="text-Blue">
-                                    {isRating ? "Đã đánh giá" : "Đánh giá"}
-                                </span>
-                        </button>
-                    </div>
-                    : null}
-            </div>
+                : null}
 
             <div>
-                <RatingModal open={open} onClose={() => setOpen(false)} productID={props.id} productName={props.name} isRating={isRating}/>
+                <RatingModal open={open} onClose={() => setOpen(false)} productId={props.productId} picture={props.picture}
+                             productName={props.productName} isRating={isRating} ratingId={ratingId} onRate={handleRate}/>
             </div>
         </div>
     );

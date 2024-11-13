@@ -11,34 +11,60 @@ import avatar from "../../assets/avatar_holder.svg";
 import { PiStorefrontLight } from "react-icons/pi";
 import RatingListItem from "../../components/Shopper/RatingListItem";
 import { Pagination, Stack } from "@mui/material";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
+import LoadingModal from "../../components/General/LoadingModal";
+import {instance} from "../../AxiosConfig";
+import {FiUser} from "react-icons/fi";
 
 
 const ProductDetails = (props) => {
+    const { productId } = useParams();
+
+    const [loading, setLoading] = useState(false);
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
+
+    const [product, setProduct] = useState({});
+    const [address, setAddress] = useState('');
+    const [shopProducts, setShopProducts] = useState([]);
+
     const navigate = useNavigate();
     // calculate time difference
     const calculateTimeDifference = (inputDate) => {
-        const currentDate = new Date();
-        const targetDate = new Date(inputDate);
+        if (inputDate) {
+            const [date, time] = inputDate.split(' ');
 
-        if(targetDate === currentDate) {
-            return "0 ngày";
+            const currentDate = new Date();
+            const targetDate = new Date(date);
+
+            if(targetDate === currentDate) {
+                return "0 ngày";
+            }
+
+            const diffInMilliseconds = currentDate - targetDate;
+            const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
+
+            if (diffInDays <= 30) {
+                return `${diffInDays} ngày`;
+            }
+
+            const diffInMonths = Math.floor(diffInDays / 30);
+            if (diffInMonths <= 11) {
+                return `${diffInMonths} tháng`;
+            }
+
+            const diffInYears = Math.floor(diffInMonths / 12);
+            return `${diffInYears} năm`;
         }
-
-        const diffInMilliseconds = currentDate - targetDate;
-        const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
-
-        if (diffInDays <= 30) {
-            return `${diffInDays} ngày`;
-        }
-
-        const diffInMonths = Math.floor(diffInDays / 30);
-        if (diffInMonths <= 11) {
-            return `${diffInMonths} tháng`;
-        }
-
-        const diffInYears = Math.floor(diffInMonths / 12);
-        return `${diffInYears} năm`;
     }
 
     // convert number (k, m, b)
@@ -50,41 +76,21 @@ const ProductDetails = (props) => {
         } else if (number >= 1e3) {
             return (number / 1e3).toFixed(1).replace(/\.0$/, '') + 'k';
         } else {
-            return number.toString();
+            return number?.toString();
         }
     }
 
+    const [hoRateList, setHORateList] = useState([]);
+
     const rateFilterList = [
         { id: 1, text: 'Tất cả' },
-        { id: 2, text: `5 sao (${props.fiveStar ?? convertNumber(0)})` },
-        { id: 3, text: `4 sao (${props.fourStar ?? convertNumber(0)})` },
-        { id: 4, text: `3 sao (${props.threeStar ?? convertNumber(0)})` },
-        { id: 5, text: `2 sao (${props.twoStar ?? convertNumber(0)})` },
-        { id: 6, text: `1 sao (${props.oneStar ?? convertNumber(0)})` },
+        { id: 2, text: `5 sao (${convertNumber(hoRateList.totalRating5) ?? convertNumber(0)})` },
+        { id: 3, text: `4 sao (${convertNumber(hoRateList.totalRating4) ?? convertNumber(0)})` },
+        { id: 4, text: `3 sao (${convertNumber(hoRateList.totalRating3) ?? convertNumber(0)})` },
+        { id: 5, text: `2 sao (${convertNumber(hoRateList.totalRating2) ?? convertNumber(0)})` },
+        { id: 6, text: `1 sao (${convertNumber(hoRateList.totalRating1) ?? convertNumber(0)})` },
     ];
 
-    const rateList = [
-        { id: 1, name: 'Lionel Messi', rating: 5.0, date: '2024-10-01' },
-        { id: 2, name: 'Cristiano Ronaldo', rating: 5.0, date: '2024-10-02' },
-        { id: 3, name: 'Neymar Jr.', rating: 4.0, date: '2024-10-03' },
-        { id: 4, name: 'Kylian Mbappé', rating: 4.0, date: '2024-10-04' },
-        { id: 5, name: 'Kevin De Bruyne', rating: 3.0, date: '2024-10-05' },
-        { id: 6, name: 'Mohamed Salah', rating: 4.0, date: '2024-10-06' },
-        { id: 7, name: 'Robert Lewandowski', rating: 4.0, date: '2024-10-07' },
-        { id: 8, name: 'Virgil van Dijk', rating: 3.0, date: '2024-10-08' },
-        { id: 9, name: 'Sadio Mané', rating: 4.0, date: '2024-10-09' },
-        { id: 10, name: 'Karim Benzema', rating: 4.0, date: '2024-10-10' },
-        { id: 11, name: 'Gareth Bale', rating: 3.0, date: '2024-10-11' },
-        { id: 12, name: 'Kaká', rating: 5.0, date: '2024-10-12' },
-        { id: 13, name: 'Zinedine Zidane', rating: 4.0, date: '2024-10-13' },
-        { id: 14, name: 'Ronaldinho', rating: 5.0, date: '2024-10-14' },
-        { id: 15, name: 'Pele', rating: 5.0, date: '2024-10-15' },
-        { id: 16, name: 'Diego Maradona', rating: 4.0, date: '2024-10-16' },
-        { id: 17, name: 'Andrés Iniesta', rating: 4.0, date: '2024-10-17' },
-        { id: 18, name: 'Xavi Hernandez', rating: 4.0, date: '2024-10-18' },
-        { id: 19, name: 'Frank Lampard', rating: 3.0, date: '2024-10-19' },
-        { id: 20, name: 'Thierry Henry', rating: 4.0, date: '2024-10-20' },
-    ];
 
     // state for quantity
     const [quantity, setQuantity] = useState(1);
@@ -110,8 +116,8 @@ const ProductDetails = (props) => {
         // Chỉ cập nhật state nếu giá trị là một số hợp lệ
         if (value === '' || /^\d+$/.test(value)) {
             if (value !== '') {
-                if(value >= (props.max_quantity ?? 7777)){
-                    setQuantity(props.max_quantity ?? 7777);
+                if(value >= (product.quantity)){
+                    setQuantity(product.quantity);
                 }
                 else {
                     setQuantity(parseInt(value));
@@ -126,32 +132,34 @@ const ProductDetails = (props) => {
     // format number with dots
     const formatNumberWithDots = (number) => {
         // Convert the number to a string
-        let numberStr = number.toString();
+        let numberStr = number?.toString();
 
         // Use a regular expression to add dots every three digits from the end
-        let formattedStr = numberStr.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        let formattedStr = numberStr?.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
         return formattedStr;
     }
 
     // state for image
-    const [imgURL, setImgURL] = useState(product_1);
+    const [imgURL, setImgURL] = useState("");
 
     const [imgIndex, setImgIndex] = useState(1);
 
+    const [images, setImages] = useState([]);
+
     const handleImage1 = () => {
         setImgIndex(1);
-        setImgURL(product_1);
+        setImgURL(images[0]);
     }
 
     const handleImage2 = () => {
         setImgIndex(2);
-        setImgURL(product_2);
+        setImgURL(images[1]);
     }
 
     const handleImage3 = () => {
         setImgIndex(3);
-        setImgURL(product_3);
+        setImgURL(images[2]);
     }
 
     const [selectedRate, setSelectedRate] = useState(1);
@@ -165,18 +173,155 @@ const ProductDetails = (props) => {
 
     const indexOfLastItem = page * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem- itemsPerPage;
-    const currentItems = rateList.slice(indexOfFirstItem, indexOfLastItem);
+    const [currentRateList, setCurrentRateList] = useState((hoRateList.ratings)?.slice(indexOfFirstItem, indexOfLastItem));
 
-    const totalPages = Math.ceil(rateList.length / itemsPerPage);
+    const [totalPages, setTotalPages] = useState(Math.ceil((hoRateList.ratings)?.length / itemsPerPage));
 
     const handleChange = (event, value) => {
         setPage(value);
     }
 
-    // Sample date
+    useEffect(() => {
+        switch (selectedRate) {
+            case 1:{
+                try {
+                    setLoading(true);
+                    openLoadingModal();
+                    setCurrentRateList((hoRateList.ratings)?.filter((rateItem) => rateItem.rating >= 0).slice(indexOfFirstItem, indexOfLastItem));
+                    setPage(1);
+                    setTotalPages(Math.ceil((hoRateList.ratings)?.filter((rateItem) => rateItem.rating >= 0).length / itemsPerPage));
+                }
+                catch (error) {
+                    setLoading(false);
+                    closeLoadingModal();
+                    console.log(error);
+                }
+                finally {
+                    setLoading(false);
+                    closeLoadingModal();
+                }
+            }break;
 
-    const handleAddToCart = () => {
+            case 2:{
+                try {
+                    setLoading(true);
+                    openLoadingModal();
+                    setCurrentRateList((hoRateList.ratings)?.filter((rateItem) => rateItem.rating === 5).slice(indexOfFirstItem, indexOfLastItem));
+                    setPage(1);
+                    setTotalPages(Math.ceil((hoRateList.ratings)?.filter((rateItem) => rateItem.rating === 5).length / itemsPerPage));
+                }
+                catch (error) {
+                    setLoading(false);
+                    closeLoadingModal();
+                    console.log(error);
+                }
+                finally {
+                    setLoading(false);
+                    closeLoadingModal();
+                }
+            }break;
+
+            case 3:{
+                try {
+                    setLoading(true);
+                    openLoadingModal();
+                    setCurrentRateList((hoRateList.ratings)?.filter((rateItem) => rateItem.rating === 4).slice(indexOfFirstItem, indexOfLastItem));
+                    setPage(1);
+                    setTotalPages(Math.ceil((hoRateList.ratings)?.filter((rateItem) => rateItem.rating === 4).length / itemsPerPage));
+                }
+                catch (error) {
+                    setLoading(false);
+                    closeLoadingModal();
+                    console.log(error);
+                }
+                finally {
+                    setLoading(false);
+                    closeLoadingModal();
+                }
+            }break;
+
+            case 4:{
+                try {
+                    setLoading(true);
+                    openLoadingModal();
+                    setCurrentRateList((hoRateList.ratings)?.filter((rateItem) => rateItem.rating === 3).slice(indexOfFirstItem, indexOfLastItem));
+                    setPage(1);
+                    setTotalPages(Math.ceil((hoRateList.ratings)?.filter((rateItem) => rateItem.rating === 3).length / itemsPerPage));
+                }
+                catch (error) {
+                    setLoading(false);
+                    closeLoadingModal();
+                    console.log(error);
+                }
+                finally {
+                    setLoading(false);
+                    closeLoadingModal();
+                }
+            }break;
+
+            case 5:{
+                try {
+                    setLoading(true);
+                    openLoadingModal();
+                    setCurrentRateList((hoRateList.ratings)?.filter((rateItem) => rateItem.rating === 2).slice(indexOfFirstItem, indexOfLastItem));
+                    setPage(1);
+                    setTotalPages(Math.ceil((hoRateList.ratings)?.filter((rateItem) => rateItem.rating === 2).length / itemsPerPage));
+                }
+                catch (error) {
+                    setLoading(false);
+                    closeLoadingModal();
+                    console.log(error);
+                }
+                finally {
+                    setLoading(false);
+                    closeLoadingModal();
+                }
+            }break;
+
+            case 6:{
+                try {
+                    setLoading(true);
+                    openLoadingModal();
+                    setCurrentRateList((hoRateList.ratings)?.filter((rateItem) => rateItem.rating === 1).slice(indexOfFirstItem, indexOfLastItem));
+                    setPage(1);
+                    setTotalPages(Math.ceil((hoRateList.ratings)?.filter((rateItem) => rateItem.rating === 1).length / itemsPerPage));
+                }
+                catch (error) {
+                    setLoading(false);
+                    closeLoadingModal();
+                    console.log(error);
+                }
+                finally {
+                    setLoading(false);
+                    closeLoadingModal();
+                }
+            }break;
+
+            default: break;
+        }
+    }, [selectedRate, page]);
+
+    const handleAddToCart = async () => {
         // Call API to add product to cart
+        try {
+            setLoading(true);
+            openLoadingModal();
+            let data = {
+                productId: productId,
+                amount: quantity
+            }
+            await instance.post('v1/shopping-service/cart/add', data);
+        }
+        catch (error) {
+            setLoading(false);
+            closeLoadingModal();
+            console.log(error);
+        }
+        finally {
+            setLoading(false);
+            closeLoadingModal();
+            setQuantity(1);
+        }
     }
 
     const handleViewShop = (shopId) => {
@@ -184,17 +329,57 @@ const ProductDetails = (props) => {
         navigate(`/shopper/shop/${shopId}`);
     }
 
-    // Call API to get product details data,
     useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                const getMeResponse = await instance.get('v1/user-service/shopper/me');
+                setAddress(getMeResponse.data.data.address);
 
-    }, [handleAddToCart]);
+                // Call API to get product details data
+                const response = await instance.get(`v1/shopping-service/product/${productId}`);
+                setProduct( await response.data.data);
+                setImages(response.data.data.picture);
+                setImgURL(response.data.data.picture[0]);
 
+                // Call API to get rate list
+                const rateResponse = await instance.get(`v1/shopping-service/product-rating/by-product/${productId}`);
+                setHORateList(rateResponse.data.data);
+                setSelectedRate(1);
+                setPage(1);
+                setTotalPages(Math.ceil(rateResponse.data.data.ratings?.length / itemsPerPage));
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
 
+        fetchData();
+    }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await instance.get(`v1/shopping-service/product/by-shop/${product?.shopId}?rpp=100&page=1`)
+                setShopProducts(response.data.data.items);
+            }
+            catch (error) {
+                console.log(error);
+            }
+        }
+
+        fetchData();
+    }, [product]);
 
     return (
         <div className="bg-Light_gray w-screen">
-            <PrimaryHeader/>
-
             <main className="grid grid-cols-[1fr_10fr_1fr]">
                 <div className="col-start-2">
                     <div className="bg-White rounded-sm grid grid-cols-[37%_63%] my-2 gap-4">
@@ -208,13 +393,13 @@ const ProductDetails = (props) => {
                                     ?
                                     <div
                                         className="border border-Blue ring-2 ring-Blue flex flex-shrink-0 cursor-pointer">
-                                        <img src={props.images ?? product_1} alt="img"
+                                        <img src={images[0] ?? product_1} alt="img"
                                              className="object-cover w-[9rem] h-[9rem]" onClick={handleImage1}/>
                                     </div>
                                     :
                                     <div
                                         className="border flex flex-shrink-0 cursor-pointer">
-                                        <img src={props.images ?? product_1} alt="img"
+                                        <img src={images[0] ?? product_1} alt="img"
                                              className="object-cover w-[9rem] h-[9rem]" onClick={handleImage1}/>
                                     </div>}
 
@@ -222,13 +407,13 @@ const ProductDetails = (props) => {
                                     ?
                                     <div
                                         className="border border-Blue ring-2 ring-Blue flex flex-shrink-0 cursor-pointer">
-                                        <img src={props.images ?? product_2} alt="img"
+                                        <img src={images[1] ?? product_2} alt="img"
                                              className="object-cover w-[9rem] h-[9rem]" onClick={handleImage2}/>
                                     </div>
                                     :
                                     <div
                                         className="border flex flex-shrink-0 cursor-pointer">
-                                        <img src={props.images ?? product_2} alt="img"
+                                        <img src={images[1] ?? product_2} alt="img"
                                              className="object-cover w-[9rem] h-[9rem]" onClick={handleImage2}/>
                                     </div>}
 
@@ -236,13 +421,13 @@ const ProductDetails = (props) => {
                                     ?
                                     <div
                                         className="border border-Blue ring-2 ring-Blue flex flex-shrink-0 cursor-pointer">
-                                        <img src={props.images ?? product_3} alt="img"
+                                        <img src={images[2] ?? product_3} alt="img"
                                              className="object-cover w-[9rem] h-[9rem]" onClick={handleImage3}/>
                                     </div>
                                     :
                                     <div
                                         className="border flex flex-shrink-0 cursor-pointer">
-                                        <img src={props.images ?? product_3} alt="img"
+                                        <img src={images[2] ?? product_3} alt="img"
                                              className="object-cover w-[9rem] h-[9rem]" onClick={handleImage3}/>
                                     </div>}
                             </div>
@@ -251,18 +436,18 @@ const ProductDetails = (props) => {
                         <div className="col-start-2 my-2 flex flex-col gap-2">
                             <div>
                                 <span className="text-[2rem] font-semibold text-pretty">
-                                    {props.name ?? "Mặt nạ giấy trắng da Vedette Nha Đam 22ml"}
+                                    {product.name ?? "Mặt nạ giấy trắng da Vedette Nha Đam 22ml"}
                                 </span>
                             </div>
 
                             <div className="flex items-center gap-3">
                                 <div>
                                     <span className="text-Star font-semibold text-xl">
-                                        {props.rating ?? "5.0"}
+                                        {product.ratingAverage?.toFixed(1) ?? "0.0"}
                                     </span>
                                 </div>
 
-                                <Rating name="product_rating" value={props.rating ?? 5} readOnly sx={{
+                                <Rating name="product_rating" value={product.ratingAverage?.toFixed(1) ?? 0} precision={0.1} readOnly sx={{
                                     '& .MuiRating-iconFilled': {
                                         color: '#FABC3F',
                                     }, '& .MuiRating-iconHover': {
@@ -274,7 +459,7 @@ const ProductDetails = (props) => {
 
                                 <div className="flex items-center justify-center gap-1">
                                     <span className="ttext-Black font-semibold text-md">
-                                        {props.reviews ?? convertNumber(777777)}
+                                        {convertNumber(hoRateList.ratings?.length ?? 0)}
                                     </span>
 
                                     <span className="text-Gray text-md">
@@ -289,7 +474,7 @@ const ProductDetails = (props) => {
                                 </span>
 
                                 <span className="text-Red font-bold text-[2rem]">
-                                    {props.price ?? formatNumberWithDots(777777)}
+                                    {formatNumberWithDots(product.price) ?? formatNumberWithDots(777777)}
                                 </span>
                             </div>
 
@@ -327,7 +512,7 @@ const ProductDetails = (props) => {
                                         </span>
 
                                         <span className="text-Black font-bold text-md">
-                                            {props.address ?? "Đường Hàn Thuyên, khu phố 6 P, Thủ Đức, Hồ Chí Minh"}
+                                            {address ?? "Đường Hàn Thuyên, khu phố 6 P, Thủ Đức, Hồ Chí Minh"}
                                         </span>
                                     </div>
 
@@ -354,7 +539,7 @@ const ProductDetails = (props) => {
                                                        value={quantity} onChange={handleInputChange}/>
                                             </div>
 
-                                            {quantity >= (props.max_quantity ?? 7777)
+                                            {quantity >= (product.quantity)
                                                 ?
                                                 <button
                                                     className="border-l h-[28px] border-l-Black flex items-center justify-center select-none cursor-not-allowed"
@@ -372,7 +557,7 @@ const ProductDetails = (props) => {
 
                                         <div>
                                             <span className="text-Gray">
-                                                Còn {props.max_quantity ?? 7777} sản phẩm
+                                                Còn {product.quantity} sản phẩm
                                             </span>
                                         </div>
                                     </div>
@@ -381,7 +566,7 @@ const ProductDetails = (props) => {
 
                             <div className="mt-10">
                                 <button
-                                    className="border border-Blue rounded-sm bg-Lighter_blue flex items-center justify-around gap-3 p-2 hover:bg-Lighterter_blue">
+                                    className="border border-Blue rounded-sm bg-Lighter_blue flex items-center justify-around gap-3 p-2 hover:bg-Lighterter_blue" onClick={handleAddToCart}>
                                     <div>
                                         <MdAddShoppingCart className="text-Blue h-6 w-6"/>
                                     </div>
@@ -398,19 +583,27 @@ const ProductDetails = (props) => {
                         <div className="col-start-2 flex items-center my-4 gap-24">
                             <div className="flex items-center gap-4">
                                 <div>
-                                    <img src={avatar} alt="avatar" className="object-cover h-[5rem] w-[5rem]"/>
+                                    {product.shop?.profilePicture
+                                        ?
+                                        <img src={product.shop?.profilePicture} alt="avatar"
+                                             className="object-cover h-[5rem] w-[5rem] rounded-[50%]"/>
+                                        :
+                                        <div className="h-[5rem] w-[5rem] rounded-[50%] bg-Gray">
+                                            <FiUser className="text-Dark_gray h-16 w-16"/>
+                                        </div>
+                                        }
                                 </div>
 
                                 <div className="flex flex-col justify-center gap-2">
                                     <div>
                                         <span className="font-bold">
-                                            {props.shopName ?? "Shop mỹ phẩm top 1 VN"}
+                                            {product.shop?.name}
                                         </span>
                                     </div>
 
                                     <div>
                                         <button
-                                            className="flex justify-center items-center border-2 border-Blue bg-Lighter_blue rounded-md px-2.5 py-0.5 gap-2 hover:bg-Lighterter_blue" onClick={() => handleViewShop(1)}>
+                                            className="flex justify-center items-center border-2 border-Blue bg-Lighter_blue rounded-md px-2.5 py-0.5 gap-2 hover:bg-Lighterter_blue" onClick={() => handleViewShop(product.shopId)}>
                                             <PiStorefrontLight className="text-Blue h-4 w-4"/>
 
                                             <span className="text-Blue text-sm">
@@ -432,7 +625,7 @@ const ProductDetails = (props) => {
 
                                         <span>
                                             <span className="text-Blue font-semibold text-md">
-                                                {props.products ?? convertNumber(77)}
+                                                {convertNumber(shopProducts?.length)}
                                             </span>
                                         </span>
                                     </div>
@@ -444,7 +637,7 @@ const ProductDetails = (props) => {
 
                                         <span>
                                             <span className="text-Blue font-semibold text-md">
-                                                {props.totalRating ?? convertNumber(77777)}
+                                                {props.totalRating ?? convertNumber(16)}
                                             </span>
                                         </span>
                                     </div>
@@ -460,7 +653,9 @@ const ProductDetails = (props) => {
 
                                         <span>
                                             <span className="text-Star font-semibold text-md">
-                                                {props.rating ?? "5.0"}/5.0
+                                                {shopProducts.reduce((total, currentValue) => {
+                                                    return total + currentValue.ratingAverage/shopProducts?.length;
+                                                }, 0).toFixed(1)}/5.0
                                             </span>
                                         </span>
                                     </div>
@@ -472,7 +667,7 @@ const ProductDetails = (props) => {
 
                                         <span>
                                             <span className="text-Blue font-semibold text-md">
-                                                {props.totalRating ?? calculateTimeDifference('2024-09-24')} trước
+                                                {calculateTimeDifference(product.shop?.createAt)} trước
                                             </span>
                                         </span>
                                     </div>
@@ -502,30 +697,18 @@ const ProductDetails = (props) => {
                                             Số lượng tồn kho
                                         </span>
                                     </div>
-
-                                    <div className="flex items-center">
-                                        <span className="text-Gray text-md">
-                                            Xuất xứ
-                                        </span>
-                                    </div>
                                 </div>
 
                                 <div className="flex flex-col justify-center gap-10">
                                     <div className="flex items-center cursor-pointer select-none">
                                         <span className="text-Blue font-semibold text-md">
-                                            {props.category ?? "Chăm sóc da mặt"}
+                                            {product.category?.name}
                                         </span>
                                     </div>
 
                                     <div className="flex items-center">
                                         <span className="text-Blue font-semibold text-md">
-                                            {props.max_quantity ?? 7777}
-                                        </span>
-                                    </div>
-
-                                    <div className="flex items-center">
-                                        <span className="text-Blue font-semibold text-md">
-                                            Nước ngoài
+                                            {product.quantity}
                                         </span>
                                     </div>
                                 </div>
@@ -543,11 +726,7 @@ const ProductDetails = (props) => {
                         <div className="grid grid-cols-[0.25fr_11.5fr_0.25fr] mt-4">
                             <div className="col-start-2 mb-4">
                                 <p className="whitespace-pre-line">
-                                    {props.description ?? "Tinh chất Nha Đam, Sodium PCA và Niacinamide giúp tăng cường hàng rào bảo vệ, giữ ẩm, làm săn chắc da. Từ đó, hạn chế quá trình lão hóa, giữ cho làn da ẩm mượt, tươi khỏe từ bên trong. Tất cả đã có trong Mặt nạ giấy Trắng da Vedette Nha Đam với công thức dạng nước giúp dưỡng chất thẩm thấu nhanh, cấp ẩm ngay tức thì, làm dịu và săn chắc da.\n" +
-                                        "Không chứa: Paraben, dầu khoáng, Silicone,...\n" +
-                                        " \n" +
-                                        "Việc thường xuyên tiếp xúc với ánh nắng mặt trời rất dễ gây nám, sạm da. Ngoài ra, làn da từ tuổi 25 trở lên cũng cần được chăm sóc để tăng cường hàng rào bảo vệ da, cân bằng độ ẩm, loại bỏ lớp Melanin bề mặt và giúp da tươi tắn, rạng ngời.\n" +
-                                        "Vì vậy, nên dùng Mặt nạ giấy Trắng da Nha Đam 2-3 lần mỗi tuần, kết hợp với tinh chất và kem dưỡng trắng để duy trì làn da săn chắc, trắng sáng."}
+                                    {product.description}
                                 </p>
                             </div>
                         </div>
@@ -566,11 +745,11 @@ const ProductDetails = (props) => {
                                     <div className="flex flex-col justify-center items-center my-4">
                                         <div>
                                             <span className="text-Star font-bold text-[2rem]">
-                                                {props.rating ?? "5.0"}/5.0
+                                                {product.ratingAverage?.toFixed(1) ?? "0.0"}/5.0
                                             </span>
                                         </div>
 
-                                        <Rating name="product_rating" value={props.rating ?? 5} readOnly precision={0.5} sx={{
+                                        <Rating name="product_rating" value={product.ratingAverage?.toFixed(1) ?? 0} readOnly precision={0.1} sx={{
                                             '& .MuiRating-iconFilled': {
                                                 color: '#FABC3F',
                                             }, '& .MuiRating-iconHover': {
@@ -593,11 +772,21 @@ const ProductDetails = (props) => {
                                     </div>
                                 </div>
 
-                                <div className="flex flex-col gap-4 mb-4">
-                                    {currentItems.map((rateItem) => (
-                                        <RatingListItem key={rateItem.id} id={rateItem.id} name={rateItem.name} rating={rateItem.rating} date={rateItem.date}/>
-                                    ))}
-                                </div>
+                                {currentRateList?.length === 0
+                                    ?
+                                    <div className="text-center py-2 bg-Lighter_gray mb-2">
+                                        <span className="text-Dark_gray">
+                                            Không có đánh giá nào!
+                                        </span>
+                                    </div>
+                                    :
+                                    <div className="flex flex-col gap-4 mb-4">
+                                        {currentRateList?.map((rateItem) => (
+                                            <RatingListItem key={rateItem.id} id={rateItem.id} name={rateItem.shopper?.fullname} picture={rateItem.shopper?.profilePicture}
+                                                            rating={rateItem.rating} date={rateItem.date}
+                                                            comment={rateItem.comment}/>
+                                        ))}
+                                    </div>}
 
                                 <div className="flex items-center justify-center mb-4">
                                     <Stack>
@@ -629,6 +818,8 @@ const ProductDetails = (props) => {
                             </div>
                         </div>
                     </div>
+
+                    {loading && <LoadingModal isOpen={isLoadingModalOpen} />}
                 </div>
             </main>
 

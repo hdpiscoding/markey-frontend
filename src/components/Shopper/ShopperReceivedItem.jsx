@@ -13,33 +13,12 @@ const ShopperReceivedItem = (props) => {
         return formattedStr;
     }
 
-    // set up modal
-    const [isModalOpen, setModalOpen] = useState(false);
-
-    const openModal = () => {
-        setModalOpen(true);
-    };
-
-    const closeModal = () => {
-        setModalOpen(false);
-    };
-    // end set up modal
-
-    const handleAccept = () => {
-        //Call API to update status of the order to "ĐÃ NHẬN HÀNG"
-
-        // Sample code
-
-        props.onDelete(props.id);
-        closeModal();
-    }
-
     return (
         <div className="bg-White rounded-md flex flex-col gap-3 shadow">
-            <div className="grid grid-cols-[85%_15%] px-4">
+            <div className="grid grid-cols-[85%_15%] pr-4">
                 <div className="flex gap-4 col-start-1">
                     <div>
-                        <img src={versace} alt="product_img" className="object-cover h-[100px] w-[100px]"/>
+                        <img src={props.picture} alt="product_img" className="object-cover h-[100px] w-[100px] p-2"/>
                     </div>
 
                     <div className="flex flex-col justify-around">
@@ -47,31 +26,30 @@ const ShopperReceivedItem = (props) => {
                             {props.productName ?? "Versace Cologne - Đẳng cấp từ nước Ý"}
                         </span>
 
-                        <span className="text-sm">
-                            Số lượng: {props.quantity ?? 10}
+                        <div className="flex items-center gap-1">
+                            <span className="text-[0.8rem]">
+                                Đơn giá:
+                            </span>
+
+                            <span className="text-[0.8rem] text-Red font-semibold">
+                                đ {formatNumberWithDots(props.price)}
+                            </span>
+                        </div>
+
+                        <span className="text-[0.8rem]">
+                            Số lượng: {props.quantity}
                         </span>
                     </div>
                 </div>
 
                 <div className="flex items-center justify-end">
                     <span className="font-semibold text-pretty text-lg text-Red">
-                        đ {//formatNumberWithDots(props.price) ??
-                        formatNumberWithDots(1000000)}
+                        đ {formatNumberWithDots(props.price * props.quantity ?? 0)}
                     </span>
                 </div>
             </div>
 
-            <div className="flex flex-row-reverse items-end gap-8 px-4 pb-4 select-none">
-                <div>
-                    <button className="bg-Blue hover:bg-Dark_blue rounded-md text-center px-6 py-1.5" onClick={openModal}>
-                        <span className="text-White">
-                            ĐÃ NHẬN HÀNG
-                        </span>
-                    </button>
-                </div>
-            </div>
 
-            <ConfirmModal isOpen={isModalOpen} onClose={closeModal} onConfirm={handleAccept} title="Xác nhận đã nhận hàng" message="Bạn có chắc chắn đã nhận hàng chưa?"/>
         </div>
     );
 };

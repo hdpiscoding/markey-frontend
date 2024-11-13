@@ -130,8 +130,6 @@ const AllProducts = () => {
 
     return (
         <div className="bg-Light_gray w-screen overflow-x-hidden">
-            <SecondaryHeader head="Kênh người bán"/>
-
             <main className="grid grid-cols-[1fr_10fr_1fr] my-4">
                 <div className="col-start-2 grid grid-cols-[15%_2%_83%]">
                     <div className="col-start-1 flex justify-center">
@@ -182,7 +180,7 @@ const AllProducts = () => {
                             <div
                                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 justify-items-center">
                                 {products.map((product) => (
-                                    <ProductCardViewMd key={product.id} name={product.name} price={product.price} image={product.picture} id={product.id}
+                                    <ProductCardViewMd key={product.id} name={product.name} price={product.price} image={product?.picture[0]} id={product.id}
                                                        rating={product.ratingAverage} role="salesman"/>
                                 ))}
                             </div>}

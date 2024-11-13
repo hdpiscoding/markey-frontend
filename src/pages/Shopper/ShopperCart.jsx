@@ -1,24 +1,72 @@
 import React, {useEffect, useState} from 'react';
 import Footer from "../../components/General/Footer";
-import CartItemGroupByDate from "../../components/Shopper/CartItemGroupByDate";
 import SecondaryHeader from "../../components/General/SecondaryHeader";
 import CartItemListView from "../../components/Shopper/CartItemListView";
 import {useNavigate} from "react-router-dom";
+import ConfirmModal from "../../components/General/ConfirmModal";
+import LoadingModal from "../../components/General/LoadingModal";
+import { BsCartX } from "react-icons/bs";
+import {instance} from "../../AxiosConfig";
 
 const ShopperCart = () => {
+    const [loading, setLoading] = useState(false);
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
+
+    // set up modal
+    const [isModalOpen, setModalOpen] = useState(false);
+
+    const openModal = () => {
+        setModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalOpen(false);
+    };
+    // end set up modal
+
     const [paymentMethod, setPaymentMethod] = useState("COD");
 
     const handlePaymentMethodChange = (event) => {
         setPaymentMethod(event.target.value);
     }
 
+    const [cart, setCart] = useState({});
     const [cartID, setCartID] = useState("");
-    const [productCount, setProductCount] = useState(0);
-    const [totalPrice, setTotalPrice] = useState(0);
 
     const navigate = useNavigate();
-    const handleBuy = () => {
+    const handleBuy = async () => {
         // Call API to delete all products in the cart
+        try {
+            setLoading(true);
+            openLoadingModal();
+            const addressResponse = await instance.get("v1/user-service/shopper/me");
+            const address = addressResponse.data.data.address;
+
+            let data = {
+                address: address,
+                paymentMethod: paymentMethod
+            };
+            await instance.post("v1/order-service/order", data);
+        }
+        catch (error) {
+            setLoading(false);
+            closeLoadingModal();
+            console.log(error);
+        }
+        finally {
+            setLoading(false);
+            closeLoadingModal();
+        }
 
         //Redirect to the other pages
         if (paymentMethod === "VNPAY") {
@@ -40,27 +88,59 @@ const ShopperCart = () => {
         return formattedStr;
     }
 
-    const [productList, setProductList] = useState([{
-        id: 1, name: "Nước hoa Versace Pour Homme", price: 500000, max_quantity: 104,
-    }, {
-        id: 2, name: "Nước hoa Hugo Boss", price: 100000, max_quantity: 115,
-    }, {
-        id: 3, name: "Nước hoa Chanel", price: 40000, max_quantity: 162,
-    }, {
-        id: 4, name: "Nước hoa Dior", price: 140000, max_quantity: 165,
-    },]);
-
     useEffect(() => {
         // Call API to get cart data from the server using Token to authenticate
-        // setCartID = data.shoppingCartId; (from API)
-        // totalPrice = data.total; (from API)
-        // productCount = data.products.length; (from API)
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                // Call API to get cart data
+                const response = await instance.get("v1/shopping-service/cart/me");
+                setCart(await response.data.data);
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
+
+        fetchData();
     }, []);
 
-    const onChange = () => {
+    const onChange = (productId, amount) => {
         // Call API to re-get cart data from the server using Token to authenticate
-        // setTotalPrice = data.total; (from API)
-        // setProductCount = data.products.length; (from API)
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                let data = {
+                    productId: productId,
+                    amount: amount
+                };
+                console.log(data);
+                // Call API to get cart data
+                await instance.post("v1/shopping-service/cart/add", data);
+
+                const response = await instance.get("v1/shopping-service/cart/me");
+                setCart(await response.data.data);
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
+
+        fetchData();
     }
 
     return (
@@ -103,14 +183,18 @@ const ShopperCart = () => {
                     </div>
 
                     <div>
-                        {productList.length <= 0
+                        {cart.products?.length <= 0
                             ?
-                            <div className="bg-Light_gray text-Gray p-5 flex items-center justify-center">
-                                Hiện tại giỏ hàng của bạn còn trống!
+                            <div className="bg-Light_gray text-Gray p-5 flex flex-col items-center justify-center gap-2">
+                                <BsCartX className="text-Dark_gray h-20 w-20"/>
+
+                                <span className="text-Dark_gray">
+                                    Hiện tại giỏ hàng của bạn còn trống!
+                                </span>
                             </div>
-                            : productList.map((product) => (
+                            : (cart.products)?.map((product) => (
                                     <CartItemListView key={product.id} id={product.id} name={product.name} amount={product.amount}
-                                                      price={product.price} max_quantity={product.max_quantity}
+                                                      price={product.price} max_quantity={product.max_quantity} picture={product.picture[0]}
                                                       onChange={onChange} cart_id={cartID}/>
                                 ))}
 
@@ -119,9 +203,9 @@ const ShopperCart = () => {
                     <div className="flex flex-row-reverse justify-around bg-White mt-5 sticky bottom-0 gap-5 transition-shadow border py-3">
                         <div className="flex flex-row-reverse gap-5">
                             <div>
-                                {productCount > 0
+                                {(cart.products)?.length > 0
                                     ?
-                                    <button className="bg-Blue rounded-sm py-2 px-6 hover:bg-Dark_blue" onClick={handleBuy}>
+                                    <button className="bg-Blue rounded-sm py-2 px-6 hover:bg-Dark_blue select-none" onClick={openModal}>
                                         <span className="text-White text-lg">
                                             Đặt hàng
                                         </span>
@@ -137,13 +221,13 @@ const ShopperCart = () => {
                             <div className="flex flex-col items-center justify-center">
                                 <div>
                                     <span>
-                                        Tổng thanh toán: ({productCount ?? 0} sản phẩm)
+                                        Tổng thanh toán: ({(cart.products)?.length ?? 0} sản phẩm)
                                     </span>
                                 </div>
 
                                 <div>
                                     <span className="text-Red font-bold text-xl">
-                                        ₫ {formatNumberWithDots(totalPrice ?? 0)}
+                                        ₫ {formatNumberWithDots(cart.total ?? 0)}
                                     </span>
                                 </div>
                             </div>
@@ -162,8 +246,10 @@ const ShopperCart = () => {
                             </select>
                         </div>
                     </div>
-                </div>
 
+                    <ConfirmModal isOpen={isModalOpen} onClose={closeModal} onConfirm={handleBuy} title={"Xác nhận đặt hàng"} message={"Bạn có chắc muốn đặt hàng?"}/>
+                    {loading && <LoadingModal isOpen={isLoadingModalOpen} />}
+                </div>
             </main>
             <Footer/>
         </div>

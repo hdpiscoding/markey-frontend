@@ -5,6 +5,8 @@ import PrivateRoute from "./components/General/PrivateRoute";
 import ScrollToTop from "./components/General/ScrollToTop";
 import useLocalStorage from "./components/General/useLocalStorage";
 import {AppContext} from "./components/General/AppContext";
+const SecondaryHeader = lazy(() => import("./components/General/SecondaryHeader"));
+const PrimaryHeader = lazy(() => import("./components/General/PrimaryHeader"));
 const AboutMarkey = lazy(() => import("./pages/General/AboutMarkey"));
 const Terms = lazy(() => import("./pages/General/Terms"));
 const SecurityPolicy = lazy(() => import("./pages/General/SecurityPolicy"));
@@ -60,6 +62,7 @@ const AllOrders = lazy(() => import("./pages/Salesman/AllOrders"));
 const HomeShopper = lazy(() => import("./pages/Shopper/HomeShopper"));
 const Login = lazy(() => import("./pages/Login_Register_Forget/Login"));
 const NotFound = lazy(() => import("./components/General/NotFound"));
+const SearchProduct = lazy(() => import("./pages/Shopper/SearchProduct"));
 
 function App() {
 
@@ -112,71 +115,81 @@ function App() {
                     {/*Shopper*/}
                     <Route element={<PrivateRoute isAuthenticated={authStorage.get()} userRole={String(roleStorage.get())} requiredRole="shopper"/>}>
                         {/*// Shopper routes*/}
-                        <Route path="/shopper" element={<HomeShopper/>}/>
+                        <Route element={<PrimaryHeader/>}>
+                            <Route path="/shopper" element={<HomeShopper/>}/>
+
+                            {/*Shopper Product*/}
+                            <Route path="/shopper/product/:productId" element={<ProductDetails/>}/>
+                            <Route path="/shopper/shop/:shopId" element={<ShopDetails/>}/>
+                            <Route path="/shopper/recommended-products" element={<RecommendedProducts/>}/>
+                            <Route path="/shopper/category-products/:categoryId" element={<CategoryProducts/>}/>
+
+                            {/*Shopper Account*/}
+                            <Route path="/shopper/profile" element={<ShopperProfile/>}/>
+                            <Route path="/shopper/change-password" element={<ShopperChangePassword/>}/>
+                            <Route path="/shopper/address" element={<ShopperAddress/>}/>
+                            <Route path="/shopper/notification" element={<ShopperNotification/>}/>
+                            <Route path="/shopper/order" element={<ShopperOrder/>}/>
+                        </Route>
+
+                        <Route path="/shopper/search-products/:productName" element={<SearchProduct/>}/>
 
                         {/*Shopper Cart*/}
                         <Route path="/shopper/cart" element={<ShopperCart/>}/>
 
-                        {/*Shopper Product*/}
-                        <Route path="/shopper/product/:productId" element={<ProductDetails/>}/>
-                        <Route path="/shopper/shop/:shopId" element={<ShopDetails/>}/>
-                        <Route path="/shopper/recommended-products" element={<RecommendedProducts/>}/>
-                        <Route path="/shopper/category-products/:categoryId" element={<CategoryProducts/>}/>
-
-                        {/*Shopper Blog*/}
-                        <Route path="/shopper/blog" element={<HomeBlog/>}/>
-                        <Route path="/shopper/blog/:blogId" element={<BlogDetails/>}/>
-                        <Route path="/shopper/category-blogs/:categoryId" element={<CategoryBlogs/>}/>
-                        <Route path="/shopper/recommended-blogs" element={<RecommendedBlogs/>}/>
-
-                        {/*Shopper Account*/}
-                        <Route path="/shopper/profile" element={<ShopperProfile/>}/>
-                        <Route path="/shopper/change-password" element={<ShopperChangePassword/>}/>
-                        <Route path="/shopper/address" element={<ShopperAddress/>}/>
-                        <Route path="/shopper/notification" element={<ShopperNotification/>}/>
-                        <Route path="/shopper/order" element={<ShopperOrder/>}/>
+                        <Route element={<SecondaryHeader head="Markey Blog"/>}>
+                            {/*Shopper Blog*/}
+                            <Route path="/shopper/blog" element={<HomeBlog/>}/>
+                            <Route path="/shopper/blog/:blogId" element={<BlogDetails/>}/>
+                            <Route path="/shopper/category-blogs/:categoryId" element={<CategoryBlogs/>}/>
+                            <Route path="/shopper/recommended-blogs" element={<RecommendedBlogs/>}/>
+                        </Route>
                     </Route>
 
                     {/*Salesman*/}
                     <Route element={<PrivateRoute isAuthenticated={authStorage.get()} userRole={String(roleStorage.get())} requiredRole="salesman"/>}>
                         {/* Salesman routes*/}
-                        <Route path="/salesman" element={<AllOrders/>}/>
+                        <Route element={<SecondaryHeader head="Kênh người bán"/>}>
+                            <Route path="/salesman" element={<AllOrders/>}/>
 
-                        {/*Salesman Product*/}
-                        <Route path="/salesman/all-products" element={<AllProducts/>}/>
-                        <Route path="/salesman/view-product/:productId" element={<ViewProduct/>}/>
-                        <Route path="/salesman/edit-product/:productId" element={<EditProduct/>}/>
-                        <Route path="/salesman/add-product" element={<AddProduct/>}/>
+                            {/*Salesman Product*/}
+                            <Route path="/salesman/all-products" element={<AllProducts/>}/>
+                            <Route path="/salesman/view-product/:productId" element={<ViewProduct/>}/>
+                            <Route path="/salesman/edit-product/:productId" element={<EditProduct/>}/>
+                            <Route path="/salesman/add-product" element={<AddProduct/>}/>
 
-                        {/*Salesman Blog*/}
-                        <Route path="/salesman/all-blogs" element={<AllBlogs/>}/>
-                        <Route path="/salesman/view-blog/:blogId" element={<ViewBlog/>}/>
-                        <Route path="/salesman/edit-blog/:blogId" element={<EditBlog/>}/>
-                        <Route path="/salesman/add-blog" element={<AddBlog/>}/>
+                            {/*Salesman Blog*/}
+                            <Route path="/salesman/all-blogs" element={<AllBlogs/>}/>
+                            <Route path="/salesman/view-blog/:blogId" element={<ViewBlog/>}/>
+                            <Route path="/salesman/edit-blog/:blogId" element={<EditBlog/>}/>
+                            <Route path="/salesman/add-blog" element={<AddBlog/>}/>
 
-                        {/*Salesman Profile*/}
-                        <Route path="/salesman/profile" element={<ViewShopInfo/>}/>
-                        <Route path="/salesman/edit-profile" element={<EditShopInfo/>}/>
-                        <Route path="/salesman/change-password" element={<SalesmanChangePassword/>}/>
+                            {/*Salesman Profile*/}
+                            <Route path="/salesman/profile" element={<ViewShopInfo/>}/>
+                            <Route path="/salesman/edit-profile" element={<EditShopInfo/>}/>
+                            <Route path="/salesman/change-password" element={<SalesmanChangePassword/>}/>
+                        </Route>
                     </Route>
 
 
                     {/*Admin*/}
                     <Route element={<PrivateRoute isAuthenticated={authStorage.get()} userRole={String(roleStorage.get())} requiredRole="admin"/>}>
                         {/* Admin routes*/}
-                        <Route path="/admin" element={<VerifySalesman/>}/>
-                        <Route path="/admin/verify-salesman/:salesmanId" element={<ViewShopDetailsVerify/>}/>
+                        <Route element={<SecondaryHeader head="Quản trị viên"/>}>
+                            <Route path="/admin" element={<VerifySalesman/>}/>
+                            <Route path="/admin/verify-salesman/:salesmanId" element={<ViewShopDetailsVerify/>}/>
 
-                        {/*Admin Categories*/}
-                        <Route path="/admin/all-categories" element={<AllCategories/>}/>
-                        <Route path="/admin/edit-category/:categoryId" element={<EditCategory/>}/>
-                        <Route path="/admin/add-category" element={<AddCategory/>}/>
+                            {/*Admin Categories*/}
+                            <Route path="/admin/all-categories" element={<AllCategories/>}/>
+                            <Route path="/admin/edit-category/:categoryId" element={<EditCategory/>}/>
+                            <Route path="/admin/add-category" element={<AddCategory/>}/>
 
-                        {/*Admin manage Shopper and Salesman*/}
-                        <Route path="/admin/shopper" element={<ManageShopper/>}/>
-                        <Route path="/admin/shopper/:shopperId" element={<BanShopperDetails/>}/>
-                        <Route path="/admin/salesman" element={<ManageSalesman/>}/>
-                        <Route path="/admin/salesman/:salesmanId" element={<BanSalesmanDetails/>}/>
+                            {/*Admin manage Shopper and Salesman*/}
+                            <Route path="/admin/shopper" element={<ManageShopper/>}/>
+                            <Route path="/admin/shopper/:shopperId" element={<BanShopperDetails/>}/>
+                            <Route path="/admin/salesman" element={<ManageSalesman/>}/>
+                            <Route path="/admin/salesman/:salesmanId" element={<BanSalesmanDetails/>}/>
+                        </Route>
                     </Route>
 
 

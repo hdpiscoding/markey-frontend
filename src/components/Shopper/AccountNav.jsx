@@ -12,12 +12,14 @@ const AccountNav = (props) => {
     const tokenStorage = useLocalStorage('token');
     const roleStorage = useLocalStorage('role');
     const authStorage = useLocalStorage('auth');
+    const userIdStorage = useLocalStorage('userId');
 
     const handleLogout = () => {
         // Remove token from localStorage
         tokenStorage.remove();
         roleStorage.remove();
         authStorage.remove();
+        userIdStorage.remove();
         navigate("/login",{ replace: true });
     }
 
@@ -113,7 +115,7 @@ const AccountNav = (props) => {
                 </div>
             </div>
 
-            <ConfirmModal isOpen={isModalOpen} onCancel={closeModal} onConfirm={handleLogout} title="Xác nhận đăng xuất" message="Bạn có chắc muốn đăng xuất khỏi hệ thống?"/>
+            <ConfirmModal isOpen={isModalOpen} onClose={closeModal} onConfirm={handleLogout} title="Xác nhận đăng xuất" message="Bạn có chắc muốn đăng xuất khỏi hệ thống?"/>
         </nav>
     );
 }

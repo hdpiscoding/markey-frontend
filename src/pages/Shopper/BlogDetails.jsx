@@ -1,30 +1,78 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import SecondaryHeader from "../../components/General/SecondaryHeader";
 import Footer from "../../components/General/Footer";
 import { FaRegClock } from "react-icons/fa";
 import sample_blog from "../../assets/sample_blog.png";
 import BlogCardView from "../../components/Shopper/BlogCardView";
-import {Link} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
+import {instance} from "../../AxiosConfig";
+import LoadingModal from "../../components/General/LoadingModal";
 
 const BlogDetails = () => {
-    const suggestedBlogs = [
-        { id: 1, title: "5 bí quyết chăm sóc tóc khỏe mạnh", author: "Gabriel Garcia Marquez", date: "2024-01-10", category: "chăm sóc tóc" },
-        { id: 2, title: "Làm thế nào để có làn da mặt rạng rỡ", author: "Virginia Woolf", date: "2024-01-15", category: "chăm sóc da mặt" },
-        { id: 3, title: "Hướng dẫn trang điểm tự nhiên cho mùa hè", author: "Jane Austen", date: "2024-01-20", category: "trang điểm" },
-        { id: 4, title: "Top 10 dụng cụ trang điểm cần có trong túi", author: "F. Scott Fitzgerald", date: "2024-01-25", category: "dụng cụ trang điểm" },
-        { id: 5, title: "Phụ kiện làm đẹp không thể thiếu cho mỗi cô gái", author: "Mark Twain", date: "2024-02-01", category: "phụ kiện làm đẹp" },
-    ];
+    const formatDateTime = (inputDateTime) => {
+        // Tách chuỗi ngày và thời gian
+        if (inputDateTime) {
+            const [date, time] = inputDateTime.split(' ');
+            // Tách chuỗi ngày thành các phần tử năm, tháng, ngày
+            const [year, month, day] = date.split('-');
+            // Trả về chuỗi ngày theo định dạng DD/MM/YYYY HH:MM:SS
+            return `${day}/${month}/${year} ${time}`;
+        }
+    }
+
+    const { blogId } = useParams();
+
+    const [loading, setLoading] = useState(false);
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
+
+    const [blog, setBlog] = useState({});
+    const [suggestBlogs, setSuggestBlogs] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                // Call API to get blog data by blogId
+                const response = await instance.get(`v1/shopping-service/post/${blogId}`);
+                setBlog(response.data.data);
+
+                // Call API to get suggested blogs data
+                const suggestResponse = await instance.post('v1/shopping-service/post/filter?page=1&rpp=5');
+                setSuggestBlogs(suggestResponse.data.data.items);
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
+
+        fetchData();
+    }, [blogId]);
 
     return (
         <div className="bg-Light_gray w-screen overflow-x-hidden">
-            <SecondaryHeader head="Blog"/>
-
             <main className="grid grid-cols-[1fr_10fr_1fr]">
                 <div className="col-start-2 bg-White my-5 flex flex-col pb-4">
                     <div className="flex flex-col p-4 gap-3">
                         <div className="flex">
                             <span className="font-semibold text-[2rem]">
-                                Bộ trang điểm cơ bản cho người mới bắt đầu gồm những gì?
+                                {blog.title}
                             </span>
                         </div>
 
@@ -34,7 +82,7 @@ const BlogDetails = () => {
                             </span>
 
                             <span className="text-Blue font-semibold">
-                                Mỹ phẩm
+                                {blog.category?.name}
                             </span>
                         </div>
 
@@ -45,7 +93,7 @@ const BlogDetails = () => {
                                 </span>
 
                                 <span className="text-Blue font-semibold">
-                                    Orchid Down
+                                    {blog.shop?.name}
                                 </span>
                             </div>
 
@@ -53,8 +101,8 @@ const BlogDetails = () => {
                                 <FaRegClock className="w-3 h-3 text-Dark_gray"/>
 
                                 <span className="text-sm text-Dark_gray">
-                                20/09/2021
-                            </span>
+                                    {formatDateTime(blog.createAt)}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -62,15 +110,12 @@ const BlogDetails = () => {
                     <div className="col-start-2 grid grid-cols-[71%_3%_26%]">
                         <div className="flex flex-col pl-4">
                             <div>
-                                <img src={sample_blog} alt="blog" className="object-cover w-full"/>
+                                <img src={blog.thumbnail} alt="blog" className="object-cover w-full"/>
                             </div>
 
                             <div className="mt-10">
                                 <p className="whitespace-pre-line">
-                                    {"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.\n" +
-                                        "\n" +
-                                        "In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus.\n" +
-                                        "\n" + "Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc,"}
+                                    {blog.content}
                                 </p>
                             </div>
                         </div>
@@ -87,9 +132,9 @@ const BlogDetails = () => {
                             </div>
 
                             <div className="flex flex-col gap-4">
-                                {suggestedBlogs.map((blog) => (
-                                    <BlogCardView key={blog.id} title={blog.title} author={blog.author} date={blog.date}
-                                                  category={blog.category}/>
+                                {suggestBlogs.map((blog) => (
+                                    <BlogCardView key={blog.id} title={blog.title} id={blog.id} picture={blog.thumbnail} author={blog.shop.name} date={blog.createAt}
+                                                  category={blog.category.name}/>
                                 ))}
                             </div>
 
@@ -105,7 +150,7 @@ const BlogDetails = () => {
                         </div>
                     </div>
 
-
+                    {loading && <LoadingModal isOpen={isLoadingModalOpen} />}
                 </div>
 
             </main>

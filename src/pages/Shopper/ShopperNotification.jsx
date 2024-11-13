@@ -1,72 +1,115 @@
 import React, {useEffect, useState} from 'react';
-import {AiFillPrinter} from "react-icons/ai";
 import PrimaryHeader from "../../components/General/PrimaryHeader";
 import Footer from "../../components/General/Footer";
 import AccountNav from "../../components/Shopper/AccountNav";
 import { PiBellZLight } from "react-icons/pi";
-import ShopperReceivedItem from "../../components/Shopper/ShopperReceivedItem";
+import LoadingModal from "../../components/General/LoadingModal";
+import NotificationWrapper from "../../components/Shopper/NotificationWrapper";
+import {Pagination, Stack} from "@mui/material";
+import {instance} from "../../AxiosConfig";
+import useLocalStorage from "../../components/General/useLocalStorage";
 
 const ShopperNotification = () => {
-    const [orders, setOrders] = useState([{}]);
-    const [orderItems, setOrderItems] = useState([{}]);
+    const userIdStorage = useLocalStorage("userId");
+    // set up pagination
+    const [page, setPage] = useState(1);
 
-    const [sampleOrderItems, setSampleOrderItems] = useState([
-        { id: 1, name: "Son môi màu đỏ quyến rũ", price: 150000, quantity: 2500, status: "ĐANG GIAO HÀNG" },
-        { id: 2, name: "Nước hoa hương chanh tươi mát", price: 800000, quantity: 1800, status: "ĐANG GIAO HÀNG" },
-        { id: 3, name: "Kem dưỡng da ban đêm chống lão hóa", price: 600000, quantity: 1500, status: "ĐANG GIAO HÀNG" },
-        { id: 4, name: "Sữa rửa mặt làm sạch sâu", price: 200000, quantity: 3200, status: "ĐANG GIAO HÀNG" },
-        { id: 5, name: "Mặt nạ cấp ẩm chiết xuất thiên nhiên", price: 75000, quantity: 4800, status: "ĐANG GIAO HÀNG" },
-        { id: 6, name: "Phấn nền trang điểm tự nhiên", price: 500000, quantity: 3100, status: "ĐANG GIAO HÀNG" },
-        { id: 7, name: "Chì kẻ mắt chống nước", price: 120000, quantity: 5400, status: "ĐANG GIAO HÀNG" },
-        { id: 8, name: "Nước tẩy trang dịu nhẹ", price: 250000, quantity: 900, status: "ĐANG GIAO HÀNG" },
-        { id: 9, name: "Son dưỡng môi SPF 15", price: 95000, quantity: 2200, status: "ĐANG GIAO HÀNG" },
-        { id: 10, name: "Kem chống nắng SPF 50", price: 400000, quantity: 3600, status: "ĐANG GIAO HÀNG" },
-    ]);
+    const [itemsPerPage, setItemsPerPage] = useState(5);
+    const [totalPages, setTotalPages] = useState(null);
+
+    const handlePageChange = (event, value) => {
+        setPage(value);
+        window.scrollTo(0, 0)
+    }
+    // end of set up pagination
+
+    const [loading, setLoading] = useState(false);
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
+
+    const [orderItems, setOrderItems] = useState([]);
 
     useEffect(() => {
         // Call API get all orders by user_id
+        setPage(1);
+        setItemsPerPage(5);
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                let filter = {
+                    sort: {
+                        "by": "createAt",
+                        "order": "DESC" // DESC | ASC
+                    },
+                    status: "DELIVERING",
+                    shopperId: userIdStorage.get()
+                }
+                const response = await instance.post(`v1/order-service/order/filter?page=${page}&rpp=${itemsPerPage}`, filter);
+                setOrderItems(response.data.data.items);
+                setTotalPages(Math.ceil(response.data.data.total / itemsPerPage));
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
 
-        // Get orderItems with status = "ĐANG GIAO HÀNG" from orders
+        fetchData();
 
     }, []);
 
-    const [items, setItems] = useState([]); // Dữ liệu cho tất cả component
-    const [visibleItems, setVisibleItems] = useState(5); // Số lượng component ban đầu được hiển thị
-    const ITEMS_TO_LOAD = 5; // Số lượng component mới được load mỗi lần
-
-    // Hàm xử lý cuộn
-    const handleScroll = () => {
-        // Kiểm tra người dùng đã cuộn đến cuối danh sách chưa
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-            loadMoreItems();
+    const handleReceived = () => {
+        // Recall API
+        // Call API get all orders by user_id
+        setPage(1);
+        setItemsPerPage(5);
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                let filter = {
+                    sort: {
+                        "by": "createAt",
+                        "order": "DESC" // DESC | ASC
+                    },
+                    status: "DELIVERING",
+                    shopperId: userIdStorage.get()
+                }
+                const response = await instance.post(`v1/order-service/order/filter?page=${page}&rpp=${itemsPerPage}`, filter);
+                setOrderItems(response.data.data.items);
+                setTotalPages(Math.ceil(response.data.data.total / itemsPerPage));
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
         }
-    };
 
-    // Hàm tải thêm component
-    const loadMoreItems = () => {
-        // Nếu vẫn còn dữ liệu để hiển thị
-        if (visibleItems < items.length) {
-            setVisibleItems((prevVisibleItems) => prevVisibleItems + ITEMS_TO_LOAD);
-        }
-    };
-
-    // Lắng nghe sự kiện cuộn
-    useEffect(() => {
-        window.addEventListener('scroll', handleScroll);
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
-    }, [visibleItems, items]);
-
-    const onDelete = (id) => {
-        // Sample code
-        setSampleOrderItems(sampleOrderItems.filter((item) => item.id !== id));
+        fetchData();
     }
 
     return (
         <div className="bg-Light_gray w-screen overflow-x-hidden">
-            <PrimaryHeader/>
-
             <main className="grid grid-cols-[1fr_10fr_1fr] my-4">
                 <div className="col-start-2 grid grid-cols-[15%_2%_83%]">
                     <div className="col-start-1 flex justify-center">
@@ -82,10 +125,9 @@ const ShopperNotification = () => {
                             <div className="border-t-2 w-full text-Dark_gray"></div>
                         </div>
 
-                        {sampleOrderItems.length > 0
-                            ? sampleOrderItems.map((item, index) => (
-                                <ShopperReceivedItem id={item.id} name={item.name} price={item.price} quantity={item.quantity} status={item.status} key={index}
-                                                     onDelete={onDelete}/>
+                        {orderItems.length > 0
+                            ? orderItems.map((item, index) => (
+                                <NotificationWrapper id={item.id} order={item} key={index} onReceived={handleReceived}/>
                             ))
                             :
                             <div className="flex flex-col items-center justify-center py-3">
@@ -96,7 +138,37 @@ const ShopperNotification = () => {
                                 </span>
                             </div>
                         }
+
+                        <div className="flex items-center justify-center">
+                            <Stack>
+                                <Pagination
+                                    count={totalPages}
+                                    page={page}
+                                    onChange={handlePageChange}
+                                    variant="text"
+                                    shape="rounded"
+                                    sx={{
+                                        "& .MuiPaginationItem-root": {
+                                            color: "#AAAAAA",            // Màu văn bản mặc định
+                                        },
+                                        '& .MuiPaginationItem-root:hover': {
+                                            // Màu khi hover
+                                            backgroundColor: '#008DDA', // Màu nền khi hover
+                                            color: 'white', // Màu chữ khi hover
+                                        },
+                                        "& .Mui-selected": {
+                                            backgroundColor: "#008DDA !important", // Màu nền cho item được chọn
+                                            color: "white",              // Màu chữ cho item được chọn
+                                        },
+                                        "& .MuiPaginationItem-ellipsis": {
+                                            color: "#AAAAAA"              // Màu sắc cho dấu ba chấm (ellipsis)
+                                        }
+                                    }}/>
+                            </Stack>
+                        </div>
                     </div>
+
+                    {loading && <LoadingModal isOpen={isLoadingModalOpen}/>}
                 </div>
             </main>
 

@@ -1,6 +1,4 @@
 import React from "react";
-import sample from "../../assets/versace_cologne.svg";
-import sample2 from "../../assets/pretty_skin.svg"
 import { IoMdStar } from "react-icons/io";
 import {useNavigate} from "react-router-dom";
 
@@ -17,19 +15,6 @@ const ProductCardViewLg = (props) => {
         return formattedStr;
     };
 
-    // convert number (k, m, b)
-    const convertNumber = (number) => {
-        if (number >= 1e9) {
-            return (number / 1e9).toFixed(1).replace(/\.0$/, '') + 'T';
-        } else if (number >= 1e6) {
-            return (number / 1e6).toFixed(1).replace(/\.0$/, '') + 'Tr';
-        } else if (number >= 1e3) {
-            return (number / 1e3).toFixed(1).replace(/\.0$/, '') + 'k';
-        } else {
-            return number.toString();
-        }
-    };
-
     const handleClick = (productId) => {
         navigate(`/shopper/product/${productId}`);
     }
@@ -38,7 +23,7 @@ const ProductCardViewLg = (props) => {
         <div className="bg-White border h-[300px] w-[200px] select-none cursor-pointer duration-100 ease-sharp-motion-curve hover:shadow-hover active:shadow-active hover:-translate-y-[1px] active:translate-y-0 hover:border-Blue hover:ring-Blue hover:ring-2" onClick={() => handleClick((props.id))}>
             <div className="grid grid-rows-[200px_50px_50px]">
                 <div className="row-start-1 flex items-center justify-center mb-1">
-                    <img src={props.image ?? sample2} alt="ProductCardViewLg" className="object-cover w-[200px] h-[200px]"/>
+                    <img src={props.picture} alt="ProductCardViewLg" className="object-cover w-[200px] h-[200px]"/>
                 </div>
 
                 <div className="row-start-2 line-clamp-2 break-words overflow-hidden px-1.5">

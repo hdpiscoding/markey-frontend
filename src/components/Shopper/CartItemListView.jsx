@@ -13,59 +13,37 @@ const CartItemListView = (props) => {
         return formattedStr;
     }
 
-    // state for empty input
-    const [isEmpty, setIsEmpty] = useState(false);
-
-    const unit_price = props.price ?? 500000000;
-
     // state for quantity
     const [amount, setAmount] = useState(props.amount ?? 1);
 
     // state for selling price
-    const [price, setPrice] = useState((props.unit_price * props.amount) ?? 0);
+    const [price, setPrice] = useState((props.price * props.amount) ?? 0);
 
 
     const increaseQuantity = () => {
         // Call API to update quantity of the product in the cart by 1
-
-        props.onChange();
+        setAmount(amount + 1);
     };
 
     const decreaseQuantity = () => {
         // Call API to update quantity of the product in the cart by -1
-
-        props.onChange();
+        setAmount(amount - 1);
     };
 
-    // const handleInputChange = (event) => {
-    //     const value = event.target.value;
-    //
-    //     value === '' ? setIsEmpty(true) : setIsEmpty(false);
-    //
-    //     if (value === '0') {
-    //         setAmount(1);
-    //         return;
-    //     }
-    //     else if (value >= props.max_quantity) {
-    //         setAmount(props.max_quantity);
-    //         return;
-    //     }
-    //
-    //     // Chỉ cập nhật state nếu giá trị là một số hợp lệ
-    //     if (value === '' || /^\d+$/.test(value)) {
-    //         setAmount(value === '' ? '' : parseInt(value));
-    //     }
-    // };
+    const handleDelete = () => {
+        setAmount(0);
+    }
 
-    const calculateSellingPrice = () => {
-        return price * amount;
-    };
+    useEffect(() => {
+        setPrice(props.price * amount);
+        props.onChange(props.id, amount);
+    }, [amount]);
 
     return (
         <div className="col-start-2 border-t flex flex-col mb-3 bg-White rounded-md shadow">
             <div className="grid grid-cols-[1.5fr_5.5fr_1.5fr_2fr_1.5fr_1fr] items-center">
                 <div className="col-start-1 flex items-center justify-center select-none">
-                    <img src={versace} alt="product" className="object-cover h-[8rem] w-[8rem]"/>
+                    <img src={props.picture} alt="product" className="object-cover h-[8rem] w-[8rem] p-4"/>
                 </div>
 
                 <div className="flex flex-col justify-between col-start-2">
@@ -82,7 +60,7 @@ const CartItemListView = (props) => {
 
                 <div className="col-start-3 flex items-center justify-center">
                     <span className="text-Black text-lg">
-                        ₫ {formatNumberWithDots(unit_price) ?? "700.000.000"}
+                        ₫ {formatNumberWithDots(props.price) ?? "700.000.000"}
                     </span>
                 </div>
 
@@ -118,20 +96,13 @@ const CartItemListView = (props) => {
                 </div>
 
                 <div className="flex items-center justify-center col-start-5">
-                    {(isEmpty
-                    ?
                     <span className="text-Red text-lg font-bold">
-                                ₫ {formatNumberWithDots(unit_price)}
-                            </span>
-                    :
-                    <span className="text-Red text-lg font-bold">
-                                ₫ {formatNumberWithDots(price)}
-                            </span>)
-                    }
+                        ₫ {formatNumberWithDots(price)}
+                    </span>
                 </div>
 
                 <div className="col-start-6 flex items-center justify-center cursor-pointer select-none">
-                    <span className="text-Red font-bold hover:underline hover:text-Dark_red">
+                    <span className="text-Red font-bold hover:underline hover:text-Dark_red" onClick={handleDelete}>
                         Xóa
                     </span>
                 </div>

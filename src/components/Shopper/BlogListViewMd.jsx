@@ -4,6 +4,15 @@ import clock from '../../assets/clock.svg';
 import {useNavigate} from "react-router-dom";
 
 const BlogListViewMd = (props) => {
+    const formatDateTime = (inputDateTime) => {
+        // Tách chuỗi ngày và thời gian
+        const [date, time] = inputDateTime.split(' ');
+        // Tách chuỗi ngày thành các phần tử năm, tháng, ngày
+        const [year, month, day] = date.split('-');
+        // Trả về chuỗi ngày theo định dạng DD/MM/YYYY HH:MM:SS
+        return `${day}/${month}/${year} ${time}`;
+    }
+
     const navigate = useNavigate();
 
     const handleClick = (blogId) => {
@@ -20,14 +29,14 @@ const BlogListViewMd = (props) => {
         <article className="bg-White h-[130px] w-auto rounded-md">
             <div className="grid grid-cols-[30%_70%]">
                 <div className="col-start-1 select-none">
-                    <img src={sample_blog} alt="blog" className="object-cover h-[130px] rounded-l-md"/>
+                    <img src={props.picture} alt="blog" className="object-cover h-[130px] w-full rounded-l-md"/>
                 </div>
 
                 <div className="col-start-2 mx-4 py-2">
                     <div className="flex flex-col gap-2">
                         <div className="cursor-pointer">
                             <span className="font-sans font-semibold text-lg text-pretty hover:text-Blue" onClick={() => handleClick(props.id)}>
-                                {props.title ?? "Nước tẩy trang Simple có tốt không? Review chi tiết từng loại conasodashjdjkdhjksdhfjksdjgfdsjhgwelhuirkfhjvxmcbvxbgjwehrtiuhfjs"}
+                                {props.title}
                             </span>
                         </div>
 
@@ -37,7 +46,7 @@ const BlogListViewMd = (props) => {
                             </span>
 
                             <span className="text-Blue font-semibold text-[0.75rem]">
-                                {props.category ?? "Tẩy trang"}
+                                {props.category}
                             </span>
                         </div>
 
@@ -48,7 +57,7 @@ const BlogListViewMd = (props) => {
                                 </span>
 
                                 <span className="text-Blue font-bold text-[0.75rem]">
-                                    {props.author ?? "Orchid Down"}
+                                    {props.author}
                                 </span>
                             </div>
 
@@ -58,7 +67,7 @@ const BlogListViewMd = (props) => {
                                 </div>
 
                                 <span className="text-[0.75rem] text-Dark_gray">
-                                {props.date ?? "18/04/2024"}
+                                {formatDateTime(props.date)}
                             </span>
                             </div>
                         </div>

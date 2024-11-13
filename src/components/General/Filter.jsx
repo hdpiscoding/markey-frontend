@@ -20,35 +20,37 @@ const Filter = (props) => {
     const checkPrices = () => {
         if (fromPrice === '' || toPrice === '') {
             setCheckPrice(false);
+            return false;
         }
         else if (fromPrice > toPrice) {
             setCheckPrice(false);
+            return false;
         }
         else {
             setCheckPrice(true);
+            return true;
         }
     }
 
     const handleApplyPrice = () => {
-        checkPrices();
-        if (checkPrice) {
-            // Call API to filter by price
+        const isValid = checkPrices();
+        if (isValid) {
+            props.onFilterByPrice(fromPrice, toPrice);
         }
     }
 
     const ratingFilters = [
-        { id: 1, value: 5, isFiveStar: true },
-        { id: 2, value: 4, isFiveStar: false },
+        { id: 5, value: 5, isFiveStar: true },
+        { id: 4, value: 4, isFiveStar: false },
         { id: 3, value: 3, isFiveStar: false },
-        { id: 4, value: 2, isFiveStar: false },
-        { id: 5, value: 1, isFiveStar: false },
+        { id: 2, value: 2, isFiveStar: false },
+        { id: 1, value: 1, isFiveStar: false },
     ];
 
     const handleRatingFilter = (id) => {
-        // ratingFilter === id ? setRatingFilter(0) : setRatingFilter(id);
         setRatingFilter(id);
         // Call API to filter by rating
-
+        props.onFilterByRating(id);
     }
 
     const handleRemoveFilter = () => {
@@ -56,7 +58,7 @@ const Filter = (props) => {
         setToPrice('');
         setRatingFilter(0);
         // Call API to reset filter
-
+        props.onResetFilter();
     }
 
     return (

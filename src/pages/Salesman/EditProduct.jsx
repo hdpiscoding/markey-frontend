@@ -1,14 +1,14 @@
 import React, {useEffect, useState} from "react";
 import SecondaryHeader from "../../components/General/SecondaryHeader";
 import SalesmanNav from "../../components/Salesman/SalesmanNav";
-import {MdAddPhotoAlternate} from "react-icons/md";
 import Footer from "../../components/General/Footer";
 import {instance, mediaInstance} from "../../AxiosConfig";
 import ConfirmModal from "../../components/General/ConfirmModal";
 import LoadingModal from "../../components/General/LoadingModal";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 
 const EditProduct = () => {
+    const navigate = useNavigate();
     const {productId} = useParams();
     const [loading, setLoading] = useState(false);
     // set up loading modal
@@ -90,6 +90,7 @@ const EditProduct = () => {
             description: product.description || '',
         })
 
+        setImages(product.picture || [null, null, null]);
         setSelectedCategory(product.categoryId || 'default');
     }, [product]);
 
@@ -133,7 +134,7 @@ const EditProduct = () => {
         if (file && validTypes.includes(file.type) && file.size <= maxSize) {
             const newImages = [...selectedImages];
             newImages[index] = file;
-            setImages(newImages);
+            setSelectedImages(newImages);
             setFieldErrors(prevErrors => ({
                 ...prevErrors,
                 [`image-${index}`]: ""
@@ -192,11 +193,11 @@ const EditProduct = () => {
             isValid = false;
         }
 
-        const selectedImagesCount = selectedImages.filter(img => img).length;
-        if (selectedImagesCount < 3 && images.every(img => img === null)) {
-            imageErrorMessages.push("Vui lòng chọn đủ 3 ảnh.");
-            isValid = false;
-        }
+        // const selectedImagesCount = selectedImages.filter(img => img).length;
+        // if (selectedImagesCount < 3 && images.every(img => img === null)) {
+        //     imageErrorMessages.push("Vui lòng chọn đủ 3 ảnh.");
+        //     isValid = false;
+        // }
 
         selectedImages.forEach((img, index) => {
             if (fieldErrors[`image-${index}`]) {
@@ -212,19 +213,6 @@ const EditProduct = () => {
 
         setFieldErrors(newFieldErrors);
         return isValid;
-
-        if (Object.keys(newFieldErrors).length === 0) {
-            // Call API để upload ảnh và trả về URL ảnh
-
-
-            // Call API để cập nhật sản phẩm
-            try {
-
-            }
-            catch (error) {
-                console.error("Failed to update product", error);
-            }
-        }
     };
 
     const handleValidate = () => {
@@ -234,25 +222,41 @@ const EditProduct = () => {
         }
     };
 
+    const replaceImage = (images, selectedImages) => {
+        let newImages =[];
+        for (let i = 0; i < 3; i++) {
+            if (selectedImages[i]) {
+                newImages.push(selectedImages[i]);
+            }
+            else {
+                newImages.push(images[i]);
+            }
+        }
+
+        return newImages;
+    }
+
     const getImagesUrl = async () => {
+        const imageUrls = [null, null, null];
         if (selectedImages.length > 0) {
-            const imageUrls = [];
             for (let i = 0; i < selectedImages.length; i++) {
-                try {
-                    const fileNameResponse = await mediaInstance.get("media-url");
-                    const fileName = fileNameResponse.data.data.fileName;
+                if (selectedImages[i]) {
+                    try {
+                        const fileNameResponse = await mediaInstance.get("media-url");
+                        const fileName = fileNameResponse.data.data.fileName;
 
-                    const formData = new FormData();
-                    formData.append("file", selectedImages[i]);
+                        const formData = new FormData();
+                        formData.append("file", selectedImages[i]);
 
-                    const response = await mediaInstance.post(`upload-media/${fileName}`, formData);
-                    imageUrls.push(response.data.data.mediaUrl);
-                } catch (error) {
-                    console.log(error);
+                        const response = await mediaInstance.post(`upload-media/${fileName}`, formData);
+                        imageUrls[i] = response.data.data.mediaUrl;
+                    } catch (error) {
+                        console.log(error);
+                    }
                 }
             }
 
-            return imageUrls;
+            return replaceImage(images, imageUrls);
         }
     }
 
@@ -271,6 +275,7 @@ const EditProduct = () => {
                     categoryId: selectedCategory,
                     picture: imageUrls,
                 }
+                await instance.put(`v1/shopping-service/product/${productId}`, data);
             }
             catch (error) {
                 setLoading(false);
@@ -280,14 +285,13 @@ const EditProduct = () => {
             finally {
                 setLoading(false);
                 closeLoadingModal();
+                navigate('/salesman/all-products');
             }
         }
     }
 
     return (
         <div className="bg-Light_gray w-screen overflow-x-hidden">
-            <SecondaryHeader head="Kênh người bán"/>
-
             <main className="grid grid-cols-[1fr_10fr_1fr] my-4">
                 <div className="col-start-2 grid grid-cols-[15%_2%_83%]">
                     <div className="col-start-1 flex justify-center">
@@ -407,7 +411,7 @@ const EditProduct = () => {
                                         {[0, 1, 2].map((index) => (
                                             <div
                                                 key={index}
-                                                className={`flex items-center justify-center gap-2 h-[120px] w-[120px] ${selectedImages[index] ? 'border-Blue' : 'bg-Gray'} rounded-md`}
+                                                className={`flex items-center justify-center gap-2 h-[120px] w-[120px] ${(selectedImages[index] || images[index]) ? 'border-Blue' : 'bg-Gray'} rounded-md`}
                                             >
                                                 <label htmlFor={`file-${index}`} className="cursor-pointer">
                                                     {selectedImages[index] ? (

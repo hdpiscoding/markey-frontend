@@ -13,12 +13,14 @@ const SalesmanNav = (props) => {
     const authStorage = useLocalStorage('auth');
     const tokenStorage = useLocalStorage('token');
     const roleStorage = useLocalStorage('role');
+    const userIdStorage = useLocalStorage('userId');
 
     const handleLogout = () => {
         // Remove token from localStorage
         tokenStorage.remove();
         roleStorage.remove();
         authStorage.remove();
+        userIdStorage.remove();
         navigate("/login", { replace: true });
     }
 

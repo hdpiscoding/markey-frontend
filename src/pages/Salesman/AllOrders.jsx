@@ -6,6 +6,7 @@ import SalemansOrderItem from "../../components/Salesman/SalemansOrderItem";
 import {Pagination, Stack} from "@mui/material";
 import LoadingModal from "../../components/General/LoadingModal";
 import {instance} from "../../AxiosConfig";
+import SalesmanOrderWrapper from "../../components/Salesman/SalesmanOrderWrapper";
 
 const AllOrders = () => {
     const [loading, setLoading] = useState(false);
@@ -41,17 +42,23 @@ const AllOrders = () => {
             try {
                 setLoading(true);
                 openLoadingModal();
+                const shopResponse = await instance.get("v1/shopping-service/shop/me");
+                const shopID = shopResponse.data.data.id;
+
                 let filter = {
                     sort: {
                         by: "createAt",
                         order: "DESC" // DESC | ASC
                     },
-                    status: "PENDING"
+                    status: "PENDING",
+                    shopId: shopID
                 }
+
                 // Call API to get orders with status == "PENDING"
                 const response = await instance.post(`v1/order-service/order/filter?page=${page}&rpp=${itemsPerPage}`, filter);
                 setTotalPages(Math.ceil(response.data.data.total/itemsPerPage));
                 setOrders(await response.data.data.items);
+                console.log(orders);
             }
             catch (error) {
                 setLoading(false);
@@ -67,9 +74,42 @@ const AllOrders = () => {
         fetchData();
     }, []);
 
-    const handleApprove = () => {
+    const handleApprove = async () => {
         // Call API to re-get orders
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                const shopResponse = await instance.get("v1/shopping-service/shop/me");
+                const shopID = shopResponse.data.data.id;
 
+                let filter = {
+                    sort: {
+                        by: "createAt",
+                        order: "DESC" // DESC | ASC
+                    },
+                    status: "PENDING",
+                    shopId: shopID
+                }
+
+                // Call API to get orders with status == "PENDING"
+                const response = await instance.post(`v1/order-service/order/filter?page=${page}&rpp=${itemsPerPage}`, filter);
+                setTotalPages(Math.ceil(response.data.data.total/itemsPerPage));
+                setOrders(await response.data.data.items);
+                console.log(orders);
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
+
+        fetchData();
 
     }
 
@@ -77,8 +117,6 @@ const AllOrders = () => {
 
     return (
         <div className="bg-Light_gray w-screen overflow-x-hidden">
-            <SecondaryHeader head="Kênh người bán"/>
-
             <main className="grid grid-cols-[1fr_10fr_1fr] my-4">
                 <div className="col-start-2 grid grid-cols-[15%_2%_83%]">
                     <div className="col-start-1 flex justify-center">
@@ -96,12 +134,20 @@ const AllOrders = () => {
                             <div className="border-t-2 w-full border-Dark_gray"></div>
                         </div>
 
-                        <div className="flex flex-col gap-4 px-4 col-start-3">
-                            {orders.map((item) => (
-                                <SalemansOrderItem key={item.id} productName={item.name} price={item.price}
-                                                   quantity={item.quantity} status={item.status} onApprove={handleApprove}/>
-                            ))}
-                        </div>
+                        {orders.length === 0
+                            ?
+                            <div className="flex items-center justify-center col-start-3 bg-Lighter_gray mx-4 py-2">
+                                <span className="text-center text-Dark_gray">
+                                    Hiện tại không có đơn hàng nào đang chờ duyệt
+                                </span>
+                            </div>
+                            :
+                            <div className="flex flex-col gap-6 px-4 col-start-3">
+                                {orders.map((order) => (
+                                    <SalesmanOrderWrapper key={order.id} order={order} onApprove={handleApprove}/>
+                                ))}
+                            </div>}
+
 
                         <div className="flex items-center justify-center mb-4">
                             <Stack>

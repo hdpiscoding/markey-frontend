@@ -91,8 +91,8 @@ const Login = () => {
         // Call API to login and get token, then store it in localStorage if login successfully
         let url = "";
         let data = {
-            phoneNumberOrEmail: `${(/^\d{10}$/).test(emailOrPhone) ? formatPhoneNumber(emailOrPhone) : emailOrPhone}`,
-            password: password
+            phoneNumberOrEmail: `${(/^\d{10}$/).test(emailOrPhone) ? formatPhoneNumber(emailOrPhone.trim()) : emailOrPhone.trim()}`,
+            password: password.trim()
         };
 
         console.log(data.phoneNumberOrEmail);

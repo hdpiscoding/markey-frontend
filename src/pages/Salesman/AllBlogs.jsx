@@ -86,9 +86,7 @@ const AllBlogs = () => {
                     shopId: shopID
                 }
                 setShopId(shopResponse.data.data.id);
-
-                const authorResponse = await instance.get('v1/user-service/salesman/me');
-                setAuthor(authorResponse.data.data.fullname);
+                setAuthor(shopResponse.data.data.name);
 
                 // Call API to get all blogs
                 const response = await instance.post(`v1/shopping-service/post/filter?page=${page}&rpp=${itemsPerPage}`, filter);
@@ -111,8 +109,6 @@ const AllBlogs = () => {
 
     return (
         <div className="bg-Light_gray w-screen overflow-x-hidden">
-            <SecondaryHeader head="Kênh người bán"/>
-
             <main className="grid grid-cols-[1fr_10fr_1fr] my-4">
                 <div className="col-start-2 grid grid-cols-[15%_2%_83%]">
                     <div className="col-start-1 flex justify-center">
@@ -153,7 +149,7 @@ const AllBlogs = () => {
                             <div className="flex flex-col gap-4">
                                 {blogs.map((blog) => (
                                     <BlogListViewLg key={blog.id} id={blog.id} title={blog.title} author={author}
-                                                    thumbnail={blog.thumbnail}
+                                                    picture={blog.thumbnail}
                                                     date={blog.createAt} category={blog.category.name} role="salesman"/>
                                 ))}
                             </div>}

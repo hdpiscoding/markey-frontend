@@ -1,13 +1,22 @@
 import React from 'react';
 import Rating from '@mui/material/Rating';
 import avatar from '../../assets/avatar_holder.svg';
+import {FiUser} from "react-icons/fi";
 
 const RatingListItem = (props) => {
     return (
         <div className="bg-White rounded-md flex flex-col shadow">
             <div className="flex mx-2 mt-2">
                 <div className="select-none">
-                    <img src={avatar} alt="avatar" className="object-cover w-[3.5rem] h-[3.5rem]"/>
+                    {props.picture
+                        ?
+                        <img src={props.picture} alt="avatar"
+                             className="object-cover w-[3.5rem] h-[3.5rem] rounded-[50%]"/>
+                        :
+                        <div className="w-[3.5rem] h-[3.5rem] rounded-[50%] bg-Lighter_gray flex items-center justify-center">
+                            <FiUser className="text-Dark_gray h-8 w-8 text-Dark_gray"/>
+                        </div>
+                    }
                 </div>
 
                 <div className="flex flex-col ml-3 justify-between">

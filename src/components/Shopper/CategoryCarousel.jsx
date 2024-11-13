@@ -4,51 +4,32 @@ import left_arrow from '../../assets/left_arrow.svg';
 import CategoryCardView from "./CategoryCardView";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
+import {instance} from "../../AxiosConfig";
 
 const CategoryCarousel = () => {
     const navigate = useNavigate();
-    const sampleCategories = [
-        { id: 1, name: "Chăm sóc da", picture: null },
-        { id: 2, name: "Chăm sóc tóc", picture: null },
-        { id: 3, name: "Phụ kiện làm đẹp", picture: null },
-        { id: 4, name: "Chăm sóc da mặt", picture: null },
-        { id: 5, name: "Dụng cụ trang điểm", picture: null },
-        { id: 6, name: "Trang điểm", picture: null },
-        { id: 7, name: "Chăm sóc cơ thể", picture: null },
-        { id: 8, name: "Nước hoa", picture: null },
-        { id: 9, name: "Chăm sóc toàn thân", picture: null },
-        { id: 10, name: "Chăm sóc tóc chuyên sâu", picture: null },
-        { id: 11, name: "Sản phẩm dưỡng ẩm", picture: null },
-        { id: 12, name: "Trang điểm tự nhiên", picture: null },
-        { id: 13, name: "Mặt nạ", picture: null },
-        { id: 14, name: "Sản phẩm tẩy trang", picture: null },
-        { id: 15, name: "Sữa rửa mặt", picture: null },
-        { id: 16, name: "Kem chống nắng", picture: null },
-        { id: 17, name: "Serum", picture: null },
-        { id: 18, name: "Sữa tắm", picture: null },
-        { id: 19, name: "Dầu gội", picture: null },
-        { id: 20, name: "Dầu xả", picture: null },
-        { id: 21, name: "Cọ trang điểm", picture: null },
-        { id: 22, name: "Bông tẩy trang", picture: null },
-        { id: 23, name: "Máy massage da", picture: null },
-        { id: 24, name: "Máy rửa mặt", picture: null },
-        { id: 25, name: "Máy làm đẹp", picture: null },
-        { id: 26, name: "Máy tẩy lông", picture: null },
-        { id: 27, name: "Máy sấy tóc", picture: null },
-        { id: 28, name: "Máy uốn tóc", picture: null },
-        { id: 29, name: "Máy làm tóc", picture: null }
-    ];
 
     const [categories, setCategories] = React.useState([]);
 
     // Call API to get categories data and cache them in state categories
     useEffect(() => {
         //Call API here
+        const fetchData = async () => {
+            try {
+                const response = await instance.get('v1/shopping-service/category');
+                const data = response.data.data;
+                setCategories(data);
+            }
+            catch (error){
+                console.log(error);
+            }
+        }
 
+        fetchData();
     }, []);
 
     const itemsPerPage = 10;
-    const totalPages = Math.ceil(sampleCategories.length / itemsPerPage);
+    const totalPages = Math.ceil(categories.length / itemsPerPage);
 
     const [currentPage, setCurrentPage] = React.useState(0);
 
@@ -65,7 +46,7 @@ const CategoryCarousel = () => {
     };
 
     const startIndex = currentPage * itemsPerPage;
-    const displayedCategories = sampleCategories.slice(startIndex, startIndex + itemsPerPage);
+    const displayedCategories = categories.slice(startIndex, startIndex + itemsPerPage);
 
     const handleOnClick = (categoryId) => {
         navigate(`/shopper/category-products/${categoryId}`);

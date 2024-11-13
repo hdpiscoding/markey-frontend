@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import PrimaryHeader from "../../components/General/PrimaryHeader";
 import Filter from "../../components/General/Filter";
 import ProductCardViewMd from "../../components/Shopper/ProductCardViewMd";
@@ -6,115 +6,23 @@ import {Pagination, Stack} from "@mui/material";
 import Footer from "../../components/General/Footer";
 import avatar from "../../assets/avatar_holder.svg";
 import { IoLocationSharp } from "react-icons/io5";
+import {useParams} from "react-router-dom";
+import {instance} from "../../AxiosConfig";
+import LoadingModal from "../../components/General/LoadingModal";
 
 const ShopDetails = () => {
-    const products = [
-        { id: 1, name: "Son môi màu đỏ quyến rũ", price: 150000, sold: 2500 },
-        { id: 2, name: "Nước hoa hương chanh tươi mát", price: 800000, sold: 1800 },
-        { id: 3, name: "Kem dưỡng da ban đêm chống lão hóa", price: 600000, sold: 1500 },
-        { id: 4, name: "Sữa rửa mặt làm sạch sâu", price: 200000, sold: 3200 },
-        { id: 5, name: "Mặt nạ cấp ẩm chiết xuất thiên nhiên", price: 75000, sold: 4800 },
-        { id: 6, name: "Phấn nền trang điểm tự nhiên", price: 500000, sold: 3100 },
-        { id: 7, name: "Chì kẻ mắt chống nước", price: 120000, sold: 5400 },
-        { id: 8, name: "Nước tẩy trang dịu nhẹ", price: 250000, sold: 900 },
-        { id: 9, name: "Son dưỡng môi SPF 15", price: 95000, sold: 2200 },
-        { id: 10, name: "Kem chống nắng SPF 50", price: 400000, sold: 3600 },
-        { id: 11, name: "Dầu gội phục hồi tóc hư tổn", price: 300000, sold: 1700 },
-        { id: 12, name: "Sữa tắm chiết xuất dừa", price: 180000, sold: 2100 },
-        { id: 13, name: "Serum tinh chất làm sáng da", price: 700000, sold: 800 },
-        { id: 14, name: "Bộ trang điểm cơ bản", price: 900000, sold: 600 },
-        { id: 15, name: "Nước hoa hồng làm sạch da", price: 180000, sold: 3500 },
-        { id: 16, name: "Tẩy tế bào chết toàn thân", price: 280000, sold: 1900 },
-        { id: 17, name: "Kem trị mụn hiệu quả", price: 220000, sold: 4200 },
-        { id: 18, name: "Bảng phấn mắt 12 màu", price: 500000, sold: 900 },
-        { id: 19, name: "Mặt nạ ngủ cho da", price: 350000, sold: 1100 },
-        { id: 20, name: "Bông tẩy trang mềm mại", price: 50000, sold: 8000 },
-        { id: 21, name: "Túi đựng mỹ phẩm thời trang", price: 150000, sold: 4500 },
-        { id: 22, name: "Dầu xả phục hồi tóc", price: 250000, sold: 1300 },
-        { id: 23, name: "Kem dưỡng ẩm ban ngày", price: 350000, sold: 700 },
-        { id: 24, name: "Phấn phủ không dầu", price: 250000, sold: 2000 },
-        { id: 25, name: "Gương trang điểm LED", price: 300000, sold: 950 },
-        { id: 26, name: "Nước hoa nam hương gỗ", price: 950000, sold: 600 },
-        { id: 27, name: "Gel lô hội dưỡng ẩm", price: 220000, sold: 3000 },
-        { id: 28, name: "Chì kẻ mày tự nhiên", price: 120000, sold: 2800 },
-        { id: 29, name: "Bút kẻ mắt nước chống trôi", price: 150000, sold: 1500 },
-        { id: 30, name: "Khăn tắm siêu mềm mại", price: 60000, sold: 4000 },
-        { id: 31, name: "Son môi màu hồng pastel", price: 140000, sold: 2100 },
-        { id: 32, name: "Nước hoa hương vanilla ngọt ngào", price: 700000, sold: 1750 },
-        { id: 33, name: "Kem chống lão hóa ban ngày", price: 650000, sold: 1200 },
-        { id: 34, name: "Sữa rửa mặt cho da nhạy cảm", price: 220000, sold: 3300 },
-        { id: 35, name: "Mặt nạ đất sét làm sạch lỗ chân lông", price: 300000, sold: 1900 },
-        { id: 36, name: "Phấn trang điểm kiềm dầu", price: 280000, sold: 2800 },
-        { id: 37, name: "Chì kẻ mắt màu đen", price: 100000, sold: 3200 },
-        { id: 38, name: "Nước tẩy trang cho da nhạy cảm", price: 200000, sold: 900 },
-        { id: 39, name: "Son dưỡng môi có màu", price: 95000, sold: 2200 },
-        { id: 40, name: "Kem chống nắng dạng xịt SPF 30", price: 450000, sold: 2900 },
-        { id: 41, name: "Dầu gội chiết xuất thiên nhiên", price: 250000, sold: 1600 },
-        { id: 42, name: "Sữa tắm hương oải hương", price: 200000, sold: 2400 },
-        { id: 43, name: "Serum phục hồi tóc", price: 400000, sold: 1100 },
-        { id: 44, name: "Bộ chăm sóc da mặt cơ bản", price: 950000, sold: 750 },
-        { id: 45, name: "Nước hoa hồng làm dịu da", price: 160000, sold: 3100 },
-        { id: 46, name: "Tẩy tế bào chết cho môi", price: 150000, sold: 2000 },
-        { id: 47, name: "Kem trị thâm mụn", price: 240000, sold: 5000 },
-        { id: 48, name: "Bảng phấn mắt 15 màu", price: 550000, sold: 900 },
-        { id: 49, name: "Mặt nạ ngủ chiết xuất trà xanh", price: 370000, sold: 1100 },
-        { id: 50, name: "Khăn giấy ướt làm sạch", price: 40000, sold: 8500 },
-        { id: 51, name: "Túi xách đựng mỹ phẩm", price: 180000, sold: 4200 },
-        { id: 52, name: "Dầu xả dưỡng tóc", price: 270000, sold: 1300 },
-        { id: 53, name: "Kem chống nắng vật lý SPF 50", price: 500000, sold: 900 },
-        { id: 54, name: "Phấn phủ trang điểm lâu trôi", price: 300000, sold: 2100 },
-        { id: 55, name: "Gương trang điểm không gương", price: 250000, sold: 800 },
-        { id: 56, name: "Nước hoa hương gỗ đàn hương", price: 850000, sold: 400 },
-        { id: 57, name: "Gel dưỡng ẩm cho da mặt", price: 320000, sold: 2500 },
-        { id: 58, name: "Chì kẻ mày dạng bột", price: 130000, sold: 2900 },
-        { id: 59, name: "Bút kẻ mắt nước màu xanh", price: 170000, sold: 1500 },
-        { id: 60, name: "Khăn tắm 100% cotton", price: 70000, sold: 6000 },
-        { id: 61, name: "Son bóng màu cam", price: 120000, sold: 2700 },
-        { id: 62, name: "Nước hoa hương hoa nhài", price: 600000, sold: 1800 },
-        { id: 63, name: "Kem chống lão hóa ban đêm", price: 700000, sold: 1300 },
-        { id: 64, name: "Sữa rửa mặt chiết xuất lô hội", price: 220000, sold: 3200 },
-        { id: 65, name: "Mặt nạ giấy cấp ẩm", price: 120000, sold: 4800 },
-        { id: 66, name: "Phấn nước trang điểm", price: 300000, sold: 2300 },
-        { id: 67, name: "Chì kẻ mắt màu nâu", price: 130000, sold: 2000 },
-        { id: 68, name: "Nước tẩy trang cho da thường", price: 250000, sold: 900 },
-        { id: 69, name: "Son dưỡng môi không màu", price: 95000, sold: 3500 },
-        { id: 70, name: "Kem chống nắng dạng kem SPF 30", price: 400000, sold: 2100 },
-        { id: 71, name: "Dầu gội cho tóc nhuộm", price: 250000, sold: 1700 },
-        { id: 72, name: "Sữa tắm hương trái cây", price: 180000, sold: 2500 },
-        { id: 73, name: "Serum chống lão hóa", price: 700000, sold: 900 },
-        { id: 74, name: "Bộ trang điểm chuyên nghiệp", price: 1200000, sold: 400 },
-        { id: 75, name: "Nước hoa hồng cho da dầu", price: 190000, sold: 2200 },
-        { id: 76, name: "Tẩy tế bào chết cho da mặt", price: 260000, sold: 1800 },
-        { id: 77, name: "Kem trị nám hiệu quả", price: 300000, sold: 1300 },
-        { id: 78, name: "Bảng phấn mắt 20 màu", price: 600000, sold: 500 },
-        { id: 79, name: "Mặt nạ ngủ chiết xuất trà trắng", price: 350000, sold: 1100 },
-        { id: 80, name: "Khăn giấy ướt chiết xuất tự nhiên", price: 45000, sold: 9000 },
-        { id: 81, name: "Túi đựng mỹ phẩm cao cấp", price: 200000, sold: 3700 },
-        { id: 82, name: "Dầu xả cho tóc khô", price: 230000, sold: 1600 },
-        { id: 83, name: "Kem chống nắng nước SPF 50", price: 500000, sold: 800 },
-        { id: 84, name: "Phấn phủ cho da khô", price: 270000, sold: 2100 },
-        { id: 85, name: "Gương trang điểm bỏ túi", price: 120000, sold: 1000 },
-        { id: 86, name: "Nước hoa hương cam chanh", price: 800000, sold: 500 },
-        { id: 87, name: "Gel lô hội làm dịu da", price: 220000, sold: 3300 },
-        { id: 88, name: "Chì kẻ mày dạng kem", price: 140000, sold: 2900 },
-        { id: 89, name: "Bút kẻ mắt nước màu tím", price: 160000, sold: 1200 },
-        { id: 90, name: "Khăn tắm dành cho trẻ em", price: 75000, sold: 3000 },
-        { id: 91, name: "Son môi màu nude", price: 110000, sold: 2500 },
-        { id: 92, name: "Nước hoa hương trái cây tươi mát", price: 900000, sold: 1700 },
-        { id: 93, name: "Kem dưỡng ẩm cho da nhạy cảm", price: 320000, sold: 1000 },
-        { id: 94, name: "Sữa rửa mặt cho da khô", price: 200000, sold: 1500 },
-        { id: 95, name: "Mặt nạ đất sét làm trắng da", price: 280000, sold: 1300 },
-        { id: 96, name: "Phấn nước kiềm dầu", price: 300000, sold: 2500 },
-        { id: 97, name: "Chì kẻ mắt màu xanh lá", price: 130000, sold: 1100 },
-        { id: 98, name: "Nước tẩy trang cho mắt", price: 200000, sold: 600 },
-        { id: 99, name: "Son dưỡng môi có mùi trái cây", price: 95000, sold: 3000 },
-        { id: 100, name: "Kem chống nắng SPF 50 dạng xịt", price: 450000, sold: 1200 },
-    ];
+    const [products, setProducts] = useState([]);
+    const { shopId } = useParams();
+    const [shop, setShop] = useState({});
+    const [address, setAddress] = useState('');
 
     const [selectedDiv, setSelectedDiv] = useState(1); // Default selected div (1: Phổ biến, 2: Bán chạy, 3: Giá)
     const [selectValue, setSelectValue] = useState('default');
 
-    const handleDivClick = (index) => {
+    const handleDivClick = async (index) => {
+        if ( index === 1 ){
+            await handleSortByRating();
+        }
         if (selectedDiv !== index) {
             setSelectedDiv(index);
             if (selectedDiv === 3) {
@@ -123,20 +31,17 @@ const ShopDetails = () => {
         }
     };
 
-    const handleSelectChange = (event) => {
-        setSelectValue(event.target.value);
+    const handleSelectChange = async (event) => {
+        const value = event.target.value;
+        setSelectValue(value);
+        await handleSortByPrice(parseInt(value));
     };
 
     // set up pagination
     const [page, setPage] = useState(1);
 
     const itemsPerPage = 25;
-    const totalPages = Math.ceil(products.length / itemsPerPage);
-
-    const indexOfLastItem = page * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-
-    const currentProducts = products.slice(indexOfFirstItem, indexOfLastItem);
+    const [totalPages, setTotalPages] = useState(null);
 
     const handlePageChange = (event, value) => {
         setPage(value);
@@ -144,23 +49,153 @@ const ShopDetails = () => {
     }
     // end of set up pagination
 
+    const [loading, setLoading] = useState(false);
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
+
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
+
+    // Set up sort and filter for API request
+    const [filter, setFilter] = useState({
+        sort:{
+            by: "ratingAverage",
+            order: "DESC"
+        },
+        name: null,
+        priceFrom: null,
+        priceTo: null,
+        aboveRating: null,
+        categoryId: null,
+        shopId: shopId
+    });
+
+    const handleSortByRating = async () => {
+        setFilter({...filter, sort: {by: "ratingAverage", order: "DESC"}});
+    }
+
+    const handleSortByPrice = async (value) => {
+        if (value === 1) {
+            setFilter({...filter, sort: {by: "price", order: "ASC"}});
+        }
+        else if (value === 2) {
+            setFilter({...filter, sort: {by: "price", order: "DESC"}});
+        }
+    }
+
+    const handleFilterByPrice = async (fromPrice, toPrice) => {
+        setFilter({...filter, priceFrom: fromPrice, priceTo: toPrice});
+    }
+
+    const handleFilterByRating = async (rating) => {
+        setFilter({...filter, aboveRating: rating});
+    }
+
+    const handleResetFilter = async () => {
+        setFilter({
+            sort:{
+                by: "ratingAverage",
+                order: "DESC"
+            },
+            name: null,
+            priceFrom: null,
+            priceTo: null,
+            aboveRating: null,
+            categoryId: null,
+            shopId: shopId
+        });
+    }
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                const response = await instance.post(`v1/shopping-service/product/filter?page=${page}&rpp=${itemsPerPage}`, filter);
+                setTotalPages(Math.ceil(response.data.data.total / itemsPerPage));
+                setProducts(response.data.data.items);
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
+
+        fetchData();
+    }, [filter]);
+    // End set up sort and filter for API request
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                const shopResponse = await instance.get(`v1/shopping-service/shop/${shopId}`);
+                setShop(shopResponse.data.data);
+
+                let filter = {
+                    shopId: shopId,
+                }
+                // Call API to get products data by categoryId
+                const response = await instance.post(`v1/shopping-service/product/filter?page=${page}&rpp=${itemsPerPage}`, filter);
+                setTotalPages(Math.ceil(response.data.data.total / itemsPerPage));
+                setProducts(response.data.data.items);
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
+
+        fetchData();
+    }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const salesmanId = shop.salesmanId;
+                const response = await instance.get(`v1/user-service/salesman/${salesmanId}`);
+                setAddress(response.data.data.address);
+            }
+            catch (error) {
+                console.log(error);
+            }
+        }
+
+        fetchData();
+    }, [shop]);
+
     return (
         <div className="bg-Light_gray w-screen overflow-x-hidden">
-            <PrimaryHeader/>
-
             <main className="flex flex-col">
                 <div className="bg-White grid grid-cols-[1fr_10fr_1fr] mb-4">
                     <div className="col-start-2 grid grid-cols-[40%_60%] py-2">
                         <div className="col-start-1 flex items-center gap-2">
                             <div>
-                                <img src={avatar} alt="avatar" className="object-cover h-20 w-20"/>
+                                <img src={shop.profilePicture} alt="avatar" className="object-cover h-20 w-20 rounded-[50%]"/>
                             </div>
 
                             <div className="flex flex-col">
                                 <div>
                                     <div className="flex items-center">
                                         <span className="font-semibold text-lg">
-                                            Tên cửa hàng
+                                            {shop.name}
                                         </span>
                                     </div>
 
@@ -168,7 +203,7 @@ const ShopDetails = () => {
                                         <IoLocationSharp className="text-Red"/>
 
                                         <span className="text-sm">
-                                            123/456 Hồng Bàng, Phường 6, Quận 6, TP.HCM
+                                            {address}
                                         </span>
                                     </div>
                                 </div>
@@ -177,18 +212,7 @@ const ShopDetails = () => {
 
                         <div className="col-start-2">
                             <p className="text-sm ">
-                                But I must explain to you how all this mistaken idea of denouncing pleasure and praising
-                                pain was born and I will give you a complete account of the system, and expound the
-                                actual teachings of the great explorer of the truth, the master-builder of human
-                                happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure,
-                                but because those who do not know how to pursue pleasure rationally encounter
-                                consequences that are extremely painful. Nor again is there anyone who loves or pursues
-                                or desires to obtain pain of itself, because it is pain, but because occasionally
-                                circumstances occur in which toil and pain can procure him some great pleasure. To take
-                                a trivial example, which of us ever undertakes laborious physical exercise, except to
-                                obtain some advantage from it? But who has any right to find fault with a man who
-                                chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain
-                                that produces no resultant pleasure?
+                                {shop.description}
                             </p>
                         </div>
 
@@ -204,7 +228,7 @@ const ShopDetails = () => {
                         </div>
 
                         <div className="grid grid-cols-[22%_1%_77%]">
-                            <Filter/>
+                            <Filter onFilterByPrice={handleFilterByPrice} onFilterByRating={handleFilterByRating} onResetFilter={handleResetFilter}/>
 
                             <div className="col-start-3 flex flex-col gap-6">
                                 <div className="bg-[#e1e1e1]">
@@ -224,14 +248,6 @@ const ShopDetails = () => {
                                             </span>
                                             </div>
 
-                                            <div className={`flex text-center rounded-md px-5 py-1 cursor-pointer 
-                                            ${selectedDiv === 2 ? "bg-Blue text-white" : 'bg-White'}`}
-                                                 onClick={() => handleDivClick(2)}>
-                                                <span>
-                                                    Bán chạy
-                                                </span>
-                                            </div>
-
                                             <div>
                                                 <select className={`rounded-md px-5 py-1 cursor-pointer 
                                                     ${selectedDiv === 3 ? 'border border-Blue outline-none ring-2 ring-Blue text-Blue' : ''}`}
@@ -247,9 +263,9 @@ const ShopDetails = () => {
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2">
-                                    {currentProducts.map((product) => (
+                                    {products.map((product) => (
                                         <ProductCardViewMd key={product.id} id={product.id} name={product.name} price={product.price}
-                                                           image={product.image} rating={product.rating} role="shopper"/>
+                                                           picture={product.picture[0]} rating={product.ratingAverage} role="shopper"/>
                                     ))}
                                 </div>
 
@@ -283,6 +299,8 @@ const ShopDetails = () => {
                             </div>
                         </div>
                     </div>
+
+                    {loading && <LoadingModal isOpen={isLoadingModalOpen} />}
                 </div>
             </main>
 
