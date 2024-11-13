@@ -130,21 +130,21 @@ const SecondaryHeader = (props) => {
                                     {role === "shopper"
                                         ?
                                         <Link to="/shopper">
-                                            <img src="/markey_blue_horizontal.png" className="object-cover"
+                                            <img src="/Markey_blue_vertical.png" className="object-cover"
                                                  alt="Markey"/>
                                         </Link> : null}
 
                                     {role === "salesman"
                                         ?
                                         <Link to="/salesman">
-                                            <img src="/markey_blue_horizontal.png" className="object-cover"
+                                            <img src="/Markey_blue_horizontal.png" className="object-cover"
                                                  alt="Markey"/>
                                         </Link> : null}
 
                                     {role === "admin"
                                         ?
                                         <Link to="/admin">
-                                            <img src="/markey_blue_horizontal.png" className="object-cover"
+                                            <img src="/Markey_blue_horizontal.png" className="object-cover"
                                                  alt="Markey"/>
                                         </Link> : null}
                                 </div>
