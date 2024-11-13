@@ -1,5 +1,4 @@
 import React, {useState, useEffect, useRef} from 'react';
-import versace from '../../assets/versace_cologne.svg';
 import { FaMinus, FaPlus } from "react-icons/fa6";
 
 const CartItemListView = (props) => {

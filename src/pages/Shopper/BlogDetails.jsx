@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import SecondaryHeader from "../../components/General/SecondaryHeader";
 import Footer from "../../components/General/Footer";
 import { FaRegClock } from "react-icons/fa";
-import sample_blog from "../../assets/sample_blog.png";
 import BlogCardView from "../../components/Shopper/BlogCardView";
 import {Link, useParams} from "react-router-dom";
 import {instance} from "../../AxiosConfig";

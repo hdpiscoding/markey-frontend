@@ -1,5 +1,4 @@
 import React from 'react';
-import versace from "../../assets/versace_cologne.svg";
 
 const SalemansOrderItem = (props) => {
     const formatNumberWithDots = (number) => {

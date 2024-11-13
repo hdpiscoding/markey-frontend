@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import versace from "../../assets/versace_cologne.svg";
 import ConfirmModal from "../General/ConfirmModal";
 
 const ShopperReceivedItem = (props) => {

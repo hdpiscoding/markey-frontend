@@ -1,13 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import PrimaryHeader from "../../components/General/PrimaryHeader";
 import Footer from "../../components/General/Footer";
-import product_1 from '../../assets/product_1.png';
-import product_2 from '../../assets/product_2.png';
-import product_3 from '../../assets/product_3.png';
 import Rating from "@mui/material/Rating";
 import {FaMinus, FaPlus} from "react-icons/fa6";
 import { MdAddShoppingCart } from "react-icons/md";
-import avatar from "../../assets/avatar_holder.svg";
 import { PiStorefrontLight } from "react-icons/pi";
 import RatingListItem from "../../components/Shopper/RatingListItem";
 import { Pagination, Stack } from "@mui/material";
@@ -393,13 +388,13 @@ const ProductDetails = (props) => {
                                     ?
                                     <div
                                         className="border border-Blue ring-2 ring-Blue flex flex-shrink-0 cursor-pointer">
-                                        <img src={images[0] ?? product_1} alt="img"
+                                        <img src={images[0]} alt="img"
                                              className="object-cover w-[9rem] h-[9rem]" onClick={handleImage1}/>
                                     </div>
                                     :
                                     <div
                                         className="border flex flex-shrink-0 cursor-pointer">
-                                        <img src={images[0] ?? product_1} alt="img"
+                                        <img src={images[0]} alt="img"
                                              className="object-cover w-[9rem] h-[9rem]" onClick={handleImage1}/>
                                     </div>}
 
@@ -407,13 +402,13 @@ const ProductDetails = (props) => {
                                     ?
                                     <div
                                         className="border border-Blue ring-2 ring-Blue flex flex-shrink-0 cursor-pointer">
-                                        <img src={images[1] ?? product_2} alt="img"
+                                        <img src={images[1]} alt="img"
                                              className="object-cover w-[9rem] h-[9rem]" onClick={handleImage2}/>
                                     </div>
                                     :
                                     <div
                                         className="border flex flex-shrink-0 cursor-pointer">
-                                        <img src={images[1] ?? product_2} alt="img"
+                                        <img src={images[1]} alt="img"
                                              className="object-cover w-[9rem] h-[9rem]" onClick={handleImage2}/>
                                     </div>}
 
@@ -421,13 +416,13 @@ const ProductDetails = (props) => {
                                     ?
                                     <div
                                         className="border border-Blue ring-2 ring-Blue flex flex-shrink-0 cursor-pointer">
-                                        <img src={images[2] ?? product_3} alt="img"
+                                        <img src={images[2]} alt="img"
                                              className="object-cover w-[9rem] h-[9rem]" onClick={handleImage3}/>
                                     </div>
                                     :
                                     <div
                                         className="border flex flex-shrink-0 cursor-pointer">
-                                        <img src={images[2] ?? product_3} alt="img"
+                                        <img src={images[2]} alt="img"
                                              className="object-cover w-[9rem] h-[9rem]" onClick={handleImage3}/>
                                     </div>}
                             </div>

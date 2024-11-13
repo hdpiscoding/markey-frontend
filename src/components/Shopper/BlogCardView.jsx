@@ -1,5 +1,4 @@
 import React from 'react';
-import sample_blog from '../../assets/sample_blog.png';
 import clock from '../../assets/clock.svg';
 import {useNavigate} from "react-router-dom";
 

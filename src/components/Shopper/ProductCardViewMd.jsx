@@ -1,5 +1,4 @@
 import React from "react";
-import sample2 from "../../assets/pretty_skin.svg";
 import {IoMdStar} from "react-icons/io";
 import {useNavigate} from "react-router-dom";
 

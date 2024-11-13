@@ -1,9 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import SecondaryHeader from "../../components/General/SecondaryHeader";
 import Footer from "../../components/General/Footer";
 import SalesmanNav from "../../components/Salesman/SalesmanNav";
 import {FiUser} from "react-icons/fi";
-import product_1 from "../../assets/product_1.png";
 import ConfirmModal from "../../components/General/ConfirmModal";
 import {useNavigate} from "react-router-dom";
 import LoadingModal from "../../components/General/LoadingModal";
