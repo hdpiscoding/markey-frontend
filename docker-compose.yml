@@ -1,7 +1,7 @@
 version: "3"
 services:
   markey-fe:
-    build: .
+    image: haphuthinh/markey-fe:latest
     ports:
       - "9050:80"
     container_name: markey-fe
