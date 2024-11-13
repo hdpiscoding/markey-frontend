@@ -1,0 +1,12 @@
+version: "3"
+services:
+  markey-fe:
+    image: haphuthinh/markey-fe:latest
+    ports:
+      - "9050:80"
+    container_name: markey-fe
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 500M
