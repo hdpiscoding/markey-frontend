@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import PrimaryHeader from "../../components/General/PrimaryHeader";
 import Footer from "../../components/General/Footer";
 import ProductCardViewLg from "../../components/Shopper/ProductCardViewLg";
 import {Pagination, Stack} from "@mui/material";

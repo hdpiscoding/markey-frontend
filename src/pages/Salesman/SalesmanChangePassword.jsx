@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import {FaEye, FaEyeSlash} from "react-icons/fa";
 import {BiErrorCircle} from "react-icons/bi";
 import Footer from "../../components/General/Footer";
-import SecondaryHeader from "../../components/General/SecondaryHeader";
 import SalesmanNav from "../../components/Salesman/SalesmanNav";
 import ConfirmModal from "../../components/General/ConfirmModal";
 import LoadingModal from "../../components/General/LoadingModal";

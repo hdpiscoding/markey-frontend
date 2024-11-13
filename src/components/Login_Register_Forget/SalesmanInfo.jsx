@@ -3,7 +3,6 @@ import {IoArrowBack} from "react-icons/io5";
 import {useNavigate} from "react-router-dom";
 import useLocalStorage from "../General/useLocalStorage";
 import LoadingModal from "../General/LoadingModal";
-import {instance} from "../../AxiosConfig";
 import axios from "axios";
 
 const SalesmanInfo = () => {

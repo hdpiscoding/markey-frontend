@@ -1,10 +1,8 @@
 import React, {useEffect, useState} from "react";
-import PrimaryHeader from "../../components/General/PrimaryHeader";
 import Filter from "../../components/General/Filter";
 import ProductCardViewMd from "../../components/Shopper/ProductCardViewMd";
 import {Pagination, Stack} from "@mui/material";
 import Footer from "../../components/General/Footer";
-import avatar from "../../assets/avatar_holder.svg";
 import { IoLocationSharp } from "react-icons/io5";
 import {useParams} from "react-router-dom";
 import {instance} from "../../AxiosConfig";

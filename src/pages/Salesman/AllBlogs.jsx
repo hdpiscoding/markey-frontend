@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import SecondaryHeader from "../../components/General/SecondaryHeader";
 import Footer from "../../components/General/Footer";
 import SalesmanNav from "../../components/Salesman/SalesmanNav";
 import {Pagination, Stack} from "@mui/material";

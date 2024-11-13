@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-import SecondaryHeader from "../../components/General/SecondaryHeader";
 import SalesmanNav from "../../components/Salesman/SalesmanNav";
 import Footer from "../../components/General/Footer";
 import {Link, useNavigate, useParams} from "react-router-dom";

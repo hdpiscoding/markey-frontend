@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {FiUser} from "react-icons/fi";
 import Footer from "../../components/General/Footer";
-import SecondaryHeader from "../../components/General/SecondaryHeader";
 import AdminNav from "../../components/Admin/AdminNav";
 import ConfirmModal from "../../components/General/ConfirmModal";
 

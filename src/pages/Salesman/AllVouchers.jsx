@@ -2,9 +2,7 @@ import React, {useState} from 'react';
 import SecondaryHeader from "../../components/General/SecondaryHeader";
 import Footer from "../../components/General/Footer";
 import SalesmanNav from "../../components/Salesman/SalesmanNav";
-import ProductCardViewMd from "../../components/Shopper/ProductCardViewMd";
 import {Pagination, Stack} from "@mui/material";
-import VoucherModalListView from "../../components/Shopper/VoucherModalListView";
 import VoucherListView from "../../components/Salesman/VoucherListView";
 
 const AllVouchers = () => {

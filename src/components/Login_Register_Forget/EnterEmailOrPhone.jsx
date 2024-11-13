@@ -2,7 +2,6 @@ import React, {useEffect, useState} from "react";
 import {IoArrowBack} from "react-icons/io5";
 import {useNavigate} from "react-router-dom";
 import useLocalStorage from "../General/useLocalStorage";
-import {instance} from "../../AxiosConfig";
 import axios from "axios";
 import LoadingModal from "../General/LoadingModal";
 

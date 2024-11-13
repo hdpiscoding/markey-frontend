@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect} from 'react';
 import { FaMinus, FaPlus } from "react-icons/fa6";
 
 const CartItemListView = (props) => {

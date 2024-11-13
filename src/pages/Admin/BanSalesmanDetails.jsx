@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import ConfirmModal from "../../components/General/ConfirmModal";
 import Footer from "../../components/General/Footer";
-import SecondaryHeader from "../../components/General/SecondaryHeader";
 import AdminNav from "../../components/Admin/AdminNav";
 import {FiUser} from "react-icons/fi";
 import {useNavigate, useParams} from "react-router-dom";

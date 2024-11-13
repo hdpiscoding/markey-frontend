@@ -6,7 +6,6 @@ import ConfirmModal from "../../components/General/ConfirmModal";
 import {useNavigate} from "react-router-dom";
 import LoadingModal from "../../components/General/LoadingModal";
 import {instance, mediaInstance} from "../../AxiosConfig";
-import useLocalStorage from "../../components/General/useLocalStorage";
 
 const EditShopInfo = () => {
     function formatPhoneNumber(phoneNumber) {

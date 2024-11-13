@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import SecondaryHeader from "../../components/General/SecondaryHeader";
 import BlogListViewMd from "../../components/Shopper/BlogListViewMd";
 import {Pagination, Stack} from "@mui/material";
 import BlogCardView from "../../components/Shopper/BlogCardView";

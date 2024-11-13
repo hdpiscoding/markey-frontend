@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import SecondaryHeader from "../../components/General/SecondaryHeader";
 import Footer from "../../components/General/Footer";
 import SalesmanNav from "../../components/Salesman/SalesmanNav";
-import SalemansOrderItem from "../../components/Salesman/SalemansOrderItem";
 import {Pagination, Stack} from "@mui/material";
 import LoadingModal from "../../components/General/LoadingModal";
 import {instance} from "../../AxiosConfig";

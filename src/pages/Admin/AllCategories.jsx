@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import SecondaryHeader from "../../components/General/SecondaryHeader";
 import Footer from "../../components/General/Footer";
 import AdminNav from "../../components/Admin/AdminNav";
-import VerifySalesmanListView from "../../components/Admin/VerifySalesmanListView";
 import {Pagination, Stack} from "@mui/material";
 import CategoryListView from "../../components/Admin/CategoryListView";
 import {instance} from "../../AxiosConfig";

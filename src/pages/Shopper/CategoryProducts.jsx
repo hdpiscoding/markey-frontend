@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import PrimaryHeader from "../../components/General/PrimaryHeader";
 import Footer from "../../components/General/Footer";
 import Filter from "../../components/General/Filter";
 import ProductCardViewMd from "../../components/Shopper/ProductCardViewMd";

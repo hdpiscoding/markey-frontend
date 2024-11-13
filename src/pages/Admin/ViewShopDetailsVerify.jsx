@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import SecondaryHeader from "../../components/General/SecondaryHeader";
 import Footer from "../../components/General/Footer";
 import AdminNav from "../../components/Admin/AdminNav";
 import ConfirmModal from "../../components/General/ConfirmModal";

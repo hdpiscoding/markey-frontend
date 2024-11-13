@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import CartItemListView from "./CartItemListView";
 
 const CartItemGroupByDate = (props) => {
     const [productList, setProductList] = useState([{
