@@ -169,7 +169,7 @@ const HomeBlog = () => {
 
                             <div className="flex flex-col gap-4">
                                 {suggestedBlogs.map((blog) => (
-                                    <BlogCardView key={blog.id} title={blog.title} picture={blog.thumbnail} author={blog.shop.name} date={blog.createAt} category={blog.category.name}/>
+                                    <BlogCardView key={blog.id} id={blog.id} title={blog.title} picture={blog.thumbnail} author={blog.shop.name} date={blog.createAt} category={blog.category.name}/>
                                 ))}
                             </div>
 
