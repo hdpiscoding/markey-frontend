@@ -23,7 +23,7 @@ const RecommendedBlogs = () => {
     // set up pagination
     const [page, setPage] = React.useState(1);
 
-    const itemsPerPage = 5;
+    const [itemsPerPage, setItemsPerPage] = useState(5);
     const [totalPages, setTotalPages] = useState(null);
 
     const handlePageChange = (event, value) => {
@@ -35,20 +35,50 @@ const RecommendedBlogs = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                setLoading(true);
+                openLoadingModal();
+                setPage(1);
+                setItemsPerPage(5);
                 const blogsResponse = await instance.post(`v1/shopping-service/post/filter?page=${page}&rpp=${itemsPerPage}`);
                 setTotalPages(Math.ceil(blogsResponse.data.data.total/itemsPerPage));
                 setBlogs(blogsResponse.data.data.items);
             }
             catch (error) {
+                setLoading(false);
+                closeLoadingModal();
                 console.log(error);
             }
             finally {
-
+                setLoading(false);
+                closeLoadingModal();
             }
         }
 
         fetchData();
     }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                const blogsResponse = await instance.post(`v1/shopping-service/post/filter?page=${page}&rpp=${itemsPerPage}`);
+                setTotalPages(Math.ceil(blogsResponse.data.data.total/itemsPerPage));
+                setBlogs(blogsResponse.data.data.items);
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
+
+        fetchData();
+    }, [page]);
 
     return (
         <div className="bg-Light_gray w-screen overflow-x-hidden">

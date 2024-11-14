@@ -86,12 +86,12 @@ const AllProducts = () => {
     // set up pagination
     const [page, setPage] = useState(1);
 
-    const itemsPerPage = 10;
+    const [itemsPerPage, setItemsPerPages] = useState(10);
     const [totalPages, setTotalPages] = useState(null);
 
     const handlePageChange = (event, value) => {
         setPage(value);
-        window.scrollTo(0, 0)
+        window.scrollTo(0, 0);
     }
     // end of set up pagination
 
@@ -100,6 +100,37 @@ const AllProducts = () => {
             try {
                 setLoading(true);
                 openLoadingModal();
+
+                let filter = {
+                    shopId: shopId
+                }
+
+                // Call API to get all products
+                const response = await instance.post(`v1/shopping-service/product/filter?page=${page}&rpp=${itemsPerPage}`, filter);
+                setTotalPages(Math.ceil(response.data.data.total/itemsPerPage));
+                setProducts(await response.data.data.items);
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
+
+        fetchData();
+    }, [page]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                setPage(1);
+                setItemsPerPages(10);
                 const shopResponse = await instance.get('v1/shopping-service/shop/me');
                 const shopID = shopResponse.data.data.id;
 
