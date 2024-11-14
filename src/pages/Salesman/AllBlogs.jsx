@@ -66,7 +66,7 @@ const AllBlogs = () => {
 
     const handlePageChange = (event, value) => {
         setPage(value);
-        window.scrollTo(0, 0)
+        window.scrollTo(0, 0);
     }
     // end of set up pagination
 
@@ -75,6 +75,39 @@ const AllBlogs = () => {
             try {
                 setLoading(true);
                 openLoadingModal();
+                let filter = {
+                    sort: {
+                        by: "createAt",
+                        order: "DESC" // DESC | ASC
+                    },
+                    shopId: shopId
+                }
+
+                // Call API to get all blogs
+                const response = await instance.post(`v1/shopping-service/post/filter?page=${page}&rpp=${itemsPerPage}`, filter);
+                setTotalPages(Math.ceil(response.data.data.total/itemsPerPage));
+                setBlogs(await response.data.data.items);
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        };
+
+        fetchData();
+    }, [page]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                setPage(1);
                 const shopResponse = await instance.get('v1/shopping-service/shop/me');
                 const shopID = shopResponse.data.data.id;
                 let filter = {
