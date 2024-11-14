@@ -41,7 +41,7 @@ const CategoryBlogs = () => {
     // set up pagination
     const [page, setPage] = React.useState(1);
 
-    const itemsPerPage = 10;
+    const [itemsPerPage, setItemsPerPage] = useState(10);
     const [totalPages, setTotalPages] = useState(null);
 
     const handlePageChange = (event, value) => {
@@ -55,6 +55,8 @@ const CategoryBlogs = () => {
             try {
                 setLoading(true);
                 openLoadingModal();
+                setPage(1);
+                setItemsPerPage(10);
                 let filter = {
                     sort: {
                         by: "createAt",
@@ -88,6 +90,35 @@ const CategoryBlogs = () => {
 
         fetchData();
     }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                let filter = {
+                    sort: {
+                        by: "createAt",
+                        order: "DESC" // DESC | ASC
+                    },
+                    categoryId: categoryId,
+                }
+                // Call API to get blogs data by categoryId
+                const blogsResponse = await instance.post(`v1/shopping-service/post/filter?page=${page}&rpp=${itemsPerPage}`, filter);
+                setTotalPages(Math.ceil(blogsResponse.data.data.total / itemsPerPage));
+                setBlogs(blogsResponse.data.data.items);
+            } catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            } finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
+
+        fetchData();
+    }, [page]);
 
     return (
         <div className="bg-Light_gray w-screen overflow-x-hidden">

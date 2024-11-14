@@ -5,8 +5,10 @@ import {MdAddPhotoAlternate} from "react-icons/md";
 import ConfirmModal from "../../components/General/ConfirmModal";
 import LoadingModal from "../../components/General/LoadingModal";
 import {instance, mediaInstance} from "../../AxiosConfig";
+import {useNavigate} from "react-router-dom";
 
 const AddBlog = () => {
+    const navigate = useNavigate();
     const [selectedCategory, setSelectedCategory] = useState('default');
     const [selectedImage, setSelectedImage] = useState(null);
     const [fieldErrors, setFieldErrors] = useState({});
@@ -177,6 +179,7 @@ const AddBlog = () => {
                 });
                 setSelectedCategory('default');
                 setSelectedImage(null);
+                navigate('/salesman/all-blogs');
             }
         }
     }
