@@ -11,11 +11,6 @@ const CartItemGroupByDate = (props) => {
         id: 4, name: "Nước hoa Dior", price: 140000, max_quantity: 165,
     },]);
 
-    const onDelete = (id) => {
-        setProductList((prevList) => prevList.filter(product => product.id !== id));
-        props.onRemoveItem(id);
-    };
-
     return (
         <div className="bg-White rounded-sm shadow">
             <div className="flex flex-col mt-5 col-start-2">
