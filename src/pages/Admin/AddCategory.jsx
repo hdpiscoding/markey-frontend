@@ -1,5 +1,4 @@
-import React, {useEffect, useState} from 'react';
-import SecondaryHeader from "../../components/General/SecondaryHeader";
+import React, {useState} from 'react';
 import ConfirmModal from "../../components/General/ConfirmModal";
 import Footer from "../../components/General/Footer";
 import AdminNav from "../../components/Admin/AdminNav";
@@ -8,7 +7,7 @@ import {instance, mediaInstance}  from "../../AxiosConfig";
 import LoadingModal from "../../components/General/LoadingModal";
 
 const AddCategory = () => {
-    const [selectedImage, setSelectedImage] = useState(null);
+    const [categoryPicture, setCategoryPicture] = useState(null);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -21,25 +20,25 @@ const AddCategory = () => {
             // Kiểm tra định dạng tập tin
             if (!allowedFormats.includes(file.type)) {
                 setError('Chỉ chấp nhận định dạng .JPEG, .JPG và .PNG');
-                setSelectedImage(null);
+                setCategoryPicture(null);
                 return;
             }
 
             // Kiểm tra dung lượng tối đa 1MB (1MB = 1024 * 1024 bytes)
             if (file.size > 1024 * 1024) {
                 setError('Dung lượng tập tin tối đa là 1MB');
-                setSelectedImage(null);
+                setCategoryPicture(null);
                 return;
             }
 
             setError('');
-            setSelectedImage(file);
+            setCategoryPicture(file);
         }
     };
 
     const [fieldErrors, setFieldErrors] = useState({});
     const [formFields, setFormFields] = useState({
-        name: '',
+        categoryName: '',
     });
 
     // set up loading modal
@@ -74,12 +73,12 @@ const AddCategory = () => {
         let imageErrorMessages = [];
         let isValid = true;
 
-        if (formFields.name.trim() === '') {
-            newFieldErrors.name = "Vui lòng nhập tên danh mục.";
+        if (formFields.categoryName.trim() === '') {
+            newFieldErrors.categoryName = "Vui lòng nhập tên danh mục.";
             isValid = false;
         }
 
-        if (!selectedImage) {
+        if (!categoryPicture) {
             imageErrorMessages.push('Vui lòng chọn ảnh.');
             isValid = false;
         }
@@ -101,13 +100,13 @@ const AddCategory = () => {
     // end set up modal
 
     const getImagesUrl = async () => {
-        if (selectedImage) {
+        if (categoryPicture) {
             try {
                 const fileNameResponse = await mediaInstance.get("media-url");
                 const fileName = fileNameResponse.data.data.fileName;
 
                 const formData = new FormData();
-                formData.append("file", selectedImage);
+                formData.append("file", categoryPicture);
 
                 const response = await mediaInstance.post(`upload-media/${fileName}`, formData);
                 console.log(response.data.data.mediaUrl);
@@ -125,7 +124,7 @@ const AddCategory = () => {
         if (Object.keys(fieldErrors).length <= 0) {
             // Call API here
             let data = {
-                name: formFields.name,
+                name: formFields.categoryName,
                 picture: pictureUrl
             }
             try {
@@ -139,8 +138,8 @@ const AddCategory = () => {
                 console.log(error);
             }
             finally {
-                setFormFields({name: ''});
-                setSelectedImage(null);
+                setFormFields({categoryName: ''});
+                setCategoryPicture(null);
                 setLoading(false);
                 closeLoadingModal();
             }
@@ -178,8 +177,8 @@ const AddCategory = () => {
                         <div className="flex flex-col items-center justify-center gap-4">
                             <div
                                 className="rounded-[50%] bg-Gray h-[120px] w-[120px] flex items-center justify-center">
-                                {selectedImage ? (
-                                    <img src={URL.createObjectURL(selectedImage)} alt="Selected"
+                                {categoryPicture ? (
+                                    <img src={URL.createObjectURL(categoryPicture)} alt="Selected"
                                          className="w-full h-full rounded-[50%] object-cover"/>
                                 ) : (
                                     <MdAddPhotoAlternate
@@ -223,12 +222,12 @@ const AddCategory = () => {
                                     <input
                                         type="text"
                                         name="name"
-                                        value={formFields.name}
+                                        value={formFields.categoryName}
                                         onChange={handleInputChange}
-                                        className={`w-full h-8 border ${fieldErrors.name ? 'border-Red' : 'border-Black'} focus:outline-none px-2 rounded-sm`}
+                                        className={`w-full h-8 border ${fieldErrors.categoryName ? 'border-Red' : 'border-Black'} focus:outline-none px-2 rounded-sm`}
                                     />
-                                    {fieldErrors.name && (
-                                        <p className="text-Red text-sm h-4 absolute left-0">{fieldErrors.name}</p>
+                                    {fieldErrors.categoryName && (
+                                        <p className="text-Red text-sm h-4 absolute left-0">{fieldErrors.categoryName}</p>
                                     )}
 
                                 </td>

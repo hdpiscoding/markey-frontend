@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import SecondaryHeader from "../../components/General/SecondaryHeader";
 import Footer from "../../components/General/Footer";
 import BlogListViewMd from "../../components/Shopper/BlogListViewMd";
 import {Pagination, Stack} from "@mui/material";
@@ -37,14 +36,14 @@ const HomeBlog = () => {
         navigate(`/shopper/category-blogs/${newCategory}`);
     }
 
-    const [blogs, setBlogs] = useState([]);
+    const [blogList, setBlogList] = useState([]);
 
-    const [suggestedBlogs, setSuggestedBlogs] = useState([]);
+    const [recommendedBlogList, setRecommendedBlogList] = useState([]);
 
     // set up pagination
     const [page, setPage] = React.useState(1);
 
-    const itemsPerPage = 10;
+    const [itemsPerPage, setItemsPerPage] = useState(10);
     const [totalPages, setTotalPages] = useState(null);
 
     const handlePageChange = (event, value) => {
@@ -59,6 +58,8 @@ const HomeBlog = () => {
                 setLoading(true);
                 openLoadingModal();
 
+                setPage(1);
+                setItemsPerPage(10);
                 const response = await instance.get('v1/shopping-service/category');
                 const data = response.data.data;
                 setCategories(data);
@@ -71,11 +72,11 @@ const HomeBlog = () => {
                 }
 
                 const blogsResponse = await instance.post(`v1/shopping-service/post/filter?page=${page}&rpp=${itemsPerPage}`, filter);
-                setBlogs(blogsResponse.data.data.items);
+                setBlogList(blogsResponse.data.data.items);
                 setTotalPages(Math.ceil(blogsResponse.data.data.total/itemsPerPage));
 
                 const suggestedBlogsResponse = await instance.post('v1/shopping-service/post/filter?page=1&rpp=5');
-                setSuggestedBlogs(suggestedBlogsResponse.data.data.items);
+                setRecommendedBlogList(suggestedBlogsResponse.data.data.items);
             }
             catch (error){
                 setLoading(false);
@@ -90,6 +91,37 @@ const HomeBlog = () => {
 
         fetchData();
     }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+
+                let filter = {
+                    sort: {
+                        by: "createAt",
+                        order: "DESC" // DESC | ASC
+                    }
+                }
+
+                const blogsResponse = await instance.post(`v1/shopping-service/post/filter?page=${page}&rpp=${itemsPerPage}`, filter);
+                setBlogList(blogsResponse.data.data.items);
+                setTotalPages(Math.ceil(blogsResponse.data.data.total/itemsPerPage));
+            }
+            catch (error){
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
+
+        fetchData();
+    }, [page]);
 
     return (
         <div className="bg-Light_gray w-screen overflow-x-hidden">
@@ -122,7 +154,7 @@ const HomeBlog = () => {
                             </div>
 
                             <div className="flex flex-col gap-4">
-                                {blogs.map((blog) => (
+                                {blogList.map((blog) => (
                                     <BlogListViewMd key={blog.id} title={blog.title} author={blog.shop.name} id={blog.id} picture={blog.thumbnail}
                                                     date={blog.createAt} category={blog.category.name} role="shopper"/>
                                 ))}
@@ -169,8 +201,8 @@ const HomeBlog = () => {
                             </div>
 
                             <div className="flex flex-col gap-4">
-                                {suggestedBlogs.map((blog) => (
-                                    <BlogCardView key={blog.id} title={blog.title} picture={blog.thumbnail} author={blog.shop.name} date={blog.createAt} category={blog.category.name}/>
+                                {recommendedBlogList.map((blog) => (
+                                    <BlogCardView key={blog.id} id={blog.id} title={blog.title} picture={blog.thumbnail} author={blog.shop.name} date={blog.createAt} category={blog.category.name}/>
                                 ))}
                             </div>
 

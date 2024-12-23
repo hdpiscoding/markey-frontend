@@ -1,5 +1,4 @@
-import React, {useState} from 'react';
-import ConfirmModal from "../General/ConfirmModal";
+import React from 'react';
 
 const ShopperReceivedItem = (props) => {
     const formatNumberWithDots = (number) => {

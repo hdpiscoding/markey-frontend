@@ -6,16 +6,16 @@ import InfoModal from "../../components/General/InfoModal";
 import LoadingModal from "../../components/General/LoadingModal";
 
 const Register = () => {
-    const formatPhoneNumber = (phoneNumber) => {
-        return phoneNumber.replace(/^0/, '+84');
+    const formatPhoneNumber = (phoneNumberNumber) => {
+        return phoneNumberNumber.replace(/^0/, '+84');
     }
     const navigate = useNavigate();
-    const [phone, setPhone] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
     const [email, setEmail] = useState('');
-    const [errors, setErrors] = useState({ phone: '', email: '' });
+    const [errors, setErrors] = useState({ phoneNumber: '', email: '' });
     const [selectedRole, setSelectedRole] = useState('shopper');
 
-    const phoneStorage = useLocalStorage('phone');
+    const phoneNumberStorage = useLocalStorage('phoneNumber');
     const emailStorage = useLocalStorage('email');
     const roleStorage = useLocalStorage('selectedRole');
 
@@ -48,13 +48,13 @@ const Register = () => {
         setSelectedRole(e.target.value);
     }
 
-    const handlePhoneChange = (e) => {
-        const phoneValue = e.target.value;
+    const handlephoneNumberChange = (e) => {
+        const phoneNumberValue = e.target.value;
         // Kiểm tra chỉ cho phép số và giới hạn tối đa 10 ký tự
-        const phoneRegex = /^[0-9]{0,10}$/;
-        if (phoneRegex.test(phoneValue)) {
-            setPhone(phoneValue);
-            setErrors((prevErrors) => ({ ...prevErrors, phone: '' })); // Xóa lỗi nếu có
+        const phoneNumberRegex = /^[0-9]{0,10}$/;
+        if (phoneNumberRegex.test(phoneNumberValue)) {
+            setPhoneNumber(phoneNumberValue);
+            setErrors((prevErrors) => ({ ...prevErrors, phoneNumber: '' })); // Xóa lỗi nếu có
         }
     };
 
@@ -62,11 +62,11 @@ const Register = () => {
         let newErrors = {};
 
         // Kiểm tra số điện thoại không được để trống
-        if (!phone) {
-            newErrors.phone = 'Vui lòng nhập số điện thoại.';
+        if (!phoneNumber) {
+            newErrors.phoneNumber = 'Vui lòng nhập số điện thoại.';
         }
-        else if (phone.length !== 10) {
-            newErrors.phone = 'Số điện thoại phải đủ 10 chữ số.';
+        else if (phoneNumber.length !== 10) {
+            newErrors.phoneNumber = 'Số điện thoại phải đủ 10 chữ số.';
         }
 
         // Kiểm tra email không được để trống
@@ -92,14 +92,14 @@ const Register = () => {
                 openLoadingModal();
                 let data = {
                     email: email,
-                    phoneNumber: formatPhoneNumber(phone),
+                    phoneNumberNumber: formatPhoneNumber(phoneNumber),
                 }
                 const response = await axios.post('http://152.42.232.101:5050/api/v1/user-service/shopper/register/validation', data);
             }
             catch (error) {
                 if (error.response) {
                     newErrors.email = 'Email hoặc số điện thoại đã tồn tại';
-                    newErrors.phone = 'Email hoặc số điện thoại đã tồn tại';
+                    newErrors.phoneNumber = 'Email hoặc số điện thoại đã tồn tại';
                 }
                 setLoading(false);
                 closeLoadingModal();
@@ -113,7 +113,7 @@ const Register = () => {
 
             // Chỉ tiếp tục nếu không có lỗi
             if (Object.keys(newErrors).length === 0) {
-                phoneStorage.set(phone);
+                phoneNumberStorage.set(phoneNumber);
                 emailStorage.set(email);
                 roleStorage.set(selectedRole);
                 // Thực hiện hành động chuyển trang hoặc xử lý tiếp theo
@@ -143,14 +143,14 @@ const Register = () => {
                 <div className="my-8 relative">
                     <input
                         className={`border-2 w-[20rem] rounded-sm h-8 outline-none pl-2 ${
-                            errors.phone ? 'border-Red' : 'focus:border-Blue focus:ring-Blue focus:ring-1'
+                            errors.phoneNumber ? 'border-Red' : 'focus:border-Blue focus:ring-Blue focus:ring-1'
                         }`}
                         placeholder="Số điện thoại"
-                        value={phone}
-                        onChange={handlePhoneChange}
+                        value={phoneNumber}
+                        onChange={handlephoneNumberChange}
                     />
-                    {errors.phone && (
-                        <span className="text-Red text-sm absolute -bottom-6 left-0">{errors.phone}</span>
+                    {errors.phoneNumber && (
+                        <span className="text-Red text-sm absolute -bottom-6 left-0">{errors.phoneNumber}</span>
                     )}
                 </div>
 

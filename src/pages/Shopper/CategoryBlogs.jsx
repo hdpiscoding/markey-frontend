@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import SecondaryHeader from "../../components/General/SecondaryHeader";
 import BlogListViewMd from "../../components/Shopper/BlogListViewMd";
 import {Pagination, Stack} from "@mui/material";
 import BlogCardView from "../../components/Shopper/BlogCardView";
@@ -35,14 +34,14 @@ const CategoryBlogs = () => {
 
     const [category, setCategory] = useState("");
 
-    const [blogs, setBlogs] = useState([]);
+    const [blogList, setBlogList] = useState([]);
 
-    const [suggestedBlogs, setSuggestedBlogs] = useState([]);
+    const [recommendedBlogList, setRecommendedBlogList] = useState([]);
 
     // set up pagination
     const [page, setPage] = React.useState(1);
 
-    const itemsPerPage = 10;
+    const [itemsPerPage, setItemsPerPage] = useState(10);
     const [totalPages, setTotalPages] = useState(null);
 
     const handlePageChange = (event, value) => {
@@ -50,6 +49,47 @@ const CategoryBlogs = () => {
         window.scrollTo(0, 0)
     }
     // end of set up pagination
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                setPage(1);
+                setItemsPerPage(10);
+                let filter = {
+                    sort: {
+                        by: "createAt",
+                        order: "DESC" // DESC | ASC
+                    },
+                    categoryId: categoryId,
+                }
+                // Call API to get blogs data by categoryId
+                const blogsResponse = await instance.post(`v1/shopping-service/post/filter?page=${page}&rpp=${itemsPerPage}`, filter);
+                setTotalPages(Math.ceil(blogsResponse.data.data.total/itemsPerPage));
+                setBlogList(blogsResponse.data.data.items);
+
+                // Call API to get category data by categoryId
+                const categoryResponse = await instance.get(`v1/shopping-service/category/${categoryId}`);
+                setCategory(categoryResponse.data.data.name);
+
+                // Call API to get suggested blogs data
+                const suggestResponse = await instance.post('v1/shopping-service/post/filter?page=1&rpp=5');
+                setRecommendedBlogList(suggestResponse.data.data.items);
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
+
+        fetchData();
+    }, []);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -65,30 +105,20 @@ const CategoryBlogs = () => {
                 }
                 // Call API to get blogs data by categoryId
                 const blogsResponse = await instance.post(`v1/shopping-service/post/filter?page=${page}&rpp=${itemsPerPage}`, filter);
-                setTotalPages(Math.ceil(blogsResponse.data.data.total/itemsPerPage));
-                setBlogs(blogsResponse.data.data.items);
-
-                // Call API to get category data by categoryId
-                const categoryResponse = await instance.get(`v1/shopping-service/category/${categoryId}`);
-                setCategory(categoryResponse.data.data.name);
-
-                // Call API to get suggested blogs data
-                const suggestResponse = await instance.post('v1/shopping-service/post/filter?page=1&rpp=5');
-                setSuggestedBlogs(suggestResponse.data.data.items);
-            }
-            catch (error) {
+                setTotalPages(Math.ceil(blogsResponse.data.data.total / itemsPerPage));
+                setBlogList(blogsResponse.data.data.items);
+            } catch (error) {
                 setLoading(false);
                 closeLoadingModal();
                 console.log(error);
-            }
-            finally {
+            } finally {
                 setLoading(false);
                 closeLoadingModal();
             }
         }
 
         fetchData();
-    }, []);
+    }, [page]);
 
     return (
         <div className="bg-Light_gray w-screen overflow-x-hidden">
@@ -126,7 +156,7 @@ const CategoryBlogs = () => {
                             </div>
 
                             <div className="flex flex-col gap-4">
-                                {blogs.map((blog) => (
+                                {blogList.map((blog) => (
                                     <BlogListViewMd key={blog.id} title={blog.title} author={blog.shop.name} id={blog.id} picture={blog.thumbnail}
                                                     date={blog.createAt} category={blog.category.name} role="shopper"/>
                                 ))}
@@ -173,7 +203,7 @@ const CategoryBlogs = () => {
                             </div>
 
                             <div className="flex flex-col gap-4">
-                                {suggestedBlogs.map((blog) => (
+                                {recommendedBlogList.map((blog) => (
                                     <BlogCardView key={blog.id} id={blog.id} picture={blog.thumbnail} title={blog.title} author={blog.shop.name} date={blog.createAt}
                                                   category={blog.category.name}/>
                                 ))}

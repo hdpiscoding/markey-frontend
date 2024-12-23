@@ -14,7 +14,7 @@ const CreatePassword = (props) => {
     const [showPassword_new, setShowPassword_new] = useState(false);
     const [showPassword_confirm, setShowPassword_confirm] = useState(false);
     const [formFields, setFormFields] = useState({
-        newPassword: '',
+        password: '',
         confirmPassword: ''
     });
     const [errors, setErrors] = useState({});
@@ -54,11 +54,11 @@ const CreatePassword = (props) => {
         const newErrors = {};
 
         // Kiểm tra xem có trường nào trống không
-        if (formFields.newPassword.trim() === '') newErrors.newPassword = "Vui lòng nhập mật khẩu mới.";
+        if (formFields.password.trim() === '') newErrors.password = "Vui lòng nhập mật khẩu mới.";
         if (formFields.confirmPassword.trim() === '') newErrors.confirmPassword = "Vui lòng nhập xác nhận mật khẩu.";
 
         // Kiểm tra mật khẩu xác nhận khớp
-        if (formFields.newPassword && formFields.confirmPassword && formFields.newPassword !== formFields.confirmPassword) {
+        if (formFields.password && formFields.confirmPassword && formFields.password !== formFields.confirmPassword) {
             newErrors.confirmPassword = "Mật khẩu xác nhận không chính xác.";
         }
 
@@ -131,20 +131,20 @@ const CreatePassword = (props) => {
                 {/* Mật khẩu mới */}
                 <div className="mb-8 flex items-center justify-items-center relative">
                     <input
-                        name="newPassword"
+                        name="password"
                         type={showPassword_new ? "text" : "password"}
-                        value={formFields.newPassword}
+                        value={formFields.password}
                         onChange={handleInputChange}
                         className={`border-2 w-[22rem] rounded-sm h-8 outline-none pl-2 
-                            ${errors.newPassword ? "border-Red" : "focus:border-Blue focus:ring-Blue focus:ring-1"}`}
+                            ${errors.password ? "border-Red" : "focus:border-Blue focus:ring-Blue focus:ring-1"}`}
                         placeholder={`${props.method === 'forget' ? 'Mật khẩu mới' : 'Mật khẩu'}`}
                     />
                     {showPassword_new
                         ? <FaEye onClick={handleShowPassword_new} className="h-4 w-4 absolute right-2 select-none cursor-pointer"/>
                         : <FaEyeSlash onClick={handleShowPassword_new} className="h-4 w-4 absolute right-2 select-none cursor-pointer"/>
                     }
-                    {errors.newPassword && (
-                        <p className="text-Red text-sm absolute left-0 -bottom-5">{errors.newPassword}</p>
+                    {errors.password && (
+                        <p className="text-Red text-sm absolute left-0 -bottom-5">{errors.password}</p>
                     )}
                 </div>
 

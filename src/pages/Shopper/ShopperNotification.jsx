@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import PrimaryHeader from "../../components/General/PrimaryHeader";
 import Footer from "../../components/General/Footer";
 import AccountNav from "../../components/Shopper/AccountNav";
 import { PiBellZLight } from "react-icons/pi";

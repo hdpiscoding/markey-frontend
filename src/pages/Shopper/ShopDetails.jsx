@@ -1,17 +1,15 @@
 import React, {useEffect, useState} from "react";
-import PrimaryHeader from "../../components/General/PrimaryHeader";
 import Filter from "../../components/General/Filter";
 import ProductCardViewMd from "../../components/Shopper/ProductCardViewMd";
 import {Pagination, Stack} from "@mui/material";
 import Footer from "../../components/General/Footer";
-import avatar from "../../assets/avatar_holder.svg";
 import { IoLocationSharp } from "react-icons/io5";
 import {useParams} from "react-router-dom";
 import {instance} from "../../AxiosConfig";
 import LoadingModal from "../../components/General/LoadingModal";
 
 const ShopDetails = () => {
-    const [products, setProducts] = useState([]);
+    const [productList, setProductList] = useState([]);
     const { shopId } = useParams();
     const [shop, setShop] = useState({});
     const [address, setAddress] = useState('');
@@ -119,7 +117,7 @@ const ShopDetails = () => {
                 openLoadingModal();
                 const response = await instance.post(`v1/shopping-service/product/filter?page=${page}&rpp=${itemsPerPage}`, filter);
                 setTotalPages(Math.ceil(response.data.data.total / itemsPerPage));
-                setProducts(response.data.data.items);
+                setProductList(response.data.data.items);
             }
             catch (error) {
                 setLoading(false);
@@ -150,7 +148,7 @@ const ShopDetails = () => {
                 // Call API to get products data by categoryId
                 const response = await instance.post(`v1/shopping-service/product/filter?page=${page}&rpp=${itemsPerPage}`, filter);
                 setTotalPages(Math.ceil(response.data.data.total / itemsPerPage));
-                setProducts(response.data.data.items);
+                setProductList(response.data.data.items);
             }
             catch (error) {
                 setLoading(false);
@@ -263,7 +261,7 @@ const ShopDetails = () => {
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2">
-                                    {products.map((product) => (
+                                    {productList.map((product) => (
                                         <ProductCardViewMd key={product.id} id={product.id} name={product.name} price={product.price}
                                                            picture={product.picture[0]} rating={product.ratingAverage} role="shopper"/>
                                     ))}

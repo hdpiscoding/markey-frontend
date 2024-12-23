@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React from "react";
 
 const VoucherModalListView = (props) => {
     // const [checked, setChecked] = useState(props.checked);

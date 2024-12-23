@@ -2,7 +2,6 @@ import React, {useEffect, useState} from "react";
 import {IoArrowBack} from "react-icons/io5";
 import {useNavigate} from "react-router-dom";
 import useLocalStorage from "../General/useLocalStorage";
-import {instance} from "../../AxiosConfig";
 import axios from "axios";
 import LoadingModal from "../General/LoadingModal";
 
@@ -21,7 +20,7 @@ const EnterEmailOrPhone = (props) => {
     const [selectedRole, setSelectedRole] = useState('shopper');
     const [title, setTitle] = useState("");
     const [method, setMethod] = useState("");
-    const [inputValue, setInputValue] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
     const [error, setError] = useState("");
     const [url, setUrl] = useState("");
 
@@ -64,26 +63,26 @@ const EnterEmailOrPhone = (props) => {
         if (props.method === "phone" || props.method === "forget") {
             // Giới hạn chỉ cho phép nhập số
             const onlyNumbers = value.replace(/\D/g, "");
-            setInputValue(onlyNumbers);
+            setPhoneNumber(onlyNumbers);
         } else {
-            setInputValue(value);
+            setPhoneNumber(value);
         }
     };
 
     const validateFrontend = () => {
         let newError = "";
 
-        if (inputValue.trim() === "") {
+        if (phoneNumber.trim() === "") {
             newError = `Vui lòng nhập ${method.toLowerCase()}.`;
         } else if (props.method === "email") {
             // Kiểm tra định dạng email hợp lệ
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(inputValue)) {
+            if (!emailRegex.test(phoneNumber)) {
                 newError = "Email không hợp lệ.";
             }
         } else if (props.method === "phone" || props.method === "forget") {
             // Kiểm tra số điện thoại có đúng 10 chữ số không
-            if (inputValue.length !== 10) {
+            if (phoneNumber.length !== 10) {
                 newError = "Số điện thoại không hợp lệ.";
             }
         }
@@ -95,9 +94,9 @@ const EnterEmailOrPhone = (props) => {
     const handleNextClick = async () => {
         if (validateFrontend()) {
             if (props.method === "phone" || props.method === "forget") {
-                phoneStorage.set(formatPhoneNumber(inputValue));
+                phoneStorage.set(formatPhoneNumber(phoneNumber));
             } else {
-                emailStorage.set(inputValue);
+                emailStorage.set(phoneNumber);
             }
 
             try {
@@ -154,7 +153,7 @@ const EnterEmailOrPhone = (props) => {
                             error ? "border-Red text-Red" : ""
                         }`}
                         placeholder={method}
-                        value={inputValue}
+                        value={phoneNumber}
                         onChange={handleInputChange}
                     />
                     {error && (

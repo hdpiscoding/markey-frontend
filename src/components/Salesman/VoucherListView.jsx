@@ -1,5 +1,4 @@
 import React from 'react';
-import SalesmanNav from "./SalesmanNav";
 
 const VoucherListView = (props) => {
     return (

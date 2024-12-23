@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import SecondaryHeader from "../../components/General/SecondaryHeader";
 import Footer from "../../components/General/Footer";
 import SalesmanNav from "../../components/Salesman/SalesmanNav";
 import ProductCardViewMd from "../../components/Shopper/ProductCardViewMd";
@@ -8,7 +7,7 @@ import LoadingModal from "../../components/General/LoadingModal";
 import {instance} from "../../AxiosConfig";
 
 const AllProducts = () => {
-    const [products, setProducts] = useState([]);
+    const [productList, setProductList] = useState([]);
     const [shopId, setShopId] = useState("");
 
     const [loading, setLoading] = useState(false);
@@ -66,7 +65,7 @@ const AllProducts = () => {
             // Call API to get all products
             const response = await instance.post(`v1/shopping-service/product/filter?page=${page}&rpp=${itemsPerPage}`, filter);
             setTotalPages(Math.ceil(response.data.data.total/itemsPerPage));
-            setProducts(await response.data.data.items);
+            setProductList(await response.data.data.items);
         }
         else if (event.target.value === '2') {
             // Call API to sort by high to low price
@@ -80,19 +79,19 @@ const AllProducts = () => {
             // Call API to get all products
             const response = await instance.post(`v1/shopping-service/product/filter?page=${page}&rpp=${itemsPerPage}`, filter);
             setTotalPages(Math.ceil(response.data.data.total/itemsPerPage));
-            setProducts(await response.data.data.items);
+            setProductList(await response.data.data.items);
         }
     };
 
     // set up pagination
     const [page, setPage] = useState(1);
 
-    const itemsPerPage = 10;
+    const [itemsPerPage, setItemsPerPages] = useState(10);
     const [totalPages, setTotalPages] = useState(null);
 
     const handlePageChange = (event, value) => {
         setPage(value);
-        window.scrollTo(0, 0)
+        window.scrollTo(0, 0);
     }
     // end of set up pagination
 
@@ -101,6 +100,37 @@ const AllProducts = () => {
             try {
                 setLoading(true);
                 openLoadingModal();
+
+                let filter = {
+                    shopId: shopId
+                }
+
+                // Call API to get all products
+                const response = await instance.post(`v1/shopping-service/product/filter?page=${page}&rpp=${itemsPerPage}`, filter);
+                setTotalPages(Math.ceil(response.data.data.total/itemsPerPage));
+                setProductList(await response.data.data.items);
+            }
+            catch (error) {
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
+
+        fetchData();
+    }, [page]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                setPage(1);
+                setItemsPerPages(10);
                 const shopResponse = await instance.get('v1/shopping-service/shop/me');
                 const shopID = shopResponse.data.data.id;
 
@@ -112,7 +142,7 @@ const AllProducts = () => {
                 // Call API to get all products
                 const response = await instance.post(`v1/shopping-service/product/filter?page=${page}&rpp=${itemsPerPage}`, filter);
                 setTotalPages(Math.ceil(response.data.data.total/itemsPerPage));
-                setProducts(await response.data.data.items);
+                setProductList(await response.data.data.items);
             }
             catch (error) {
                 setLoading(false);
@@ -169,7 +199,7 @@ const AllProducts = () => {
                             </div>
                         </div>
 
-                        {products.length <= 0
+                        {productList.length <= 0
                             ?
                             <div className="flex items-center justify-center text-center w-full bg-Lighter_gray py-4">
                                 <span className="text-Gray">
@@ -179,8 +209,8 @@ const AllProducts = () => {
                             :
                             <div
                                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 justify-items-center">
-                                {products.map((product) => (
-                                    <ProductCardViewMd key={product.id} name={product.name} price={product.price} image={product?.picture[0]} id={product.id}
+                                {productList.map((product) => (
+                                    <ProductCardViewMd key={product.id} name={product.name} price={product.price} picture={product?.picture[0]} id={product.id}
                                                        rating={product.ratingAverage} role="salesman"/>
                                 ))}
                             </div>}

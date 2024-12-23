@@ -127,7 +127,7 @@ const Footer = () => {
                                         <div>
                                             <a href="#">
                                             <span className="text-Gray hover:text-Blue font-sans text-sm">
-                                                (+89) 938 318 615
+                                                (+84) 938 318 615
                                             </span>
                                             </a>
                                         </div>

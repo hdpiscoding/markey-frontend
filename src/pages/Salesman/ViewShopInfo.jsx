@@ -4,7 +4,6 @@ import Footer from "../../components/General/Footer";
 import {Link} from "react-router-dom";
 import LoadingModal from "../../components/General/LoadingModal";
 import {instance} from "../../AxiosConfig";
-import useLocalStorage from "../../components/General/useLocalStorage";
 import {FiUser} from "react-icons/fi";
 
 const ViewShopInfo = () => {

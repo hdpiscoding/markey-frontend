@@ -13,7 +13,7 @@ import { HiOutlineDocumentSearch } from "react-icons/hi";
 const SearchProduct = () => {
     const { productName} = useParams();
     const decodedProductName = decodeURIComponent(productName);
-    const [products, setProducts] = useState([]);
+    const [productList, setProductList] = useState([]);
 
     const [selectedDiv, setSelectedDiv] = useState(1); // Default selected div (1: Phổ biến, 2: Bán chạy, 3: Giá)
     const [selectValue, setSelectValue] = useState('default');
@@ -117,7 +117,7 @@ const SearchProduct = () => {
                 openLoadingModal();
                 const response = await instance.post(`v1/shopping-service/product/filter?page=${page}&rpp=${itemsPerPage}`, filter);
                 setTotalPages(Math.ceil(response.data.data.total / itemsPerPage));
-                setProducts(response.data.data.items);
+                setProductList(response.data.data.items);
             }
             catch (error) {
                 setLoading(false);
@@ -151,7 +151,7 @@ const SearchProduct = () => {
                 // Call API to get products data by categoryId
                 const response = await instance.post(`v1/shopping-service/product/filter?page=${page}&rpp=${itemsPerPage}`, filter);
                 setTotalPages(Math.ceil(response.data.data.total / itemsPerPage));
-                setProducts(response.data.data.items);
+                setProductList(response.data.data.items);
             }
             catch (error) {
                 setLoading(false);
@@ -173,7 +173,7 @@ const SearchProduct = () => {
 
             <main className="grid grid-cols-[1fr_10fr_1fr] my-4">
                 <div className="col-start-2 flex flex-col gap-4">
-                    {products.length === 0
+                    {productList.length === 0
                         ?
                         <div className="flex flex-col items-center my-20">
                             <HiOutlineDocumentSearch className="text-Dark_gray h-20 w-20"/>
@@ -232,7 +232,7 @@ const SearchProduct = () => {
 
                                     <div
                                         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2">
-                                        {products.map((product) => (
+                                        {productList.map((product) => (
                                             <ProductCardViewMd key={product.id} id={product.id} name={product.name}
                                                                price={product.price} picture={product.picture[0]}
                                                                rating={product.ratingAverage} role="shopper"/>

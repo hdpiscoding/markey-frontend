@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import ConfirmModal from "../../components/General/ConfirmModal";
 import Footer from "../../components/General/Footer";
-import SecondaryHeader from "../../components/General/SecondaryHeader";
 import AdminNav from "../../components/Admin/AdminNav";
 import {FiUser} from "react-icons/fi";
 import {useNavigate, useParams} from "react-router-dom";
 import {instance} from "../../AxiosConfig";
 import LoadingModal from "../../components/General/LoadingModal";
+import {toast} from "react-toastify";
 
 const BanSalesmanDetails = () => {
     const navigate = useNavigate();
@@ -14,7 +14,7 @@ const BanSalesmanDetails = () => {
     const [loading, setLoading] = useState(false);
 
     // store image API data
-    const [image, setImage] = useState(null);
+    const [shopPicture, setShopPicture] = useState(null);
     const [salesman, setSalesman] = useState({});
     const [shop, setShop] = useState({});
 
@@ -40,9 +40,9 @@ const BanSalesmanDetails = () => {
                     await instance.get(`v1/user-service/salesman/${salesmanId}`),
                     await instance.get(`v1/shopping-service/shop/by-salesman/${salesmanId}`)
                 ]);
-                setSalesman(await salesmanResponse.data.data);
-                setShop(await shopResponse.data.data);
-                setImage(shop.profilePicture);
+                setSalesman(salesmanResponse.data.data);
+                setShop(shopResponse.data.data);
+                setShopPicture(shopResponse.data.data.profilePicture);
             }
             catch (error) {
                 console.log(error);
@@ -72,6 +72,7 @@ const BanSalesmanDetails = () => {
         //Call API to update salesman isActive = !isActive
         try {
             await instance.put(`v1/user-service/admin/block-salesman/${salesmanId}`);
+            toast.success(`${salesman?.isBlocked ? "Mở khóa" : "Khóa"} người bán thành công!`);
         }
         catch (error) {
             console.log(error);
@@ -114,7 +115,7 @@ const BanSalesmanDetails = () => {
                         <div className="flex flex-col items-center justify-center gap-4">
                             <div
                                 className="rounded-[50%] bg-Light_gray h-[120px] w-[120px] flex items-center justify-center">
-                                {image ? <img src={image} alt="img"
+                                {shopPicture ? <img src={shopPicture} alt="img"
                                               className="w-full h-full border rounded-[50%] object-cover"/> : <FiUser className="text-Dark_gray h-16 w-16"/>
                                 }
                             </div>
@@ -201,8 +202,8 @@ const BanSalesmanDetails = () => {
                     </div>
 
                     <ConfirmModal isOpen={isModalOpen} onClose={closeModal} onConfirm={handleLock}
-                                  title={`Xác nhận ${salesman?.isLocked ? "mở khóa" : "khóa"} người bán`}
-                                  message={`Bạn có chắc muốn ${salesman?.isLocked ? "mở khóa" : "khóa"} tài khoản người bán này?`}/>
+                                  title={`Xác nhận ${salesman?.isBlocked ? "mở khóa" : "khóa"} người bán`}
+                                  message={`Bạn có chắc muốn ${salesman?.isBlocked ? "mở khóa" : "khóa"} tài khoản người bán này?`}/>
                     {loading && <LoadingModal isOpen={isLoadingModalOpen}/>}
                 </div>
             </main>

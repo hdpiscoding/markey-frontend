@@ -3,7 +3,6 @@ import {IoArrowBack} from "react-icons/io5";
 import {useNavigate} from "react-router-dom";
 import useLocalStorage from "../General/useLocalStorage";
 import LoadingModal from "../General/LoadingModal";
-import {instance} from "../../AxiosConfig";
 import axios from "axios";
 
 const SalesmanInfo = () => {
@@ -22,7 +21,7 @@ const SalesmanInfo = () => {
     const descriptionStorage = useLocalStorage('description');
 
     const [loading, setLoading] = useState(false);
-    const [name, setName] = useState("");
+    const [fullname, setFullname] = useState("");
     const [address, setAddress] = useState("");
     const [shopName, setShopName] = useState("");
     const [cccd, setCccd] = useState("");
@@ -52,7 +51,7 @@ const SalesmanInfo = () => {
         e.preventDefault();
 
         const newErrors = {
-            name: name.trim() === "",
+            name: fullname.trim() === "",
             address: address.trim() === "",
             shopName: shopName.trim() === "",
             cccd: cccd.trim() === "",
@@ -69,7 +68,7 @@ const SalesmanInfo = () => {
                 openLoadingModal();
 
                 // Lưu thông tin người dùng vào localStorage
-                nameStorage.set(name);
+                nameStorage.set(fullname);
                 addressStorage.set(address);
                 shopNameStorage.set(shopName);
                 cccdStorage.set(cccd);
@@ -142,8 +141,8 @@ const SalesmanInfo = () => {
                 {/* Input Họ và tên */}
                 <div className="relative w-full">
                     <input
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        value={fullname}
+                        onChange={(e) => setFullname(e.target.value)}
                         className={`border-2 w-full rounded-sm h-8 pl-2 outline-none ${
                             errors.name ? "border-Red text-Red" : "focus:ring-Blue focus:ring-1 focus:border-Blue"
                         }`}

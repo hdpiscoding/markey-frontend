@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import RatingModal from "./RatingModal";
 import OrderItem from "./OrderItem";
 import {useNavigate} from "react-router-dom";
 import ConfirmModal from "../General/ConfirmModal";

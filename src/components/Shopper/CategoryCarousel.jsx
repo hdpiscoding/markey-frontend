@@ -3,22 +3,21 @@ import right_arrow from '../../assets/right_arrow.svg';
 import left_arrow from '../../assets/left_arrow.svg';
 import CategoryCardView from "./CategoryCardView";
 import {useNavigate} from "react-router-dom";
-import axios from "axios";
 import {instance} from "../../AxiosConfig";
 
 const CategoryCarousel = () => {
     const navigate = useNavigate();
 
-    const [categories, setCategories] = React.useState([]);
+    const [categoryList, setCategoryList] = React.useState([]);
 
-    // Call API to get categories data and cache them in state categories
+    // Call API to get categoryList data and cache them in state categoryList
     useEffect(() => {
         //Call API here
         const fetchData = async () => {
             try {
                 const response = await instance.get('v1/shopping-service/category');
                 const data = response.data.data;
-                setCategories(data);
+                setCategoryList(data);
             }
             catch (error){
                 console.log(error);
@@ -29,7 +28,7 @@ const CategoryCarousel = () => {
     }, []);
 
     const itemsPerPage = 10;
-    const totalPages = Math.ceil(categories.length / itemsPerPage);
+    const totalPages = Math.ceil(categoryList.length / itemsPerPage);
 
     const [currentPage, setCurrentPage] = React.useState(0);
 
@@ -46,7 +45,7 @@ const CategoryCarousel = () => {
     };
 
     const startIndex = currentPage * itemsPerPage;
-    const displayedCategories = categories.slice(startIndex, startIndex + itemsPerPage);
+    const displayedCategories = categoryList.slice(startIndex, startIndex + itemsPerPage);
 
     const handleOnClick = (categoryId) => {
         navigate(`/shopper/category-products/${categoryId}`);

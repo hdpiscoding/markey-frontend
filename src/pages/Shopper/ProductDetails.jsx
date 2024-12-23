@@ -10,7 +10,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import LoadingModal from "../../components/General/LoadingModal";
 import {instance} from "../../AxiosConfig";
 import {FiUser} from "react-icons/fi";
-
+import {toast} from "react-toastify";
 
 const ProductDetails = (props) => {
     const { productId } = useParams();
@@ -306,10 +306,12 @@ const ProductDetails = (props) => {
                 amount: quantity
             }
             await instance.post('v1/shopping-service/cart/add', data);
+            toast.success("Thêm sản phẩm vào giỏ hàng thành công!");
         }
         catch (error) {
             setLoading(false);
             closeLoadingModal();
+            toast.error("Thêm sản phẩm vào giỏ hàng thất bại!");
             console.log(error);
         }
         finally {

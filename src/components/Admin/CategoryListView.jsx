@@ -1,5 +1,4 @@
 import React, {useState} from "react";
-import avatar from "../../assets/avatar_holder.svg";
 import ConfirmModal from "../General/ConfirmModal";
 import {Link} from "react-router-dom";
 import {instance} from "../../AxiosConfig";

@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import PrimaryHeader from "../../components/General/PrimaryHeader";
 import Footer from "../../components/General/Footer";
 import ProductCardViewLg from "../../components/Shopper/ProductCardViewLg";
 import {Pagination, Stack} from "@mui/material";
@@ -7,7 +6,7 @@ import LoadingModal from "../../components/General/LoadingModal";
 import {instance} from "../../AxiosConfig";
 
 const RecommendedProducts = () => {
-    const [products, setProducts] = useState([]);
+    const [recommendedProductList, setRecommendedProductList] = useState([]);
 
     const [loading, setLoading] = useState(false);
     // set up loading modal
@@ -25,7 +24,7 @@ const RecommendedProducts = () => {
     // set up pagination
     const [page, setPage] = React.useState(1);
 
-    const itemsPerPage = 24;
+    const [itemsPerPage, setItemsPerPage] = useState(24);
     const [totalPages, setTotalPages] = useState(null);
 
     const handlePageChange = (event, value) => {
@@ -39,8 +38,33 @@ const RecommendedProducts = () => {
             try {
                 setLoading(true);
                 openLoadingModal();
-                const productsResponse = await instance.get('v1/shopping-service/product/recommend?page=1&rpp=12');
-                setProducts(productsResponse.data.data.items);
+                const productsResponse = await instance.get(`v1/shopping-service/product/recommend?page=${page}&rpp=${itemsPerPage}`);
+                setRecommendedProductList(productsResponse.data.data.items);
+                setTotalPages(Math.ceil(productsResponse.data.data.total / itemsPerPage));
+            }
+            catch (error){
+                setLoading(false);
+                closeLoadingModal();
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
+
+        fetchData();
+    }, [page]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                setPage(1);
+                setItemsPerPage(24);
+                const productsResponse = await instance.get(`v1/shopping-service/product/recommend?page=${page}&rpp=${itemsPerPage}`);
+                setRecommendedProductList(productsResponse.data.data.items);
                 setTotalPages(Math.ceil(productsResponse.data.data.total / itemsPerPage));
             }
             catch (error){
@@ -68,8 +92,8 @@ const RecommendedProducts = () => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-                        {products.map((product) => (
-                            <ProductCardViewLg id={product.id} name={product.name} price={product.price}
+                        {recommendedProductList.map((product) => (
+                            <ProductCardViewLg id={product.id} name={product.name} price={product.price} picture={product.picture[0]}
                                                rating={product.ratingAverage.toFixed(1)}/>
                         ))}
                     </div>

@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import SecondaryHeader from "../../components/General/SecondaryHeader";
 import Footer from "../../components/General/Footer";
 import AdminNav from "../../components/Admin/AdminNav";
 import ConfirmModal from "../../components/General/ConfirmModal";
@@ -7,6 +6,7 @@ import {FiUser} from "react-icons/fi";
 import {useNavigate, useParams} from "react-router-dom";
 import {instance} from "../../AxiosConfig";
 import LoadingModal from "../../components/General/LoadingModal";
+import {toast} from "react-toastify";
 
 const ViewShopDetailsVerify = () => {
     const navigate = useNavigate();
@@ -14,7 +14,7 @@ const ViewShopDetailsVerify = () => {
     const [loading, setLoading] = useState(false);
 
     // store image API data
-    const [image, setImage] = useState(null);
+    const [shopPicture, setShopPicture] = useState(null);
     const [salesman, setSalesman] = useState({});
     const [shop, setShop] = useState({});
 
@@ -42,7 +42,7 @@ const ViewShopDetailsVerify = () => {
                 ]);
                 setSalesman(await salesmanResponse.data.data);
                 setShop(await shopResponse.data.data);
-                setImage(shop.profilePicture);
+                setShopPicture(shop.profilePicture);
             }
             catch (error) {
                 console.log(error);
@@ -74,6 +74,7 @@ const ViewShopDetailsVerify = () => {
         // Call API to approve the salesman
         try {
             await instance.put(`v1/user-service/admin/approve-salesman/${salesmanId}`);
+            toast.success("Duyệt người bán thành công!");
         }
         catch (error) {
             console.log(error);
@@ -113,7 +114,7 @@ const ViewShopDetailsVerify = () => {
 
                         <div className="flex flex-col items-center justify-center gap-4">
                             <div className="rounded-[50%] bg-Light_gray h-[120px] w-[120px] flex items-center justify-center">
-                                {image ? <img src={image} alt="Selected"
+                                {shopPicture ? <img src={shopPicture} alt="Selected"
                                               className="w-full h-full border rounded-[50%] object-cover"/> : <FiUser className="text-Dark_gray h-16 w-16"/>
                                 }
                             </div>

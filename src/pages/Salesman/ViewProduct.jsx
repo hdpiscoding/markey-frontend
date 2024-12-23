@@ -1,18 +1,18 @@
 import React, {useEffect, useState} from "react";
-import SecondaryHeader from "../../components/General/SecondaryHeader";
 import SalesmanNav from "../../components/Salesman/SalesmanNav";
 import Footer from "../../components/General/Footer";
 import {Link, useNavigate, useParams} from "react-router-dom";
 import {instance} from "../../AxiosConfig";
 import ConfirmModal from "../../components/General/ConfirmModal";
 import LoadingModal from "../../components/General/LoadingModal";
+import {toast} from "react-toastify";
 
 const ViewProduct = () => {
     const navigate = useNavigate();
 
     const {productId} = useParams();
 
-    const [images, setImages] = useState([]);
+    const [productPictures, setProductPictures] = useState([]);
 
     const [product, setProduct] = useState({});
 
@@ -71,7 +71,7 @@ const ViewProduct = () => {
             try {
                 const response = await instance.get(`v1/shopping-service/category/${product.categoryId}`);
                 setCategory(response.data.data.name);
-                setImages(product.picture);
+                setProductPictures(product.picture);
             }
             catch (error) {
                 console.log(error);
@@ -95,6 +95,7 @@ const ViewProduct = () => {
     const handleDelete = async () => {
         try {
             await instance.delete(`v1/shopping-service/product/${productId}`);
+            toast.success("Xóa sản phẩm thành công!");
         }
         catch (error) {
             console.log(error);
@@ -196,7 +197,7 @@ const ViewProduct = () => {
                                 <td className="py-3 w-[25%]">Hình ảnh:</td>
                                 <td className="py-3">
                                     <div className="flex items-center gap-5">
-                                        {images ? images.map((image, index) => (
+                                        {productPictures ? productPictures.map((image, index) => (
                                             <img
                                                 key={index}
                                                 src={image}
@@ -204,7 +205,7 @@ const ViewProduct = () => {
                                                 className="h-[120px] w-[120px] object-cover rounded-md"
                                             />
                                         )) : null}
-                                        {/*{images.map((image, index) => (*/}
+                                        {/*{productPictures.map((image, index) => (*/}
                                         {/*    <img*/}
                                         {/*        key={index}*/}
                                         {/*        src={image}*/}

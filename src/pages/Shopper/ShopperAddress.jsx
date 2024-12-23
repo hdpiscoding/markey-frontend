@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import PrimaryHeader from "../../components/General/PrimaryHeader";
 import Footer from "../../components/General/Footer";
 import AccountNav from "../../components/Shopper/AccountNav";
 import AddressModal from "../../components/Shopper/AddressModal";
@@ -16,8 +15,8 @@ const ShopperAddress = () => {
 
     const [open, setOpen] = React.useState(false);
 
-    const [name, setName] = React.useState(null);
-    const [phone, setPhone] = React.useState(null);
+    const [fullname, setFullname] = React.useState(null);
+    const [phoneNumber, setPhoneNumber] = React.useState(null);
     const [address, setAddress] = React.useState(null);
     const [id, setId] = React.useState(null);
 
@@ -44,8 +43,8 @@ const ShopperAddress = () => {
                 setLoading(true);
                 openLoadingModal();
                 const response = await instance.get(`v1/user-service/shopper/me`);
-                setName(response.data.data.fullname);
-                setPhone(response.data.data.phoneNumber);
+                setFullname(response.data.data.fullname);
+                setPhoneNumber(response.data.data.phoneNumber);
                 setId(response.data.data.id);
                 if (response.data.data.address) {
                     setAddress(response.data.data.address);
@@ -103,13 +102,13 @@ const ShopperAddress = () => {
                                 <div className="flex flex-col gap-1">
                                     <div className="flex items-center gap-2">
                                         <span className="font-semibold">
-                                            {name}
+                                            {fullname}
                                         </span>
 
                                         <div className="border-l-2 h-5 border-Dark_gray"></div>
 
                                         <div>
-                                            {convertPhoneNumber(phone)}
+                                            {convertPhoneNumber(phoneNumber)}
                                         </div>
                                     </div>
 

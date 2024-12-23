@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import PrimaryHeader from "../../components/General/PrimaryHeader";
 import Footer from "../../components/General/Footer";
 import Filter from "../../components/General/Filter";
 import ProductCardViewMd from "../../components/Shopper/ProductCardViewMd";
@@ -10,7 +9,7 @@ import {instance} from "../../AxiosConfig";
 
 const CategoryProducts = () => {
     const {categoryId} = useParams();
-    const [products, setProducts] = useState([]);
+    const [productList, setProductList] = useState([]);
     const [category, setCategory] = useState({});
 
     const [selectedDiv, setSelectedDiv] = useState(1); // Default selected div (1: Phổ biến, 2: Bán chạy, 3: Giá)
@@ -115,7 +114,7 @@ const CategoryProducts = () => {
                 openLoadingModal();
                 const response = await instance.post(`v1/shopping-service/product/filter?page=${page}&rpp=${itemsPerPage}`, filter);
                 setTotalPages(Math.ceil(response.data.data.total / itemsPerPage));
-                setProducts(response.data.data.items);
+                setProductList(response.data.data.items);
             }
             catch (error) {
                 setLoading(false);
@@ -146,7 +145,7 @@ const CategoryProducts = () => {
                 // Call API to get products data by categoryId
                 const response = await instance.post(`v1/shopping-service/product/filter?page=${page}&rpp=${itemsPerPage}`, filter);
                 setTotalPages(Math.ceil(response.data.data.total / itemsPerPage));
-                setProducts(response.data.data.items);
+                setProductList(response.data.data.items);
             }
             catch (error) {
                 setLoading(false);
@@ -208,7 +207,7 @@ const CategoryProducts = () => {
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2">
-                                {products.map((product) => (
+                                {productList.map((product) => (
                                     <ProductCardViewMd key={product.id} id={product.id} name={product.name} price={product.price} picture={product.picture[0]}
                                                        rating={product.ratingAverage} role="shopper"/>
                                 ))}

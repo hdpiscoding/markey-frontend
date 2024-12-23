@@ -3,7 +3,6 @@ import Footer from "../../components/General/Footer";
 import UserListView from "../../components/Admin/UserListView";
 import {Pagination, Stack} from "@mui/material";
 import AdminNav from "../../components/Admin/AdminNav";
-import SecondaryHeader from "../../components/General/SecondaryHeader";
 import {instance} from "../../AxiosConfig";
 import LoadingModal from "../../components/General/LoadingModal";
 

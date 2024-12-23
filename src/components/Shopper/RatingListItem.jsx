@@ -1,6 +1,5 @@
 import React from 'react';
 import Rating from '@mui/material/Rating';
-import avatar from '../../assets/avatar_holder.svg';
 import {FiUser} from "react-icons/fi";
 
 const RatingListItem = (props) => {
