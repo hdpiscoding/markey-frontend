@@ -20,7 +20,7 @@ const ShopperInfo = () => {
     const passwordStorage = useLocalStorage('password');
 
     const [loading, setLoading] = useState(false);
-    const [name, setName] = useState("");
+    const [fullname, setfullname] = useState("");
     const [address, setAddress] = useState("");
     const [errors, setErrors] = useState({ name: false, address: false });
 
@@ -40,7 +40,7 @@ const ShopperInfo = () => {
         e.preventDefault();
         // Kiểm tra xem input nào trống và cập nhật trạng thái lỗi
         const newErrors = {
-            name: name.trim() === "",
+            name: fullname.trim() === "",
             address: address.trim() === "",
         };
 
@@ -50,7 +50,7 @@ const ShopperInfo = () => {
         const isValid = !newErrors.name && !newErrors.address;
         if (isValid) {
             let data = {
-                fullname: name,
+                fullname: fullname,
                 address: address,
                 email: emailStorage.get(),
                 phoneNumber: formatPhoneNumber(phoneStorage.get()),
@@ -59,7 +59,7 @@ const ShopperInfo = () => {
             try {
                 setLoading(true);
                 openLoadingModal();
-                nameStorage.set(name);
+                nameStorage.set(fullname);
                 addressStorage.set(address);
 
                 // Call API để lưu thông tin người dùng
@@ -106,8 +106,8 @@ const ShopperInfo = () => {
                 {/* Input Họ và tên */}
                 <div className="relative w-full">
                     <input
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        value={fullname}
+                        onChange={(e) => setfullname(e.target.value)}
                         className={`border-2 w-full rounded-sm h-8 pl-2 outline-none ${
                             errors.name
                                 ? "border-Red text-Red"

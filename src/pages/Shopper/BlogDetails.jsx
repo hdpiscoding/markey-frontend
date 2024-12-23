@@ -34,7 +34,7 @@ const BlogDetails = () => {
     // end set up loading modal
 
     const [blog, setBlog] = useState({});
-    const [suggestBlogs, setSuggestBlogs] = useState([]);
+    const [recommendedBlogList, setRecommendedBlogList] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -47,7 +47,7 @@ const BlogDetails = () => {
 
                 // Call API to get suggested blogs data
                 const suggestResponse = await instance.post('v1/shopping-service/post/filter?page=1&rpp=5');
-                setSuggestBlogs(suggestResponse.data.data.items);
+                setRecommendedBlogList(suggestResponse.data.data.items);
             }
             catch (error) {
                 setLoading(false);
@@ -130,7 +130,7 @@ const BlogDetails = () => {
                             </div>
 
                             <div className="flex flex-col gap-4">
-                                {suggestBlogs.map((blog) => (
+                                {recommendedBlogList.map((blog) => (
                                     <BlogCardView key={blog.id} title={blog.title} id={blog.id} picture={blog.thumbnail} author={blog.shop.name} date={blog.createAt}
                                                   category={blog.category.name}/>
                                 ))}

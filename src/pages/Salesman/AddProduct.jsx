@@ -6,11 +6,12 @@ import ConfirmModal from "../../components/General/ConfirmModal";
 import LoadingModal from "../../components/General/LoadingModal";
 import {instance, mediaInstance} from "../../AxiosConfig";
 import {useNavigate} from "react-router-dom";
+import {toast} from "react-toastify";
 
 const AddProduct = () => {
     const navigate = useNavigate();
-    const [selectedCategory, setSelectedCategory] = React.useState('default');
-    const [selectedImages, setSelectedImages] = React.useState([null, null, null]);
+    const [category, setCategory] = React.useState('default');
+    const [productPictures, setProductPictures] = React.useState([null, null, null]);
     const [fieldErrors, setFieldErrors] = React.useState({});
     const [formFields, setFormFields] = React.useState({
         productName: '',
@@ -21,7 +22,7 @@ const AddProduct = () => {
     const [categories, setCategories] = React.useState([]);
 
     const handleCategoryChange = (e) => {
-        setSelectedCategory(e.target.value);
+        setCategory(e.target.value);
     };
 
     // set up modal
@@ -81,9 +82,9 @@ const AddProduct = () => {
         const maxSize = 2 * 1024 * 1024;
 
         if (file && validTypes.includes(file.type) && file.size <= maxSize) {
-            const newImages = [...selectedImages];
+            const newImages = [...productPictures];
             newImages[index] = file;
-            setSelectedImages(newImages);
+            setProductPictures(newImages);
             setFieldErrors(prevErrors => ({
                 ...prevErrors,
                 [`image-${index}`]: ""
@@ -132,7 +133,7 @@ const AddProduct = () => {
         let imageErrorMessages = [];
         let isValid = true;
 
-        if (selectedCategory === 'default') {
+        if (category === 'default') {
             newFieldErrors.category = "Vui lòng chọn danh mục.";
             isValid = false;
         }
@@ -160,13 +161,13 @@ const AddProduct = () => {
             isValid = false;
         }
 
-        const selectedImagesCount = selectedImages.filter(img => img).length;
+        const selectedImagesCount = productPictures.filter(img => img).length;
         if (selectedImagesCount < 3) {
             imageErrorMessages.push("Vui lòng chọn đủ 3 ảnh.");
             isValid = false;
         }
 
-        selectedImages.forEach((img, index) => {
+        productPictures.forEach((img, index) => {
             if (fieldErrors[`image-${index}`]) {
                 imageErrorMessages.push(fieldErrors[`image-${index}`]);
                 isValid = false;
@@ -190,15 +191,15 @@ const AddProduct = () => {
     };
 
     const getImagesUrl = async () => {
-        if (selectedImages.length > 0) {
+        if (productPictures.length > 0) {
             const imageUrls = [];
-            for (let i = 0; i < selectedImages.length; i++) {
+            for (let i = 0; i < productPictures.length; i++) {
                 try {
                     const fileNameResponse = await mediaInstance.get("media-url");
                     const fileName = fileNameResponse.data.data.fileName;
 
                     const formData = new FormData();
-                    formData.append("file", selectedImages[i]);
+                    formData.append("file", productPictures[i]);
 
                     const response = await mediaInstance.post(`upload-media/${fileName}`, formData);
                     imageUrls.push(response.data.data.mediaUrl);
@@ -224,9 +225,10 @@ const AddProduct = () => {
                     price: parseInt(formFields.price),
                     quantity: parseInt(formFields.stock),
                     picture: imageUrls,
-                    categoryId: selectedCategory
+                    categoryId: category
                 }
                 const response = await instance.post('v1/shopping-service/product', data);
+                toast.success("Đăng sản phẩm thành công!");
             }
             catch (error) {
                 setLoading(false);
@@ -285,7 +287,7 @@ const AddProduct = () => {
                                 <td className="py-4 relative">
                                     <select
                                         className={`w-[50%] h-8 border ${fieldErrors.category ? 'border-Red' : 'border-Black'} focus:outline-none px-2 rounded-sm`}
-                                        value={selectedCategory}
+                                        value={category}
                                         onChange={handleCategoryChange}
                                     >
                                         <option value={'default'} hidden disabled>Tên danh mục</option>
@@ -361,12 +363,12 @@ const AddProduct = () => {
                                         {[0, 1, 2].map((index) => (
                                             <div
                                                 key={index}
-                                                className={`flex items-center justify-center gap-2 h-[120px] w-[120px] ${selectedImages[index] ? 'border-Blue' : 'bg-Gray'} rounded-md`}
+                                                className={`flex items-center justify-center gap-2 h-[120px] w-[120px] ${productPictures[index] ? 'border-Blue' : 'bg-Gray'} rounded-md`}
                                             >
                                                 <label htmlFor={`file-${index}`} className="cursor-pointer">
-                                                    {selectedImages[index] ? (
+                                                    {productPictures[index] ? (
                                                         <img
-                                                            src={URL.createObjectURL(selectedImages[index])}
+                                                            src={URL.createObjectURL(productPictures[index])}
                                                             alt={`selected-${index}`}
                                                             className="h-[120px] w-[120px] object-cover rounded-md"
                                                         />

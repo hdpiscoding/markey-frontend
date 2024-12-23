@@ -5,11 +5,12 @@ import {Pagination, Stack} from "@mui/material";
 import VerifySalesmanListView from "../../components/Admin/VerifySalesmanListView";
 import LoadingModal from "../../components/General/LoadingModal";
 import {instance} from "../../AxiosConfig";
+import {toast} from "react-toastify";
 
 const VerifySalesman = () => {
     const [loading, setLoading] = useState(false);
 
-    const [salesmans, setSalesmans] = useState([]);
+    const [salesmanList, setSalesmanList] = useState([]);
 
     const [selectedDate, setSelectedDate] = useState('1');
 
@@ -29,7 +30,7 @@ const VerifySalesman = () => {
                             isApproved: false});
                 const items = response.data.data.items;
                 setTotalPages(Math.ceil(response.data.data.total / itemsPerPage));
-                setSalesmans(items);
+                setSalesmanList(items);
             }
             catch (error) {
                 console.log(error);
@@ -51,7 +52,7 @@ const VerifySalesman = () => {
                         isApproved: false});
                 const items = response.data.data.items;
                 setTotalPages(Math.ceil(response.data.data.total / itemsPerPage));
-                setSalesmans(items);
+                setSalesmanList(items);
             }
             catch (error) {
                 console.log(error);
@@ -72,7 +73,7 @@ const VerifySalesman = () => {
                 isApproved: false});
             const items = response.data.data.items;
             setTotalPages(Math.ceil(response.data.data.total / itemsPerPage));
-            setSalesmans(items);
+            setSalesmanList(items);
         }
         catch (error) {
             console.log(error);
@@ -104,6 +105,7 @@ const VerifySalesman = () => {
             setLoading(true);
             openLoadingModal();
             await fetchData();
+            toast.success("Duyệt người bán thành công");
         }
         catch (error) {
             console.log(error);
@@ -131,7 +133,7 @@ const VerifySalesman = () => {
                 isApproved: false});
             const items = response.data.data.items;
             setTotalPages(Math.ceil(response.data.data.total / itemsPerPage));
-            setSalesmans(items);
+            setSalesmanList(items);
         }
         catch (error) {
             console.log(error);
@@ -187,14 +189,14 @@ const VerifySalesman = () => {
                             </div>
                         </div>
 
-                        {salesmans.length <= 0
+                        {salesmanList.length <= 0
                             ? <div className="bg-White flex items-center justify-center p-4">
                                 <span className="text-Dark_gray text-center">
                                     Hiện tại không có người bán nào cần duyệt
                                 </span>
                             </div>
                             : <div className="flex flex-col gap-4">
-                                {salesmans.map((salesman) => (
+                                {salesmanList.map((salesman) => (
                                     <VerifySalesmanListView key={salesman.id} id={salesman.id} email={salesman.email}
                                                             onApprove={handleApprove}/>
                                 ))}

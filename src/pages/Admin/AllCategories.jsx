@@ -5,9 +5,10 @@ import {Pagination, Stack} from "@mui/material";
 import CategoryListView from "../../components/Admin/CategoryListView";
 import {instance} from "../../AxiosConfig";
 import LoadingModal from "../../components/General/LoadingModal";
+import {toast} from "react-toastify";
 
 const AllCategories = () => {
-    const [categories, setCategories] = useState([]);
+    const [categoryList, setCategoryList] = useState([]);
     const [loading, setLoading] = useState(false);
 
     // set up loading modal
@@ -28,7 +29,7 @@ const AllCategories = () => {
                 setLoading(true);
                 openLoadingModal();
                 const response = await instance.get('v1/shopping-service/category/');
-                setCategories(response.data.data);
+                setCategoryList(response.data.data);
             }
             catch (error) {
                 setLoading(false);
@@ -48,12 +49,12 @@ const AllCategories = () => {
     const [page, setPage] = useState(1);
 
     const itemsPerPage = 5;
-    const totalPages = Math.ceil(categories.length / itemsPerPage);
+    const totalPages = Math.ceil(categoryList.length / itemsPerPage);
 
     const indexOfLastItem = page * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
-    const currentCategories = categories.slice(indexOfFirstItem, indexOfLastItem);
+    const currentCategories = categoryList.slice(indexOfFirstItem, indexOfLastItem);
 
     const handlePageChange = (event, value) => {
         setPage(value);
@@ -65,7 +66,8 @@ const AllCategories = () => {
         // Call API to rerender the list
         try {
             const response = await instance.get('v1/shopping-service/category/');
-            setCategories(response.data.data);
+            setCategoryList(response.data.data);
+            toast.success("Xóa danh mục thành công!");
         }
         catch (error) {
             console.log(error);

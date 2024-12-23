@@ -36,9 +36,9 @@ const HomeBlog = () => {
         navigate(`/shopper/category-blogs/${newCategory}`);
     }
 
-    const [blogs, setBlogs] = useState([]);
+    const [blogList, setBlogList] = useState([]);
 
-    const [suggestedBlogs, setSuggestedBlogs] = useState([]);
+    const [recommendedBlogList, setRecommendedBlogList] = useState([]);
 
     // set up pagination
     const [page, setPage] = React.useState(1);
@@ -72,11 +72,11 @@ const HomeBlog = () => {
                 }
 
                 const blogsResponse = await instance.post(`v1/shopping-service/post/filter?page=${page}&rpp=${itemsPerPage}`, filter);
-                setBlogs(blogsResponse.data.data.items);
+                setBlogList(blogsResponse.data.data.items);
                 setTotalPages(Math.ceil(blogsResponse.data.data.total/itemsPerPage));
 
                 const suggestedBlogsResponse = await instance.post('v1/shopping-service/post/filter?page=1&rpp=5');
-                setSuggestedBlogs(suggestedBlogsResponse.data.data.items);
+                setRecommendedBlogList(suggestedBlogsResponse.data.data.items);
             }
             catch (error){
                 setLoading(false);
@@ -106,7 +106,7 @@ const HomeBlog = () => {
                 }
 
                 const blogsResponse = await instance.post(`v1/shopping-service/post/filter?page=${page}&rpp=${itemsPerPage}`, filter);
-                setBlogs(blogsResponse.data.data.items);
+                setBlogList(blogsResponse.data.data.items);
                 setTotalPages(Math.ceil(blogsResponse.data.data.total/itemsPerPage));
             }
             catch (error){
@@ -154,7 +154,7 @@ const HomeBlog = () => {
                             </div>
 
                             <div className="flex flex-col gap-4">
-                                {blogs.map((blog) => (
+                                {blogList.map((blog) => (
                                     <BlogListViewMd key={blog.id} title={blog.title} author={blog.shop.name} id={blog.id} picture={blog.thumbnail}
                                                     date={blog.createAt} category={blog.category.name} role="shopper"/>
                                 ))}
@@ -201,7 +201,7 @@ const HomeBlog = () => {
                             </div>
 
                             <div className="flex flex-col gap-4">
-                                {suggestedBlogs.map((blog) => (
+                                {recommendedBlogList.map((blog) => (
                                     <BlogCardView key={blog.id} id={blog.id} title={blog.title} picture={blog.thumbnail} author={blog.shop.name} date={blog.createAt} category={blog.category.name}/>
                                 ))}
                             </div>

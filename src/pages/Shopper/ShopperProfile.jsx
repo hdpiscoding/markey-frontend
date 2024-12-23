@@ -59,15 +59,15 @@ const ShopperProfile = () => {
     const [shopper, setShopper] = useState(null);
 
     // Store API image data (URL)
-    const [image, setImage] = useState(null);
+    const [profilePicture, setProfilePicture] = useState(null);
     // Store selected image
     const [selectedImage, setSelectedImage] = useState(null);
-    const [name, setName] = useState('');
+    const [fullname, setFullname] = useState('');
     const [nameError, setNameError] = useState('');
     const [error, setError] = useState('');
 
     const validateName = () => {
-        if (name.trim() === '') {
+        if (fullname.trim() === '') {
             setNameError('Họ và tên không được để trống.');
             return false;
         }
@@ -84,9 +84,9 @@ const ShopperProfile = () => {
                 const response = await instance.get("v1/user-service/shopper/me");
                 const item = response.data.data;
                 setShopper(item);
-                setName(item.fullname);
-                setImage(item.profilePicture);
-                setSelectedDate(dayjs(formatDate(item.birthdate), 'DD/MM/YYYY'));
+                setFullname(item.fullname);
+                setProfilePicture(item.profilePicture);
+                setBirthday(dayjs(formatDate(item.birthdate), 'DD/MM/YYYY'));
                 setGender(item.gender);
             }
             catch (error) {
@@ -104,7 +104,7 @@ const ShopperProfile = () => {
     }, []);
 
     const handleNameChange = (event) => {
-        setName(event.target.value);
+        setFullname(event.target.value);
         if (nameError) setNameError('');
     }
 
@@ -138,7 +138,7 @@ const ShopperProfile = () => {
         setGender(event.target.value);
     };
 
-    const [selectedDate, setSelectedDate] = useState(null);
+    const [birthday, setBirthday] = useState(null);
 
     // set up modal
     const [isModalOpen, setModalOpen] = useState(false);
@@ -182,8 +182,8 @@ const ShopperProfile = () => {
         try {
             const pictureUrl = await getImagesUrl();
             let data = {
-                fullname: name,
-                birthdate: selectedDate?.format('YYYY-MM-DD'),
+                fullname: fullname,
+                birthdate: birthday?.format('YYYY-MM-DD'),
                 profilePicture: pictureUrl,
                 gender: gender,
             }
@@ -227,9 +227,9 @@ const ShopperProfile = () => {
                                 {selectedImage ? (
                                     <img src={URL.createObjectURL(selectedImage)} alt="Selected"
                                          className="w-full h-full rounded-[50%] object-cover"/>
-                                ) : (image
+                                ) : (profilePicture
                                         ?
-                                        <img src={image} alt="img" className="w-full h-full rounded-[50%] object-cover"/>
+                                        <img src={profilePicture} alt="img" className="w-full h-full rounded-[50%] object-cover"/>
                                         :
                                         <FiUser className="text-Dark_gray h-16 w-16"/>
                                 )}
@@ -272,7 +272,7 @@ const ShopperProfile = () => {
                                 </td>
 
                                 <td className="py-3 relative">
-                                    <input type="text" className={`focus:outline-none border py-1 px-2 w-3/4 ${nameError ? 'border-Red text-Red' : 'border-Black'}`} value={name} onChange={handleNameChange}/>
+                                    <input type="text" className={`focus:outline-none border py-1 px-2 w-3/4 ${nameError ? 'border-Red text-Red' : 'border-Black'}`} value={fullname} onChange={handleNameChange}/>
                                     {nameError && (
                                         <p className="text-Red text-sm absolute mt-1">{nameError}</p>
                                     )}
@@ -358,11 +358,11 @@ const ShopperProfile = () => {
                                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                                             <DatePicker
                                                 format="DD/MM/YYYY"
-                                                value={selectedDate}
+                                                value={birthday}
                                                 onChange={(newValue) => {
                                                     // Kiểm tra tính hợp lệ trước khi cập nhật
                                                     if (newValue && newValue.isValid()) {
-                                                        setSelectedDate(newValue);
+                                                        setBirthday(newValue);
                                                     } else {
                                                         console.error('Selected date is invalid');
                                                     }

@@ -23,8 +23,8 @@ const HomeShopper = () => {
     };
     // end set up loading modal
 
-    const [products, setProducts] = React.useState([]);
-    const [blogs, setBlogs] = React.useState([]);
+    const [recommendedProductList, setRecommendedProductList] = React.useState([]);
+    const [recommendedBlogList, setRecommendedBlogList] = React.useState([]);
 
     const handleMoreProducts = () => {
         navigate("/shopper/recommended-products");
@@ -34,17 +34,17 @@ const HomeShopper = () => {
         navigate("/shopper/recommended-blogs");
     }
 
-    // Call API to get products and blogs data and cache them in state products and blogs
+    // Call API to get recommendedProductList and recommendedBlogList data and cache them in state recommendedProductList and recommendedBlogList
     useEffect(() => {
         const fetchData = async () => {
             try {
                 setLoading(true);
                 openLoadingModal();
                 const productsResponse = await instance.get('v1/shopping-service/product/recommend?page=1&rpp=12');
-                setProducts(productsResponse.data.data.items);
+                setRecommendedProductList(productsResponse.data.data.items);
 
                 const blogsResponse = await instance.post('v1/shopping-service/post/filter?page=1&rpp=8');
-                setBlogs(blogsResponse.data.data.items);
+                setRecommendedBlogList(blogsResponse.data.data.items);
             }
             catch (error){
                 setLoading(false);
@@ -76,7 +76,7 @@ const HomeShopper = () => {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-                            {products.map((product) => (
+                            {recommendedProductList.map((product) => (
                                 <ProductCardViewLg id={product.id} name={product.name} price={product.price} rating={product.ratingAverage.toFixed(1)} picture={product.picture[0]}/>
                             ))}
                         </div>
@@ -98,7 +98,7 @@ const HomeShopper = () => {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                            {blogs.map((blog) => (
+                            {recommendedBlogList.map((blog) => (
                                 <BlogCardView id={blog.id} title={blog.title} picture={blog.thumbnail} author={blog.shop.name} date={blog.createAt} category={blog.category.name}/>
                             ))}
                         </div>
