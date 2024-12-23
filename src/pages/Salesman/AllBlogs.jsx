@@ -39,7 +39,7 @@ const AllBlogs = () => {
             }
             const response = await instance.post(`v1/shopping-service/post/filter?page=${page}&rpp=${itemsPerPage}`, filter);
             setTotalPages(Math.ceil(response.data.data.total/itemsPerPage));
-            setBlogs(await response.data.data.items);
+            setBlogLists(await response.data.data.items);
         }
         else if(event.target.value === '2') {
             // Call API to sort by oldest date
@@ -52,11 +52,11 @@ const AllBlogs = () => {
             }
             const response = await instance.post(`v1/shopping-service/post/filter?page=${page}&rpp=${itemsPerPage}`, filter);
             setTotalPages(Math.ceil(response.data.data.total/itemsPerPage));
-            setBlogs(await response.data.data.items);
+            setBlogLists(await response.data.data.items);
         }
     };
 
-    const [blogs, setBlogs] = useState([]);
+    const [blogList, setBlogLists] = useState([]);
 
     // set up pagination
     const [page, setPage] = React.useState(1);
@@ -86,7 +86,7 @@ const AllBlogs = () => {
                 // Call API to get all blogs
                 const response = await instance.post(`v1/shopping-service/post/filter?page=${page}&rpp=${itemsPerPage}`, filter);
                 setTotalPages(Math.ceil(response.data.data.total/itemsPerPage));
-                setBlogs(await response.data.data.items);
+                setBlogLists(await response.data.data.items);
             }
             catch (error) {
                 setLoading(false);
@@ -123,7 +123,7 @@ const AllBlogs = () => {
                 // Call API to get all blogs
                 const response = await instance.post(`v1/shopping-service/post/filter?page=${page}&rpp=${itemsPerPage}`, filter);
                 setTotalPages(Math.ceil(response.data.data.total/itemsPerPage));
-                setBlogs(await response.data.data.items);
+                setBlogLists(await response.data.data.items);
             }
             catch (error) {
                 setLoading(false);
@@ -170,7 +170,7 @@ const AllBlogs = () => {
                             </div>
                         </div>
 
-                        {blogs.length <= 0
+                        {blogList.length <= 0
                             ?
                             <div className="flex items-center justify-center text-center w-full bg-Lighter_gray py-4">
                                 <span className="text-Gray">
@@ -179,7 +179,7 @@ const AllBlogs = () => {
                             </div>
                             :
                             <div className="flex flex-col gap-4">
-                                {blogs.map((blog) => (
+                                {blogList.map((blog) => (
                                     <BlogListViewLg key={blog.id} id={blog.id} title={blog.title} author={author}
                                                     picture={blog.thumbnail}
                                                     date={blog.createAt} category={blog.category.name} role="salesman"/>

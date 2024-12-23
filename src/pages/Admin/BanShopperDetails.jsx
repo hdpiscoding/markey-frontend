@@ -3,6 +3,10 @@ import {FiUser} from "react-icons/fi";
 import Footer from "../../components/General/Footer";
 import AdminNav from "../../components/Admin/AdminNav";
 import ConfirmModal from "../../components/General/ConfirmModal";
+import {instance} from "../../AxiosConfig";
+import {toast} from "react-toastify";
+import LoadingModal from "../../components/General/LoadingModal";
+import {useNavigate, useParams} from "react-router-dom";
 
 const BanShopperDetails = () => {
     const formatDate = (dateString) => {
@@ -23,14 +27,35 @@ const BanShopperDetails = () => {
         return `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
     }
 
+    const navigate = useNavigate();
+    const { shopperId } = useParams();
     // Store API data
     const [shopper, setShopper] = useState(null);
 
-    const [selectedImage, setSelectedImage] = useState(null);
+    const [shopperPicture, setShopperPicture] = useState(null);
+    const [loading, setLoading] = useState(false);
+
 
     useEffect(() => {
         // Call API to get shopper's data by shopper_id and set to shopper and set shopper's avatar to selectedImage
+        const fetchShopperData = async () => {
+            try {
+                setLoading(true);
+                openLoadingModal();
+                const shopperResponse = await instance.get(`v1/user-service/shopper/${shopperId}`);
+                setShopper(shopperResponse.data.data);
+                setShopperPicture(shopperResponse.data.data.profilePicture);
+            }
+            catch (error) {
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+                closeLoadingModal();
+            }
+        }
 
+        fetchShopperData();
     }, []);
 
     // set up modal
@@ -45,12 +70,30 @@ const BanShopperDetails = () => {
     };
     // end set up modal
 
-    const handleLock = () => {
-        // Call API to lock/unlock the user to set isActice = !isActive
+    // set up loading modal
+    const [isLoadingModalOpen, setLoadingModalOpen] = useState(false);
 
+    const openLoadingModal = () => {
+        setLoadingModalOpen(true);
+    };
+
+    const closeLoadingModal = () => {
+        setLoadingModalOpen(false);
+    };
+    // end set up loading modal
+
+    const handleLock = async () => {
+        // Call API to lock/unlock the user to set isActice = !isActive
+        try {
+            await instance.put(`v1/user-service/admin/block-shopper/${shopperId}`);
+            toast.success(`${shopper?.isBlocked ? "Mở khóa" : "Khóa"} người bán thành công!`);
+        }
+        catch (error) {
+            console.log(error);
+        }
         closeModal();
         // Redirect to the previous page
-
+        navigate(-1);
     }
 
     return (
@@ -69,9 +112,9 @@ const BanShopperDetails = () => {
                                 </span>
 
                                 <div className="flex items-center justify-center gap-10 select-none">
-                                    <span className={`font-semibold ${shopper?.isActive ? "text-Red hover:text-Dark_red" : "text-Blue hover:text-Dark_blue"} cursor-pointer`}
+                                    <span className={`font-semibold ${!shopper?.isBlocked ? "text-Red hover:text-Dark_red" : "text-Blue hover:text-Dark_blue"} cursor-pointer`}
                                           onClick={openModal}>
-                                        {shopper?.isActive ? 'Khóa' : 'Mở khóa'}
+                                        {!shopper?.isBlocked ? 'Khóa' : 'Mở khóa'}
                                     </span>
                                 </div>
                             </div>
@@ -82,8 +125,8 @@ const BanShopperDetails = () => {
                         <div className="flex flex-col items-center justify-center gap-4">
                             <div
                                 className="rounded-[50%] bg-Light_gray h-[120px] w-[120px] flex items-center justify-center">
-                                {selectedImage ? (
-                                    <img src={selectedImage} alt="Selected"
+                                {shopperPicture ? (
+                                    <img src={shopperPicture} alt="Selected"
                                          className="w-full h-full rounded-[50%] object-cover"/>
                                 ) : (
                                     <FiUser className="text-Dark_gray h-16 w-16"/>
@@ -118,7 +161,7 @@ const BanShopperDetails = () => {
 
                                 <td className="py-3">
                                     <span className="font-semibold">
-                                        {shopper?.gender?.toLowerCase ?? 'Nam'}
+                                        {shopper?.gender ?? 'Chưa xác định'}
                                     </span>
                                 </td>
                             </tr>
@@ -176,7 +219,8 @@ const BanShopperDetails = () => {
                         </table>
                     </div>
 
-                    <ConfirmModal isOpen={isModalOpen} onClose={closeModal} onConfirm={handleLock} title={`Xác nhận ${shopper?.isLocked ? "mở khóa" : "khóa"} khách hàng`} message={`Bạn có chắc muốn ${shopper?.isLocked ? "mở khóa" : "khóa"} tài khoản khách hàng này?`}/>
+                    <ConfirmModal isOpen={isModalOpen} onClose={closeModal} onConfirm={handleLock} title={`Xác nhận ${shopper?.isBlocked ? "mở khóa" : "khóa"} khách hàng`} message={`Bạn có chắc muốn ${shopper?.isBlocked ? "mở khóa" : "khóa"} tài khoản khách hàng này?`}/>
+                    {loading && <LoadingModal isOpen={isLoadingModalOpen}/>}
                 </div>
             </main>
 

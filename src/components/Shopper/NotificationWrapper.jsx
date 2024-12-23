@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import ConfirmModal from "../General/ConfirmModal";
 import ShopperReceivedItem from "./ShopperReceivedItem";
 import {instance} from "../../AxiosConfig";
+import {toast} from "react-toastify";
 
 const NotificationWrapper = (props) => {
     const [order, setOrder] = React.useState(props.order);
@@ -40,6 +41,7 @@ const NotificationWrapper = (props) => {
             console.log(error);
         }
         finally {
+            toast.success("Cập nhật trạng thái thành công!");
             props.onReceived();
         }
     }

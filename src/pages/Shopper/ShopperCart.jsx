@@ -7,6 +7,7 @@ import ConfirmModal from "../../components/General/ConfirmModal";
 import LoadingModal from "../../components/General/LoadingModal";
 import { BsCartX } from "react-icons/bs";
 import {instance} from "../../AxiosConfig";
+import {toast} from "react-toastify";
 
 const ShopperCart = () => {
     const [loading, setLoading] = useState(false);
@@ -57,6 +58,12 @@ const ShopperCart = () => {
                 paymentMethod: paymentMethod
             };
             await instance.post("v1/order-service/order", data);
+            if (cart.products?.length > 0) {
+                for (let i = 0; i < cart.products.length; i++) {
+                    onChange(cart.products[i].id, 0);
+                }
+            }
+            toast.success("Đặt hàng thành công!");
         }
         catch (error) {
             setLoading(false);

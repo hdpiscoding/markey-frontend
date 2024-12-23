@@ -43,7 +43,7 @@ const EditShopInfo = () => {
 
     const [salesman, setSalesman] = useState({});
     const [shop, setShop] = useState({});
-    const [image, setImage] = useState(null);
+    const [shopPicture, setShopPicture] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
     const [error, setError] = useState('');
 
@@ -72,11 +72,11 @@ const EditShopInfo = () => {
     };
 
     const [email, setEmail] = useState(null);
-    const [phone, setPhone] = useState(null);
+    const [phoneNumber, setPhoneNumber] = useState(null);
 
     const [fieldErrors, setFieldErrors] = useState({});
     const [formFields, setFormFields] = useState({
-        name: '',
+        fullname: '',
         cccd: '',
         shopName: '',
         address: '',
@@ -111,11 +111,11 @@ const EditShopInfo = () => {
     }, []);
 
     useEffect(() => {
-        setImage(shop.profilePicture);
+        setShopPicture(shop.profilePicture);
         setEmail(salesman.email);
-        setPhone(formatPhoneNumber(salesman.phoneNumber));
+        setPhoneNumber(formatPhoneNumber(salesman.phoneNumber));
         setFormFields({
-            name: salesman.fullname || '',
+            fullname: salesman.fullname || '',
             cccd: salesman.cccd || '',
             address: salesman.address || '',
             shopName: shop.name || '',
@@ -158,8 +158,8 @@ const EditShopInfo = () => {
         let imageErrorMessages = [];
         let isValid = true;
 
-        if (formFields.name.trim() === '') {
-            newFieldErrors.name = "Họ tên không được để trống.";
+        if (formFields.fullname.trim() === '') {
+            newFieldErrors.fullname = "Họ tên không được để trống.";
             isValid = false;
         }
 
@@ -232,7 +232,7 @@ const EditShopInfo = () => {
             try {
                 const pictureUrl = await getImagesUrl();
                 let salesmanRequest = {
-                    fullname: formFields.name,
+                    fullname: formFields.fullname,
                     cccd: formFields.cccd,
                     address: formFields.address
                 }
@@ -240,7 +240,7 @@ const EditShopInfo = () => {
                 let shopRequest = {
                     name: formFields.shopName,
                     description: formFields.description,
-                    profilePicture: pictureUrl ?? image
+                    profilePicture: pictureUrl ?? shopPicture
                 }
 
                 setLoading(true);
@@ -296,9 +296,9 @@ const EditShopInfo = () => {
                                 {selectedImage ? (
                                     <img src={URL.createObjectURL(selectedImage)} alt="Selected"
                                          className="w-full h-full rounded-[50%] object-cover"/>
-                                ) : (image
+                                ) : (shopPicture
                                         ?
-                                        <img src={image} alt="img" className="w-full h-full rounded-[50%] object-cover"/>
+                                        <img src={shopPicture} alt="img" className="w-full h-full rounded-[50%] object-cover"/>
                                         :
                                         <FiUser className="text-Dark_gray h-16 w-16"/>
                                 )}
@@ -339,7 +339,7 @@ const EditShopInfo = () => {
                                     <input
                                         type="text"
                                         name="name"
-                                        value={formFields.name}
+                                        value={formFields.fullname}
                                         onChange={handleInputChange}
                                         className={`w-full h-8 border ${fieldErrors.name ? 'border-Red' : 'border-Black'} focus:outline-none px-2 rounded-sm`}
                                     />
@@ -405,7 +405,7 @@ const EditShopInfo = () => {
                                 <td className="py-5">
                                     <div className="flex items-center gap-4">
                                             <span className="font-semibold">
-                                                { phone ?? "0903039930"}
+                                                { phoneNumber ?? "0903039930"}
                                             </span>
 
                                         <span

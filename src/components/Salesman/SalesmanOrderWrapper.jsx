@@ -3,6 +3,7 @@ import SalemansOrderItem from "./SalemansOrderItem";
 import ConfirmModal from "../General/ConfirmModal";
 import LoadingModal from "../General/LoadingModal";
 import {instance} from "../../AxiosConfig";
+import {toast} from "react-toastify";
 
 const SalesmanOrderWrapper = (props) => {
     const formatNumberWithDots = (number) => {
@@ -51,6 +52,7 @@ const SalesmanOrderWrapper = (props) => {
                 status: "DELIVERING"
             }
             await instance.put(`v1/order-service/order/status/${order.id}`, data);
+            toast.success("Duyệt đơn hàng thành công!");
         }
         catch (error) {
             setLoading(false);

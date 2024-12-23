@@ -6,6 +6,7 @@ import SalesmanNav from "../../components/Salesman/SalesmanNav";
 import ConfirmModal from "../../components/General/ConfirmModal";
 import LoadingModal from "../../components/General/LoadingModal";
 import {instance} from "../../AxiosConfig";
+import {toast} from "react-toastify";
 
 const SalesmanChangePassword = () => {
     const [currentPassword, setCurrentPassword] = useState('');
@@ -103,7 +104,6 @@ const SalesmanChangePassword = () => {
                     newPassword: newPassword
                 }
                 const response = await instance.put('v1/user-service/salesman/change-password', data)
-
                 setCurrentPassword('');
                 setNewPassword('');
                 setConfirmPassword('');
@@ -111,6 +111,7 @@ const SalesmanChangePassword = () => {
                 setShowPassword_new(false);
                 setShowPassword_confirm(false);
                 setErrors({});
+                toast.success("Đổi mật khẩu thành công!");
             }
             catch (error) {
                 setLoading(false);

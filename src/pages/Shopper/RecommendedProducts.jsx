@@ -6,7 +6,7 @@ import LoadingModal from "../../components/General/LoadingModal";
 import {instance} from "../../AxiosConfig";
 
 const RecommendedProducts = () => {
-    const [products, setProducts] = useState([]);
+    const [recommendedProductList, setRecommendedProductList] = useState([]);
 
     const [loading, setLoading] = useState(false);
     // set up loading modal
@@ -39,7 +39,7 @@ const RecommendedProducts = () => {
                 setLoading(true);
                 openLoadingModal();
                 const productsResponse = await instance.get(`v1/shopping-service/product/recommend?page=${page}&rpp=${itemsPerPage}`);
-                setProducts(productsResponse.data.data.items);
+                setRecommendedProductList(productsResponse.data.data.items);
                 setTotalPages(Math.ceil(productsResponse.data.data.total / itemsPerPage));
             }
             catch (error){
@@ -64,7 +64,7 @@ const RecommendedProducts = () => {
                 setPage(1);
                 setItemsPerPage(24);
                 const productsResponse = await instance.get(`v1/shopping-service/product/recommend?page=${page}&rpp=${itemsPerPage}`);
-                setProducts(productsResponse.data.data.items);
+                setRecommendedProductList(productsResponse.data.data.items);
                 setTotalPages(Math.ceil(productsResponse.data.data.total / itemsPerPage));
             }
             catch (error){
@@ -92,7 +92,7 @@ const RecommendedProducts = () => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-                        {products.map((product) => (
+                        {recommendedProductList.map((product) => (
                             <ProductCardViewLg id={product.id} name={product.name} price={product.price} picture={product.picture[0]}
                                                rating={product.ratingAverage.toFixed(1)}/>
                         ))}

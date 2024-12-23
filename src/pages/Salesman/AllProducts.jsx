@@ -7,7 +7,7 @@ import LoadingModal from "../../components/General/LoadingModal";
 import {instance} from "../../AxiosConfig";
 
 const AllProducts = () => {
-    const [products, setProducts] = useState([]);
+    const [productList, setProductList] = useState([]);
     const [shopId, setShopId] = useState("");
 
     const [loading, setLoading] = useState(false);
@@ -65,7 +65,7 @@ const AllProducts = () => {
             // Call API to get all products
             const response = await instance.post(`v1/shopping-service/product/filter?page=${page}&rpp=${itemsPerPage}`, filter);
             setTotalPages(Math.ceil(response.data.data.total/itemsPerPage));
-            setProducts(await response.data.data.items);
+            setProductList(await response.data.data.items);
         }
         else if (event.target.value === '2') {
             // Call API to sort by high to low price
@@ -79,7 +79,7 @@ const AllProducts = () => {
             // Call API to get all products
             const response = await instance.post(`v1/shopping-service/product/filter?page=${page}&rpp=${itemsPerPage}`, filter);
             setTotalPages(Math.ceil(response.data.data.total/itemsPerPage));
-            setProducts(await response.data.data.items);
+            setProductList(await response.data.data.items);
         }
     };
 
@@ -108,7 +108,7 @@ const AllProducts = () => {
                 // Call API to get all products
                 const response = await instance.post(`v1/shopping-service/product/filter?page=${page}&rpp=${itemsPerPage}`, filter);
                 setTotalPages(Math.ceil(response.data.data.total/itemsPerPage));
-                setProducts(await response.data.data.items);
+                setProductList(await response.data.data.items);
             }
             catch (error) {
                 setLoading(false);
@@ -142,7 +142,7 @@ const AllProducts = () => {
                 // Call API to get all products
                 const response = await instance.post(`v1/shopping-service/product/filter?page=${page}&rpp=${itemsPerPage}`, filter);
                 setTotalPages(Math.ceil(response.data.data.total/itemsPerPage));
-                setProducts(await response.data.data.items);
+                setProductList(await response.data.data.items);
             }
             catch (error) {
                 setLoading(false);
@@ -199,7 +199,7 @@ const AllProducts = () => {
                             </div>
                         </div>
 
-                        {products.length <= 0
+                        {productList.length <= 0
                             ?
                             <div className="flex items-center justify-center text-center w-full bg-Lighter_gray py-4">
                                 <span className="text-Gray">
@@ -209,7 +209,7 @@ const AllProducts = () => {
                             :
                             <div
                                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 justify-items-center">
-                                {products.map((product) => (
+                                {productList.map((product) => (
                                     <ProductCardViewMd key={product.id} name={product.name} price={product.price} picture={product?.picture[0]} id={product.id}
                                                        rating={product.ratingAverage} role="salesman"/>
                                 ))}

@@ -5,6 +5,7 @@ import {Link, useNavigate, useParams} from "react-router-dom";
 import LoadingModal from "../../components/General/LoadingModal";
 import {instance} from "../../AxiosConfig";
 import ConfirmModal from "../../components/General/ConfirmModal";
+import {toast} from "react-toastify";
 
 const ViewBlog = () => {
     const navigate = useNavigate();
@@ -78,7 +79,7 @@ const ViewBlog = () => {
             setLoading(true);
             openLoadingModal();
             await instance.delete(`v1/shopping-service/post/${blogId}`);
-
+            toast.success("Xóa bài viết thành công!");
         }
         catch (error) {
             setLoading(false);

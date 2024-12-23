@@ -5,7 +5,7 @@ import LoadingModal from "../../components/General/LoadingModal";
 import {instance} from "../../AxiosConfig";
 
 const RecommendedBlogs = () => {
-    const [blogs, setBlogs] = useState([]);
+    const [recommendedBlogList, setRecommendedBlogList] = useState([]);
 
     const [loading, setLoading] = useState(false);
     // set up loading modal
@@ -41,7 +41,7 @@ const RecommendedBlogs = () => {
                 setItemsPerPage(5);
                 const blogsResponse = await instance.post(`v1/shopping-service/post/filter?page=${page}&rpp=${itemsPerPage}`);
                 setTotalPages(Math.ceil(blogsResponse.data.data.total/itemsPerPage));
-                setBlogs(blogsResponse.data.data.items);
+                setRecommendedBlogList(blogsResponse.data.data.items);
             }
             catch (error) {
                 setLoading(false);
@@ -64,7 +64,7 @@ const RecommendedBlogs = () => {
                 openLoadingModal();
                 const blogsResponse = await instance.post(`v1/shopping-service/post/filter?page=${page}&rpp=${itemsPerPage}`);
                 setTotalPages(Math.ceil(blogsResponse.data.data.total/itemsPerPage));
-                setBlogs(blogsResponse.data.data.items);
+                setRecommendedBlogList(blogsResponse.data.data.items);
             }
             catch (error) {
                 setLoading(false);
@@ -91,7 +91,7 @@ const RecommendedBlogs = () => {
                     </div>
 
                     <div className="flex flex-col gap-4">
-                        {blogs.map((blog) => (
+                        {recommendedBlogList.map((blog) => (
                             <BlogListViewLg key={blog.id} id={blog.id} title={blog.title} author={blog.shop.name} date={blog.createAt} category={blog.category.name} picture={blog.thumbnail} role="shopper"/>
                         ))}
                     </div>

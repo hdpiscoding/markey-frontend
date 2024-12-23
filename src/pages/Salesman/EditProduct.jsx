@@ -5,6 +5,7 @@ import {instance, mediaInstance} from "../../AxiosConfig";
 import ConfirmModal from "../../components/General/ConfirmModal";
 import LoadingModal from "../../components/General/LoadingModal";
 import {useNavigate, useParams} from "react-router-dom";
+import {toast} from "react-toastify";
 
 const EditProduct = () => {
     const navigate = useNavigate();
@@ -275,6 +276,7 @@ const EditProduct = () => {
                     picture: imageUrls,
                 }
                 await instance.put(`v1/shopping-service/product/${productId}`, data);
+                toast.success("Chỉnh sửa sản phẩm thành công!");
             }
             catch (error) {
                 setLoading(false);

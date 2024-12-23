@@ -3,6 +3,7 @@ import ConfirmModal from "../General/ConfirmModal";
 import {Link} from "react-router-dom";
 import {instance} from "../../AxiosConfig";
 import {FiUser} from "react-icons/fi";
+import {toast} from "react-toastify";
 
 
 const UserListView = (props) => {
@@ -24,6 +25,7 @@ const UserListView = (props) => {
         if (!props.isLocked) {
             try {
                 await instance.put(`v1/user-service/admin/block-${props.role}/${props.id}`);
+                toast.success(`Khóa ${props.role === "shopper" ? "tài khoản khách hàng" : "tài khoản người bán"} thành công!`);
             }
             catch (error) {
                 console.log(error);
@@ -32,6 +34,7 @@ const UserListView = (props) => {
         else {
             try {
                 await instance.put(`v1/user-service/admin/unblock-${props.role}/${props.id}`);
+                toast.success(`Mở khóa ${props.role === "shopper" ? "khách hàng" : "người bán"} thành công!`);
             }
             catch (error) {
                 console.log(error);

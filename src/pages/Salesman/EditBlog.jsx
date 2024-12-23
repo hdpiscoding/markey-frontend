@@ -5,6 +5,7 @@ import ConfirmModal from "../../components/General/ConfirmModal";
 import LoadingModal from "../../components/General/LoadingModal";
 import {instance, mediaInstance} from "../../AxiosConfig";
 import {useNavigate, useParams} from "react-router-dom";
+import {toast} from "react-toastify";
 
 const EditBlog = () => {
     const navigate = useNavigate();
@@ -198,6 +199,7 @@ const EditBlog = () => {
                     lang_type: "VN"
                 }
                 await instance.put(`v1/shopping-service/post/${blogId}`, data);
+                toast.success("Cập nhật bài viết thành công!");
             }
             catch (error) {
                 setLoading(false);

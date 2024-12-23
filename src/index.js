@@ -4,11 +4,26 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {AppProvider} from "./components/General/AppContext";
+import {ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <AppProvider>
         <App />
+
+        <ToastContainer
+            position="top-right"
+            autoClose={2000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            style={{ zIndex: 100 }}
+        />
     </AppProvider>
 );
 
