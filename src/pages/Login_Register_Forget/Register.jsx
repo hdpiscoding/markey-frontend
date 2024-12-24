@@ -15,7 +15,7 @@ const Register = () => {
     const [errors, setErrors] = useState({ phoneNumber: '', email: '' });
     const [selectedRole, setSelectedRole] = useState('shopper');
 
-    const phoneNumberStorage = useLocalStorage('phoneNumber');
+    const phoneStorage = useLocalStorage('phone');
     const emailStorage = useLocalStorage('email');
     const roleStorage = useLocalStorage('selectedRole');
 
@@ -113,7 +113,7 @@ const Register = () => {
 
             // Chỉ tiếp tục nếu không có lỗi
             if (Object.keys(newErrors).length === 0) {
-                phoneNumberStorage.set(phoneNumber);
+                phoneStorage.set(phoneNumber);
                 emailStorage.set(email);
                 roleStorage.set(selectedRole);
                 // Thực hiện hành động chuyển trang hoặc xử lý tiếp theo
