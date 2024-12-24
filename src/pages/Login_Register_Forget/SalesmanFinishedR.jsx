@@ -25,7 +25,7 @@ const SalesmanFinishedR = () => {
 
                     <div className="mb-12">
                         <span className="font-sans text-center text-Black text-sm">
-                            Chúng tôi rất vui khi có bạn tham gia vào cộng đồng
+                            Chúng tôi rất vui khi có bạn tham gia vào cộng đồng. Vui lòng đợi để chúng tôi xác nhận tai khoản của bạn. Xin cảm ơn!
                         </span>
                     </div>
 
