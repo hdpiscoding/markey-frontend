@@ -92,7 +92,7 @@ const Register = () => {
                 openLoadingModal();
                 let data = {
                     email: email,
-                    phoneNumberNumber: formatPhoneNumber(phoneNumber),
+                    phoneNumber: formatPhoneNumber(phoneNumber),
                 }
                 const response = await axios.post('http://152.42.232.101:5050/api/v1/user-service/shopper/register/validation', data);
             }
